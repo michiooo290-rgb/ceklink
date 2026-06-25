@@ -1,0 +1,109 @@
+/* Hallmark · genre: atmospheric · macrostructure: Marquee Hero · theme: Terminal
+ * font-display: Outfit · font-body: IBM Plex Sans · font-mono: JetBrains Mono
+ * accent: cyber-green oklch(75% 0.18 155) · secondary: blue oklch(70% 0.15 250) · tertiary: purple oklch(65% 0.18 300)
+ * paper: dark oklch(12% 0.015 270) — warmer, more depth
+ */
+
+:root {
+  /* ── Color Tokens: Paper (warmer dark with blue undertone) ── */
+  --color-paper: oklch(12% 0.015 270);       /* #0d0d14 */
+  --color-paper-2: oklch(15% 0.015 270);     /* #131320 */
+  --color-paper-3: oklch(19% 0.018 270);     /* #1c1c30 */
+  --color-paper-4: oklch(24% 0.02 270);      /* #272740 */
+
+  /* ── Color Tokens: Text (warmer grays, more levels) ──────── */
+  --color-text: oklch(92% 0.003 270);        /* #eaeaf0 */
+  --color-text-secondary: oklch(72% 0.008 270); /* #a0a0b8 */
+  --color-text-muted: oklch(58% 0.012 270);  /* #7a7a95 */
+  --color-text-dim: oklch(45% 0.015 270);    /* #5a5a75 */
+
+  /* ── Color Tokens: Accent (green — primary) ──────────────── */
+  --color-accent: oklch(75% 0.18 155);       /* #00ff88 */
+  --color-accent-dim: oklch(65% 0.15 155);   /* #00cc6a */
+  --color-accent-glow: oklch(75% 0.18 155 / 30%);
+
+  /* ── Color Tokens: Secondary (blue — NEW) ────────────────── */
+  --color-secondary: oklch(70% 0.15 250);    /* #4d9fff */
+  --color-secondary-dim: oklch(60% 0.12 250); /* #3d80dd */
+  --color-secondary-glow: oklch(70% 0.15 250 / 20%);
+
+  /* ── Color Tokens: Tertiary (purple — NEW) ───────────────── */
+  --color-tertiary: oklch(65% 0.18 300);     /* #c084fc */
+  --color-tertiary-dim: oklch(55% 0.15 300);
+  --color-tertiary-glow: oklch(65% 0.18 300 / 15%);
+
+  /* ── Color Tokens: Semantic ──────────────────────────────── */
+  --color-danger: oklch(60% 0.22 25);        /* #ff3b3b */
+  --color-danger-dim: oklch(50% 0.18 25);
+  --color-danger-glow: oklch(60% 0.22 25 / 20%);
+
+  --color-warn: oklch(75% 0.15 75);          /* #ffaa00 */
+  --color-warn-dim: oklch(65% 0.12 75);
+  --color-warn-glow: oklch(75% 0.15 75 / 20%);
+
+  /* ── Color Tokens: Borders (more visible) ────────────────── */
+  --color-border: oklch(22% 0.02 270);       /* #252540 */
+  --color-border-accent: oklch(75% 0.18 155 / 12%);
+  --color-border-hover: oklch(75% 0.18 155 / 20%);
+
+  --color-focus: oklch(75% 0.18 155 / 50%);
+
+  /* ── Font Tokens ──────────────────────────────── */
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Typography Scale (Major Third 1.25) ──────── */
+  --text-xs: 0.64rem;      /* 10.24px */
+  --text-sm: 0.8rem;       /* 12.8px */
+  --text-base: 1rem;       /* 16px */
+  --text-md: 1.25rem;      /* 20px */
+  --text-lg: 1.5625rem;    /* 25px */
+  --text-xl: 1.9531rem;    /* 31.25px */
+  --text-2xl: 2.4414rem;   /* 39px */
+  --text-3xl: 3.0518rem;   /* 48.8px */
+  --text-4xl: 3.8147rem;   /* 61px */
+  --text-display: clamp(2.75rem, 5vw + 1rem, 4.5rem);
+  --text-display-s: clamp(2rem, 4vw + 0.5rem, 3.5rem);
+
+  /* ── Spacing Scale (4pt) ──────────────────────── */
+  --space-1: 0.25rem;      /* 4px */
+  --space-2: 0.5rem;       /* 8px */
+  --space-3: 0.75rem;      /* 12px */
+  --space-4: 1rem;         /* 16px */
+  --space-5: 1.25rem;      /* 20px */
+  --space-6: 1.5rem;       /* 24px */
+  --space-8: 2rem;         /* 32px */
+  --space-10: 2.5rem;      /* 40px */
+  --space-12: 3rem;        /* 48px */
+  --space-16: 4rem;        /* 64px */
+  --space-20: 5rem;        /* 80px */
+  --space-24: 6rem;        /* 96px */
+
+  /* ── Radius ───────────────────────────────────── */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-md: 0.5rem;     /* 8px */
+  --radius-lg: 0.75rem;    /* 12px */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-2xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;
+
+  /* ── Easings ──────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Durations ────────────────────────────────── */
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+  --dur-slower: 600ms;
+
+  /* ── Shadows ──────────────────────────────────── */
+  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 30%);
+  --shadow-md: 0 4px 12px oklch(0% 0 0 / 40%);
+  --shadow-lg: 0 8px 32px oklch(0% 0 0 / 50%);
+  --shadow-glow-accent: 0 0 20px var(--color-accent-glow);
+  --shadow-glow-danger: 0 0 20px var(--color-danger-glow);
+  --shadow-glow-warn: 0 0 20px var(--color-warn-glow);
+}

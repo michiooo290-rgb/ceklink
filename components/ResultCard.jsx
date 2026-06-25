@@ -1,0 +1,325 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ShieldCheck, ShieldAlert, ShieldX, Copy, Share2, Flag,
+  CheckCircle2, AlertTriangle, XCircle, ChevronDown, ChevronUp,
+  Globe, Lock, Unlock, Link, Search, Info, ExternalLink,
+} from "lucide-react";
+import ReportModal from "./ReportModal";
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1], staggerChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+};
+
+export default function ResultCard({ result, url }) {
+  const [copied, setCopied] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  if (!result) return null;
+
+  const { status, statusLabel, score, summary, issues, domain, riskLevel, details } = result;
+
+  const StatusIcon = status === "safe" ? ShieldCheck : status === "warn" ? ShieldAlert : ShieldX;
+
+  const glowClass = status === "safe" ? "glow-safe" : status === "warn" ? "glow-warn" : "glow-danger";
+
+  const statusColor = status === "safe" ? "text-[#00ff88]" : status === "warn" ? "text-[#ffaa00]" : "text-[#ff3b3b]";
+  const statusBg = status === "safe" ? "bg-[#00ff88]/10" : status === "warn" ? "bg-[#ffaa00]/10" : "bg-[#ff3b3b]/10";
+
+  const handleCopy = () => {
+    const text = `Hasil Cek Link - CekLink\n\nLink: ${url}\nStatus: ${statusLabel}\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nTemuan:\n${issues.map((i) => `- ${i.label}: ${i.value}`).join("\n")}\n\nCek link lain di: ceklink.id`;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleShareWA = () => {
+    const text = encodeURIComponent(
+      `*Hasil Cek Link - CekLink*\n\nLink: ${url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nCek link lain di: ceklink.id`
+    );
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  };
+
+  const issueStatusColors = {
+    safe: { bg: "bg-[#00ff88]", text: "text-[#00ff88]", icon: CheckCircle2 },
+    warn: { bg: "bg-[#ffaa00]", text: "text-[#ffaa00]", icon: AlertTriangle },
+    danger: { bg: "bg-[#ff3b3b]", text: "text-[#ff3b3b]", icon: XCircle },
+  };
+
+  return (
+    <motion.div
+      className={`glass-card ${glowClass} mt-8 overflow-hidden`}
+      role="region"
+      aria-label="Hasil pemindaian URL"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Scan overlay animation */}
+      <div className="scan-overlay">
+        <motion.div
+          className="scan-line"
+          initial={{ x: "-100%" }}
+          animate={{ x: "100%" }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </div>
+
+      <div className="p-6 sm:p-8">
+        {/* Status Header */}
+        <motion.div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6" variants={itemVariants}>
+          <div className="flex items-center gap-4">
+            <motion.div
+              className={`w-14 h-14 rounded-xl ${statusBg} flex items-center justify-center`}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <StatusIcon size={28} className={statusColor} />
+            </motion.div>
+            <div>
+              <motion.div className={`font-heading font-bold text-2xl ${statusColor}`}>
+                {statusLabel}
+              </motion.div>
+              <div className="font-mono text-sm text-[#666680] break-all mt-1">{domain}</div>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={`text-xs px-2 py-1 rounded-full ${statusBg} ${statusColor} font-medium`}>
+                  Risiko: {riskLevel}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Score Circle */}
+          <motion.div className="flex items-center gap-3" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4, type: "spring" }}>
+            <div className="relative w-20 h-20">
+              <svg className="w-20 h-20 -rotate-90" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(26,26,46,0.8)" strokeWidth="5" />
+                <motion.circle
+                  cx="40" cy="40" r="35" fill="none"
+                  stroke={status === "safe" ? "#00ff88" : status === "warn" ? "#ffaa00" : "#ff3b3b"}
+                  strokeWidth="5" strokeLinecap="round"
+                  initial={{ strokeDasharray: "0 220" }}
+                  animate={{ strokeDasharray: `${(score / 100) * 220} 220` }}
+                  transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <motion.span className="font-heading font-bold text-xl text-white">{score}</motion.span>
+                <span className="text-[10px] text-[#666680]">/100</span>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Summary */}
+        <motion.p className="text-[#e0e0e0] text-base mb-6 leading-relaxed" variants={itemVariants}>
+          {summary}
+        </motion.p>
+
+        {/* Issues List */}
+        <motion.div className="space-y-3 mb-6" variants={itemVariants}>
+          <h3 className="text-sm font-semibold text-[#8888aa] uppercase tracking-wider">Hasil Pemeriksaan</h3>
+          {issues.map((issue, i) => {
+            const colors = issueStatusColors[issue.status];
+            const Icon = colors.icon;
+            return (
+              <motion.div
+                key={i}
+                className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + i * 0.1 }}
+              >
+                <div className={`w-8 h-8 rounded-lg ${issue.status === "safe" ? "bg-[#00ff88]/10" : issue.status === "warn" ? "bg-[#ffaa00]/10" : "bg-[#ff3b3b]/10"} flex items-center justify-center flex-shrink-0`}>
+                  <Icon size={16} className={colors.text} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-[#e0e0e0]">{issue.label}</span>
+                    <span className={`text-xs font-mono ${colors.text}`}>{issue.value}</span>
+                  </div>
+                  <p className="text-xs text-[#666680] mt-1">{issue.detail}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Score Breakdown (if deductions exist) */}
+        {details?.deductions?.length > 0 && (
+          <motion.div className="mb-6" variants={itemVariants}>
+            <button
+              onClick={() => setShowDetails(!showDetails)}
+              className="flex items-center gap-2 text-sm text-[#8888aa] hover:text-[#00ff88] transition-colors w-full"
+            >
+              <Info size={14} />
+              <span>Detail Pengurangan Skor</span>
+              {showDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+            <AnimatePresence>
+              {showDetails && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-3 space-y-2">
+                    {details.deductions.map((d, i) => (
+                      <div key={i} className="flex items-center justify-between text-xs p-2 rounded-lg bg-white/[0.02]">
+                        <span className="text-[#e0e0e0]">{d.item}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#ff3b3b] font-mono">{d.points}</span>
+                          <span className="text-[#555570]">{d.reason}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {/* URL Info */}
+        {details?.urlParts && (
+          <motion.div className="mb-6 p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]" variants={itemVariants}>
+            <h3 className="text-sm font-semibold text-[#8888aa] mb-3 flex items-center gap-2">
+              <Globe size={14} />
+              Informasi URL
+            </h3>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <span className="text-[#555570]">Protokol</span>
+                <div className={`font-mono ${details.urlParts.protocol === "https" ? "text-[#00ff88]" : "text-[#ff3b3b]"}`}>
+                  {details.urlParts.protocol === "https" ? <Lock size={12} className="inline mr-1" /> : <Unlock size={12} className="inline mr-1" />}
+                  {details.urlParts.protocol.toUpperCase()}
+                </div>
+              </div>
+              <div>
+                <span className="text-[#555570]">Domain</span>
+                <div className="font-mono text-[#e0e0e0] break-all">{domain}</div>
+              </div>
+              {details.urlParts.pathname && details.urlParts.pathname !== "/" && (
+                <div className="col-span-2">
+                  <span className="text-[#555570]">Path</span>
+                  <div className="font-mono text-[#e0e0e0] break-all">{details.urlParts.pathname}</div>
+                </div>
+              )}
+              {details.urlParts.port && (
+                <div>
+                  <span className="text-[#555570]">Port</span>
+                  <div className="font-mono text-[#ffaa00]">{details.urlParts.port}</div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Recommendations */}
+        <motion.div className="mb-6 p-4 rounded-xl border border-[#00ff88]/20 bg-[#00ff88]/5" variants={itemVariants}>
+          <h3 className="text-sm font-semibold text-[#00ff88] mb-2 flex items-center gap-2">
+            <ShieldCheck size={14} />
+            Rekomendasi
+          </h3>
+          <ul className="space-y-1 text-xs text-[#8888aa]">
+            {status === "safe" ? (
+              <>
+                <li>• Link ini terlihat aman, tetap waspada saat mengisi data</li>
+                <li>• Pastikan selalu cek URL sebelum login</li>
+                <li>• Gunakan 2FA untuk keamanan ekstra</li>
+              </>
+            ) : status === "warn" ? (
+              <>
+                <li>• Jangan isi data pribadi di halaman ini</li>
+                <li>• Verifikasi keaslian link ke sumber resmi</li>
+                <li>• Laporkan link ini jika mencurigakan</li>
+                <li>• Gunakan browser extension CekLink untuk proteksi otomatis</li>
+              </>
+            ) : (
+              <>
+                <li>• JANGAN KLIK atau buka link ini</li>
+                <li>• Jangan isi data apapun di halaman ini</li>
+                <li>• Laporkan link ini untuk melindungi orang lain</li>
+                <li>• Jika sudah terlanjur klik, segera ganti password</li>
+                <li>• Hubungi bank jika data finansial bocor</li>
+              </>
+            )}
+          </ul>
+        </motion.div>
+
+        {/* Action Buttons */}
+        <motion.div className="flex flex-wrap gap-3" variants={itemVariants}>
+          <motion.button
+            onClick={handleCopy}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#1a1a2e] text-[#666680] hover:text-[#00ff88] hover:border-[#00ff88]/30 transition-colors text-sm"
+            aria-label="Salin hasil"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Copy size={16} />
+            {copied ? "Tersalin!" : "Salin Hasil"}
+          </motion.button>
+          <motion.button
+            onClick={handleShareWA}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-green-600/20 border border-green-500/30 text-green-400 hover:bg-green-600/30 transition-colors text-sm"
+            aria-label="Bagikan ke WhatsApp"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Share2 size={16} />
+            Share WA
+          </motion.button>
+          <motion.button
+            onClick={() => setShowReport(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#1a1a2e] text-[#666680] hover:text-[#ff3b3b] hover:border-[#ff3b3b]/30 transition-colors text-sm"
+            aria-label="Laporkan link"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Flag size={16} />
+            Laporkan
+          </motion.button>
+        </motion.div>
+
+        {/* Checked timestamp */}
+        <div className="mt-4 text-xs text-[#555570] text-center">
+          Diperiksa pada: {new Date(result.checkedAt).toLocaleString("id-ID")}
+        </div>
+      </div>
+
+      {/* Report Modal */}
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        url={url}
+        domain={domain}
+      />
+    </motion.div>
+  );
+}
