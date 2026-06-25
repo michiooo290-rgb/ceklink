@@ -44,7 +44,7 @@ export default function Hero() {
       {/* ColorBends Background */}
       <div className="absolute inset-0 z-0" aria-hidden="true">
         <ColorBends
-          colors={["#00ff88", "#06b6d4", "#8a5cff", "#0d9488"]}
+          colors={["#D4870A", "#1A9E6A", "#C44A20", "#0F7A5E"]}
           rotation={90}
           speed={0.2}
           scale={1}
@@ -69,7 +69,7 @@ export default function Hero() {
 
       {/* Floating orbs decoration */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#00ff88]/5 blur-3xl"
+        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[#F5A623]/5 blur-3xl"
         animate={{
           x: [0, 50, 0],
           y: [0, -30, 0],
@@ -83,7 +83,7 @@ export default function Hero() {
         aria-hidden="true"
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-[#06b6d4]/5 blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-48 h-48 rounded-full bg-[#2DCB85]/5 blur-3xl"
         animate={{
           x: [0, -40, 0],
           y: [0, 40, 0],
@@ -106,9 +106,9 @@ export default function Hero() {
       >
         {/* Badge */}
         <motion.div variants={scaleVariants}>
-          <div className="glass-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#00ff88]/20 bg-[#00ff88]/5 text-[#00ff88] text-sm font-mono mb-8 hover-lift">
+          <div className="glass-shimmer inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#F5A623]/20 bg-[#F5A623]/5 text-[#F5A623] text-sm font-mono mb-8 hover-lift">
             <motion.span
-              className="w-2 h-2 rounded-full bg-[#00ff88]"
+              className="w-2 h-2 rounded-full bg-[#F5A623]"
               animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
@@ -140,21 +140,21 @@ export default function Hero() {
           Tempel link yang mencurigakan, kami akan menganalisisnya secara
           otomatis. Tahu apakah link tersebut{" "}
           <motion.span
-            className="text-[#00ff88] font-medium"
+            className="text-[#2DCB85] font-medium"
             whileHover={{ scale: 1.05 }}
           >
             aman
           </motion.span>
           ,{" "}
           <motion.span
-            className="text-[#ffaa00] font-medium"
+            className="text-[#F5A623] font-medium"
             whileHover={{ scale: 1.05 }}
           >
             mencurigakan
           </motion.span>
           , atau{" "}
           <motion.span
-            className="text-[#ff3b3b] font-medium"
+            className="text-[#E55C30] font-medium"
             whileHover={{ scale: 1.05 }}
           >
             berbahaya
@@ -167,7 +167,7 @@ export default function Hero() {
           <motion.a
             href="#cek-link"
             className="btn-glow inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-base"
-            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(0, 255, 136, 0.5)" }}
+            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(245, 166, 35, 0.5)" }}
             whileTap={{ scale: 0.95 }}
           >
             <Search size={20} />
@@ -207,7 +207,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 + i * 0.2, duration: 0.5 }}
             >
-              <div className="font-heading font-bold text-2xl text-[#00ff88]">
+              <div className="font-heading font-bold text-2xl text-[#F5A623]">
                 {stat.value}
               </div>
               <div className="text-sm text-[#666680]">{stat.label}</div>
@@ -218,7 +218,7 @@ export default function Hero() {
 
       {/* Bottom Gradient Fade */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0a0a0f] to-transparent"
+        className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#1a1e2e] to-transparent"
         aria-hidden="true"
       />
 
@@ -234,7 +234,7 @@ export default function Hero() {
       >
         <div className="w-6 h-10 rounded-full border-2 border-[#666680] flex items-start justify-center p-1">
           <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[#00ff88]"
+            className="w-1.5 h-1.5 rounded-full bg-[#F5A623]"
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           />

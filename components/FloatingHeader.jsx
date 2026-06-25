@@ -95,7 +95,7 @@ export default function FloatingHeader() {
           className={`relative rounded-2xl border transition-all duration-500 ${
             atTop
               ? "bg-transparent border-transparent shadow-none"
-              : "bg-[rgba(10,10,15,0.8)] backdrop-blur-xl border-[rgba(0,255,136,0.08)] shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.02)_inset]"
+              : "bg-[rgba(26,30,46,0.8)] backdrop-blur-xl border-[rgba(245,166,35,0.08)] shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.02)_inset]"
           }`}
           role="navigation"
           aria-label="Navigasi utama"
@@ -107,10 +107,10 @@ export default function FloatingHeader() {
                 href="#beranda"
                 className="flex items-center gap-2.5 font-bold text-lg text-white group transition-all"
               >
-                <span className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#00ff88] to-[#00cc6a] text-[#0a0a0f] shadow-[0_0_20px_rgba(0,255,136,0.3)] group-hover:shadow-[0_0_30px_rgba(0,255,136,0.5)] transition-shadow">
+                <span className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#F5A623] to-[#D48F1A] text-[#1a1e2e] shadow-[0_0_20px_rgba(245,166,35,0.3)] group-hover:shadow-[0_0_30px_rgba(245,166,35,0.5)] transition-shadow">
                   <ShieldCheck size={18} strokeWidth={2.5} aria-hidden="true" />
                 </span>
-                <span className="font-heading bg-gradient-to-r from-[#00ff88] to-[#00d97e] bg-clip-text text-transparent">
+                <span className="font-heading bg-gradient-to-r from-[#F5A623] to-[#E8B84A] bg-clip-text text-transparent">
                   CekLink
                 </span>
               </a>
@@ -125,13 +125,13 @@ export default function FloatingHeader() {
                       href={item.href}
                       className={`relative px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${
                         isActive
-                          ? "text-[#00ff88] bg-[rgba(0,255,136,0.08)]"
+                          ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
                           : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
                       }`}
                     >
                       {item.label}
                       {isActive && (
-                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#00ff88] rounded-full shadow-[0_0_8px_rgba(0,255,136,0.5)]" />
+                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#F5A623] rounded-full shadow-[0_0_8px_rgba(245,166,35,0.5)]" />
                       )}
                     </a>
                   );
@@ -141,7 +141,7 @@ export default function FloatingHeader() {
               {/* CTA Button */}
               <a
                 href="#cek-link"
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#00ff88] to-[#00cc6a] text-[#0a0a0f] hover:shadow-[0_0_24px_rgba(0,255,136,0.4)] transition-all duration-300 hover:-translate-y-0.5"
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e] hover:shadow-[0_0_24px_rgba(245,166,35,0.4)] transition-all duration-300 hover:-translate-y-0.5"
               >
                 Mulai Scan
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -181,7 +181,7 @@ export default function FloatingHeader() {
                       href={item.href}
                       className={`block px-4 py-3 text-sm font-medium rounded-xl transition-all ${
                         isActive
-                          ? "text-[#00ff88] bg-[rgba(0,255,136,0.08)]"
+                          ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
                           : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
                       }`}
                       onClick={() => setMobileOpen(false)}
@@ -192,7 +192,7 @@ export default function FloatingHeader() {
                 })}
                 <a
                   href="#cek-link"
-                  className="block px-4 py-3 mt-2 text-sm font-semibold text-center rounded-xl bg-gradient-to-r from-[#00ff88] to-[#00cc6a] text-[#0a0a0f]"
+                  className="block px-4 py-3 mt-2 text-sm font-semibold text-center rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e]"
                   onClick={() => setMobileOpen(false)}
                 >
                   Mulai Scan →

@@ -1,52 +1,52 @@
-/* Hallmark · genre: atmospheric · macrostructure: Marquee Hero · theme: Terminal
+/* Hallmark · genre: atmospheric · macrostructure: Marquee Hero · theme: Amber Warning System
  * font-display: Outfit · font-body: IBM Plex Sans · font-mono: JetBrains Mono
- * accent: cyber-green oklch(75% 0.18 155) · secondary: blue oklch(70% 0.15 250) · tertiary: purple oklch(65% 0.18 300)
- * paper: dark oklch(12% 0.015 270) — warmer, more depth
+ * accent: amber oklch(75% 0.17 75) · secondary: teal oklch(62% 0.14 185) · tertiary: coral oklch(58% 0.16 25)
+ * paper: slate oklch(13% 0.008 250) — neutral dark, no strong tint
  */
 
 :root {
-  /* ── Color Tokens: Paper (warmer dark with blue undertone) ── */
-  --color-paper: oklch(12% 0.015 270);       /* #0d0d14 */
-  --color-paper-2: oklch(15% 0.015 270);     /* #131320 */
-  --color-paper-3: oklch(19% 0.018 270);     /* #1c1c30 */
-  --color-paper-4: oklch(24% 0.02 270);      /* #272740 */
+  /* ── Color Tokens: Paper (slate dark, neutral) ───────────── */
+  --color-paper: oklch(13% 0.008 250);       /* ~#1a1e2e */
+  --color-paper-2: oklch(16% 0.008 250);     /* ~#1f2438 */
+  --color-paper-3: oklch(20% 0.010 250);     /* ~#262c42 */
+  --color-paper-4: oklch(25% 0.012 250);     /* ~#303850 */
 
-  /* ── Color Tokens: Text (warmer grays, more levels) ──────── */
-  --color-text: oklch(92% 0.003 270);        /* #eaeaf0 */
-  --color-text-secondary: oklch(72% 0.008 270); /* #a0a0b8 */
-  --color-text-muted: oklch(58% 0.012 270);  /* #7a7a95 */
-  --color-text-dim: oklch(45% 0.015 270);    /* #5a5a75 */
+  /* ── Color Tokens: Text ──────────────────────────────────── */
+  --color-text: oklch(92% 0.003 250);        /* ~#e8eaf0 */
+  --color-text-secondary: oklch(72% 0.008 250); /* ~#a0a5b8 */
+  --color-text-muted: oklch(58% 0.010 250);  /* ~#7a8095 */
+  --color-text-dim: oklch(45% 0.012 250);    /* ~#5a6075 */
 
-  /* ── Color Tokens: Accent (green — primary) ──────────────── */
-  --color-accent: oklch(75% 0.18 155);       /* #00ff88 */
-  --color-accent-dim: oklch(65% 0.15 155);   /* #00cc6a */
-  --color-accent-glow: oklch(75% 0.18 155 / 30%);
+  /* ── Color Tokens: Accent (amber — primary) ──────────────── */
+  --color-accent: oklch(75% 0.17 75);        /* ~#F5A623 */
+  --color-accent-dim: oklch(65% 0.14 75);    /* ~#D48F1A */
+  --color-accent-glow: oklch(75% 0.17 75 / 25%);
 
-  /* ── Color Tokens: Secondary (blue — NEW) ────────────────── */
-  --color-secondary: oklch(70% 0.15 250);    /* #4d9fff */
-  --color-secondary-dim: oklch(60% 0.12 250); /* #3d80dd */
-  --color-secondary-glow: oklch(70% 0.15 250 / 20%);
+  /* ── Color Tokens: Secondary (teal — safe/positive) ──────── */
+  --color-secondary: oklch(62% 0.14 185);    /* ~#2DCB85 */
+  --color-secondary-dim: oklch(52% 0.12 185); /* ~#1FA86B */
+  --color-secondary-glow: oklch(62% 0.14 185 / 20%);
 
-  /* ── Color Tokens: Tertiary (purple — NEW) ───────────────── */
-  --color-tertiary: oklch(65% 0.18 300);     /* #c084fc */
-  --color-tertiary-dim: oklch(55% 0.15 300);
-  --color-tertiary-glow: oklch(65% 0.18 300 / 15%);
+  /* ── Color Tokens: Tertiary (coral — danger accent) ──────── */
+  --color-tertiary: oklch(58% 0.16 25);      /* ~#E55C30 */
+  --color-tertiary-dim: oklch(48% 0.14 25);
+  --color-tertiary-glow: oklch(58% 0.16 25 / 15%);
 
   /* ── Color Tokens: Semantic ──────────────────────────────── */
-  --color-danger: oklch(60% 0.22 25);        /* #ff3b3b */
-  --color-danger-dim: oklch(50% 0.18 25);
-  --color-danger-glow: oklch(60% 0.22 25 / 20%);
+  --color-danger: oklch(58% 0.22 25);        /* ~#E55C30 coral */
+  --color-danger-dim: oklch(48% 0.18 25);
+  --color-danger-glow: oklch(58% 0.22 25 / 20%);
 
-  --color-warn: oklch(75% 0.15 75);          /* #ffaa00 */
-  --color-warn-dim: oklch(65% 0.12 75);
-  --color-warn-glow: oklch(75% 0.15 75 / 20%);
+  --color-warn: oklch(75% 0.17 75);          /* same as accent (amber) */
+  --color-warn-dim: oklch(65% 0.14 75);
+  --color-warn-glow: oklch(75% 0.17 75 / 20%);
 
-  /* ── Color Tokens: Borders (more visible) ────────────────── */
-  --color-border: oklch(22% 0.02 270);       /* #252540 */
-  --color-border-accent: oklch(75% 0.18 155 / 12%);
-  --color-border-hover: oklch(75% 0.18 155 / 20%);
+  /* ── Color Tokens: Borders ───────────────────────────────── */
+  --color-border: oklch(23% 0.010 250);      /* ~#2e3348 */
+  --color-border-accent: oklch(75% 0.17 75 / 10%);
+  --color-border-hover: oklch(75% 0.17 75 / 18%);
 
-  --color-focus: oklch(75% 0.18 155 / 50%);
+  --color-focus: oklch(75% 0.17 75 / 40%);
 
   /* ── Font Tokens ──────────────────────────────── */
   --font-display: "Outfit", system-ui, sans-serif;
