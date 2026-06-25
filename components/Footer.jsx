@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { ShieldCheck, Heart } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -152,16 +152,8 @@ export default function Footer() {
             className="flex items-center gap-1"
             whileHover={{ scale: 1.05 }}
           >
-            Made with{" "}
-            <motion.span
-              animate={{ scale: [1, 1.3, 1] }}
-              transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
-            >
-              <Heart size={14} className="text-[#ff3b3b] fill-[#ff3b3b]" aria-hidden="true" />
-            </motion.span>{" "}
-            by{" "}
-            <span className="text-[#00ff88] font-medium">Michio Tarok</span>
-            {" · "}Rekayasa Keamanan Siber
+            Made with by{" "}
+            <span className="text-[#00ff88] font-medium">Michio</span>
           </motion.p>
         </motion.div>
       </div>
