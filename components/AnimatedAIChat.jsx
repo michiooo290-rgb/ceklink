@@ -111,17 +111,29 @@ async function getResponse(input) {
   return ["🤔 Coba perintah:","• `/cek <url>` — Cek link","• `/tips` — Tips aman","• `/contoh` — Contoh phising"].join("\n");
 }
 
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function MsgContent({ text }) {
+  const MAX_RENDER_LENGTH = 2000;
+  const safeText = typeof text === "string" ? escapeHtml(text.slice(0, MAX_RENDER_LENGTH)) : "";
+
   return (
     <div className="space-y-1">
-      {text.split("\n").map((line, i) => {
+      {safeText.split("\n").map((line, i) => {
         if (!line.trim()) return <div key={i} className="h-2" />;
         const parts = [];
         let remaining = line;
         let key = 0;
 
-        // Process bold **text**
-        const boldRe = /\*\*(.*?)\*\*/g;
+        // Process bold **text** (only allow alphanumeric, spaces, and basic punctuation)
+        const boldRe = /\*\*([a-zA-Z0-9 .,;:!?\-_/]+)\*\*/g;
         let match;
         let last = 0;
         while ((match = boldRe.exec(remaining)) !== null) {
@@ -132,11 +144,11 @@ function MsgContent({ text }) {
         if (last < remaining.length) parts.push(<span key={key++}>{remaining.slice(last)}</span>);
         if (parts.length === 0) parts.push(<span key={key++}>{remaining}</span>);
 
-        // Process inline `code` within each part
+        // Process inline `code` within each part (only allow safe characters)
         const finalParts = parts.map((part, pi) => {
           if (typeof part.props?.children !== "string") return part;
           const txt = part.props.children;
-          const codeRe = /`(.*?)`/g;
+          const codeRe = /`([a-zA-Z0-9 .,;:!?\-_/:@&=#%]+)`/g;
           const codeParts = [];
           let cm;
           let cl = 0;
@@ -165,12 +177,31 @@ export default function AnimatedAIChat() {
   const [copiedId, setCopiedId] = useState(null);
   const endRef = useRef(null);
   const inputRef = useRef(null);
+  const chatRateRef = useRef({ count: 0, resetTime: Date.now() + 60000 });
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs]);
   useEffect(() => { if (isOpen) setTimeout(() => inputRef.current?.focus(), 300); }, [isOpen]);
 
   const send = async (cmd) => {
     if (!cmd.trim() || typing) return;
+
+    // Rate limiting: max 20 messages per minute
+    const now = Date.now();
+    if (now > chatRateRef.current.resetTime) {
+      chatRateRef.current = { count: 0, resetTime: now + 60000 };
+    }
+    chatRateRef.current.count++;
+    if (chatRateRef.current.count > 20) {
+      setMsgs((p) => [...p, { id: Date.now().toString(), role: "user", content: cmd.slice(0, 50) + "..." }, { id: (Date.now() + 1).toString(), role: "assistant", content: "⚠️ Terlalu banyak pesan. Tunggu sebentar sebelum mengirim lagi." }]);
+      setInput("");
+      return;
+    }
+
+    if (cmd.length > 500) {
+      setMsgs((p) => [...p, { id: Date.now().toString(), role: "user", content: cmd.slice(0, 500) }, { id: (Date.now() + 1).toString(), role: "assistant", content: "⚠️ Pesan terlalu panjang (maks 500 karakter)." }]);
+      setInput("");
+      return;
+    }
     setMsgs((p) => [...p, { id: Date.now().toString(), role: "user", content: cmd }]);
     setInput("");
     setTyping(true);
@@ -350,6 +381,7 @@ export default function AnimatedAIChat() {
                   onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
                   placeholder="Ketik /cek <url> atau pertanyaan..."
                   className="flex-1 bg-transparent text-sm text-white placeholder:text-[#555570] outline-none"
+                  maxLength={500}
                   disabled={typing}
                 />
                 <button

@@ -761,6 +761,7 @@ export default function EdukasiPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari topik edukasi..."
                 className="input-glow w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder:text-[#555570]"
+                maxLength={200}
               />
             </div>
           </motion.div>

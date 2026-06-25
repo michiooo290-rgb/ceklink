@@ -1,0 +1,11 @@
+Contact: mailto:security@ceklink.id
+Expires: 2027-06-25T00:00:00.000Z
+Encryption: https://ceklink.id/pgp-key.txt
+Preferred-Languages: id, en
+Canonical: https://ceklink.id/.well-known/security.txt
+Policy: https://ceklink.id/security-policy
+
+# CekLink Security Disclosure Policy
+# Kami menghargai laporan kerentanan keamanan.
+# Silakan laporkan melalui email di atas.
+# Kami berusaha merespons dalam 48 jam.

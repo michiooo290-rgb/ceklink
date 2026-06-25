@@ -20,26 +20,48 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const sanitize = (str) => str.replace(/[<>&"'/]/g, "").trim();
+
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedReason) return;
 
+    const trimmedDesc = sanitize(description).slice(0, 1000);
+    const trimmedEmail = email.trim().toLowerCase().slice(0, 254);
+
+    if (trimmedEmail && !isValidEmail(trimmedEmail)) {
+      alert("Format email tidak valid.");
+      return;
+    }
+
     setSubmitting(true);
 
-    // Simulate API call
+    // NOTE: This is a demo simulation — in production, replace with a real API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // In production: send to backend
     const report = {
       url,
       domain,
       reason: selectedReason,
-      description,
-      email,
+      description: trimmedDesc,
+      email: trimmedEmail || null,
       timestamp: new Date().toISOString(),
     };
 
-    console.log("Report submitted:", report);
+    // Store locally as a temporary measure (production: send to backend)
+    try {
+      const reports = JSON.parse(localStorage.getItem("ceklink_reports") || "[]");
+      // Limit to 100 reports to prevent localStorage abuse
+      if (reports.length >= 100) {
+        reports.shift(); // Remove oldest
+      }
+      reports.push(report);
+      localStorage.setItem("ceklink_reports", JSON.stringify(reports));
+    } catch {
+      // localStorage may be unavailable; fail silently
+    }
 
     setSubmitting(false);
     setSubmitted(true);
@@ -104,11 +126,13 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                   Laporan Terkirim!
                 </h3>
                 <p className="text-[#666680] text-sm mb-4">
-                  Terima kasih telah melaporkan link ini. Tim kami akan segera meninjau laporan kamu.
+                  Terima kasih telah melaporkan link ini. Laporan kamu tersimpan dan akan ditinjau oleh tim kami.
                 </p>
-                <p className="text-[#555570] text-xs">
-                  {email && `Konfirmasi akan dikirim ke ${email}`}
-                </p>
+                {email && (
+                  <p className="text-[#555570] text-xs">
+                    Konfirmasi akan dikirim ke {email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}
+                  </p>
+                )}
               </motion.div>
             ) : (
               <>
@@ -169,6 +193,7 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                       placeholder="Ceritakan mengapa link ini berbahaya (opsional)"
                       className="input-glow w-full px-4 py-3 rounded-xl text-sm text-white placeholder:text-[#555570] min-h-[80px] resize-none"
                       rows={3}
+                      maxLength={1000}
                     />
                   </div>
 
@@ -184,6 +209,7 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="nama@email.com untuk update laporan"
                       className="input-glow w-full px-4 py-3 rounded-xl text-sm text-white placeholder:text-[#555570]"
+                      maxLength={254}
                     />
                     <p className="text-[#555570] text-xs mt-1">
                       Kami akan mengirim konfirmasi dan update status laporan

@@ -1,0 +1,10 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow admin or sensitive paths (future-proofing)
+Disallow: /api/
+Disallow: /.well-known/
+
+# Sitemap (if available)
+# Sitemap: https://ceklink.id/sitemap.xml

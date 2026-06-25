@@ -12,6 +12,7 @@ export default function URLScanner() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const inputRef = useRef(null);
+  const scanCountRef = useRef({ count: 0, resetTime: Date.now() + 60000 });
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
 
@@ -27,22 +28,75 @@ export default function URLScanner() {
       return;
     }
 
-    // Basic URL validation — supports: bit.ly/x, tokopedia.com, http://example.com/path
-    // Very permissive to avoid false negatives
-    const hasProtocol = /^https?:\/\//i.test(trimmed);
-    const domainLike = trimmed.replace(/^https?:\/\//i, "").split("/")[0];
-    const hasDot = domainLike.includes(".");
-    const hasValidChars = /^[\w.-]+(\.\w{2,})/.test(domainLike);
+    // --- Max length check ---
+    if (trimmed.length > 2048) {
+      setError("URL terlalu panjang. Maksimal 2048 karakter.");
+      return;
+    }
 
-    if (!hasDot || !hasValidChars) {
+    // --- Block dangerous protocols explicitly ---
+    if (/^(javascript|data|vbscript|file|ftp):/i.test(trimmed)) {
+      setError("Protokol URL tidak diizinkan. Gunakan http:// atau https://.");
+      return;
+    }
+
+    // --- Block obvious XSS / injection patterns ---
+    if (/[<>"'`{}\\]/.test(trimmed) || /[\x00-\x1f]/.test(trimmed)) {
+      setError("URL mengandung karakter yang tidak diizinkan.");
+      return;
+    }
+
+    // --- Normalize: prepend https:// if no protocol ---
+    let normalized = trimmed;
+    if (!/^https?:\/\//i.test(normalized)) {
+      normalized = "https://" + normalized;
+    }
+
+    // --- Structural URL validation ---
+    let parsed;
+    try {
+      parsed = new URL(normalized);
+    } catch {
       setError("Format URL tidak valid. Contoh: https://example.com atau bit.ly/promo");
       return;
     }
 
+    // Must be http or https (belt-and-suspenders after protocol block)
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      setError("Hanya protokol http dan https yang diizinkan.");
+      return;
+    }
+
+    // Hostname must contain at least one dot and valid TLD
+    const hostname = parsed.hostname;
+    if (!hostname || !hostname.includes(".")) {
+      setError("Format URL tidak valid. Contoh: https://example.com atau bit.ly/promo");
+      return;
+    }
+
+    // Block IP addresses (optional: you may remove this if IPs are needed)
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+      setError("Pemindaian IP address langsung tidak didukung.");
+      return;
+    }
+
+    // --- Client-side rate limiting: max 10 scans per minute ---
+    const now = Date.now();
+    if (now > scanCountRef.current.resetTime) {
+      // Window expired, reset counter
+      scanCountRef.current = { count: 0, resetTime: now + 60000 };
+    }
+    if (scanCountRef.current.count >= 10) {
+      const secondsLeft = Math.ceil((scanCountRef.current.resetTime - now) / 1000);
+      setError(`Terlalu banyak pemindaian. Coba lagi dalam ${secondsLeft} detik.`);
+      return;
+    }
+    scanCountRef.current.count += 1;
+
     setLoading(true);
 
     try {
-      const data = await scanURL(trimmed);
+      const data = await scanURL(normalized);
       setResult(data);
     } catch (err) {
       setError("Terjadi kesalahan saat memindai. Coba lagi.");
@@ -109,6 +163,7 @@ export default function URLScanner() {
                 className="input-glow w-full pl-11 pr-4 py-4 rounded-xl text-base font-mono text-[#e0e0e0] placeholder:text-[#666680]/50"
                 aria-label="URL yang akan diperiksa"
                 disabled={loading}
+                maxLength={2048}
                 autoComplete="url"
               />
             </motion.div>

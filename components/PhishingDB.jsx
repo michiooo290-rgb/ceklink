@@ -59,7 +59,7 @@ export default function PhishingDB() {
             Phising Terbaru di Indonesia
           </h2>
           <p className="text-[#666680]">
-            Data dari laporan komunitas CekLink
+            Contoh data ilustrasi — bukan data real-time
           </p>
         </motion.div>
 
