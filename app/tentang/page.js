@@ -98,10 +98,6 @@ export default function TentangPage() {
                   <span className="w-2 h-2 rounded-full bg-[#2DCB85] mt-2 flex-shrink-0" />
                   <span><strong className="text-[#e0e0e0]">Pusat Edukasi</strong> — Artikel dan panduan lengkap tentang keamanan digital.</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-[#2DCB85] mt-2 flex-shrink-0" />
-                  <span><strong className="text-[#e0e0e0]">AI Chat Assistant</strong> — Asisten virtual yang membantu mengecek link dan memberikan tips keamanan.</span>
-                </li>
               </ul>
             </div>
 
