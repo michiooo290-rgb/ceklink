@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1e2e"/>
+      <stop offset="100%" style="stop-color:#262c42"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F5A623"/>
+      <stop offset="100%" style="stop-color:#2DCB85"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Shield Icon -->
+  <g transform="translate(520, 160)">
+    <path d="M80 20 L140 50 L140 110 C140 150 110 180 80 195 C50 180 20 150 20 110 L20 50 Z" fill="none" stroke="#F5A623" stroke-width="6" opacity="0.3"/>
+    <path d="M80 35 L125 58 L125 108 C125 140 105 165 80 178 C55 165 35 140 35 108 L35 58 Z" fill="#F5A623" fill-opacity="0.1" stroke="#F5A623" stroke-width="3"/>
+    <path d="M60 100 L75 115 L105 85" fill="none" stroke="#2DCB85" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="370" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="64" fill="#F5A623">CekLink</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="400" font-size="28" fill="#a0a5b8">Cek Keamanan Link dalam Hitungan Detik</text>
+
+  <!-- URL -->
+  <text x="600" y="520" text-anchor="middle" font-family="monospace" font-size="20" fill="#666680">ceklink.id</text>
+
+  <!-- Bottom accent -->
+  <rect x="0" y="626" width="1200" height="4" fill="url(#accent)"/>
+</svg>

@@ -47,15 +47,7 @@ export default function PhishingDB() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3 flex items-center justify-center gap-3">
-            <motion.div
-              animate={{
-                rotate: [0, -15, 15, -15, 0],
-                scale: [1, 1.1, 1, 1.1, 1],
-              }}
-              transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 3 }}
-            >
-              <Siren size={28} className="text-[#ff3b3b]" aria-hidden="true" />
-            </motion.div>
+            <Siren size={28} className="text-[#E55C30]" aria-hidden="true" />
             Phising Terbaru di Indonesia
           </h2>
           <p className="text-[#666680]">
@@ -70,7 +62,7 @@ export default function PhishingDB() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           {/* Table Header */}
-          <div className="hidden sm:grid grid-cols-4 gap-4 px-6 py-3 border-b border-[#1a1a2e] text-[#666680] text-sm font-medium">
+          <div className="hidden sm:grid grid-cols-4 gap-4 px-6 py-3 border-b border-[#2e3348] text-[#666680] text-sm font-medium">
             <span>Link</span>
             <span>Target</span>
             <span>Waktu</span>
@@ -87,7 +79,7 @@ export default function PhishingDB() {
               <motion.div
                 key={i}
                 variants={rowVariants}
-                className="table-row grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 px-6 py-4 border-b border-[#1a1a2e]/30 items-center"
+                className="table-row grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 px-6 py-4 border-b border-[#2e3348]/30 items-center"
                 whileHover={{
                   backgroundColor: "rgba(0, 255, 136, 0.03)",
                   transition: { duration: 0.2 },
@@ -105,30 +97,22 @@ export default function PhishingDB() {
                   {item.date}
                 </div>
                 <div className="flex sm:justify-center">
-                  <motion.span
+                  <span
                     className={
                       item.status === "danger"
                         ? "badge-danger inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium"
                         : "badge-warn inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium"
                     }
-                    animate={item.status === "danger" ? {
-                      boxShadow: [
-                        "0 0 0px rgba(255, 59, 59, 0)",
-                        "0 0 10px rgba(255, 59, 59, 0.3)",
-                        "0 0 0px rgba(255, 59, 59, 0)",
-                      ],
-                    } : {}}
-                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
                   >
                     <span
                       className="w-2 h-2 rounded-full"
                       style={{
-                        backgroundColor: item.status === "danger" ? "#ff3b3b" : "#ffaa00",
+                        backgroundColor: item.status === "danger" ? "#E55C30" : "#F5A623",
                       }}
                       aria-hidden="true"
                     />
                     {item.status === "danger" ? "Bahaya" : "Waspada"}
-                  </motion.span>
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -143,15 +127,11 @@ export default function PhishingDB() {
         >
           <p className="text-[#666680] text-sm">
             Total{" "}
-            <motion.span
-              className="text-[#00ff88] font-semibold"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: 1, type: "spring" }}
-            >
-              892
-            </motion.span>{" "}
+            <span className="text-[#2DCB85] font-semibold">892</span>{" "}
             link phising telah dilaporkan dan divalidasi oleh komunitas
+          </p>
+          <p className="text-[10px] text-[#555570] mt-1">
+            * Data ilustrasi — bukan data real-time
           </p>
         </motion.div>
       </div>

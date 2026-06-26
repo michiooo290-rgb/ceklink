@@ -4,3 +4,12 @@
   height: 100%;
   overflow: hidden;
 }
+
+.color-bends-container canvas {
+  opacity: 0;
+  animation: colorBendsFadeIn 1s ease-out 0.1s forwards;
+}
+
+@keyframes colorBendsFadeIn {
+  to { opacity: 1; }
+}

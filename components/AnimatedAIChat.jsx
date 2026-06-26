@@ -155,7 +155,7 @@ function MsgContent({ text }) {
           while ((cm = codeRe.exec(txt)) !== null) {
             if (cm.index > cl) codeParts.push(<span key={`c${pi}${cl}`}>{txt.slice(cl, cm.index)}</span>);
             codeParts.push(
-              <code key={`c${pi}${cm.index}`} className="bg-white/10 px-1.5 py-0.5 rounded text-[#00ff88] text-xs font-mono">{cm[1]}</code>
+              <code key={`c${pi}${cm.index}`} className="bg-white/10 px-1.5 py-0.5 rounded text-[#2DCB85] text-xs font-mono">{cm[1]}</code>
             );
             cl = cm.index + cm[0].length;
           }
@@ -181,6 +181,15 @@ export default function AnimatedAIChat() {
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs]);
   useEffect(() => { if (isOpen) setTimeout(() => inputRef.current?.focus(), 300); }, [isOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpen) setIsOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
 
   const send = async (cmd) => {
     if (!cmd.trim() || typing) return;
@@ -218,23 +227,14 @@ export default function AnimatedAIChat() {
     setTyping(false);
   };
 
-  const handleCopy = (text, id) => {
-    navigator.clipboard.writeText(text.replace(/\*\*/g, "").replace(/`/g, ""))
-      .then(() => {
-        setCopiedId(id);
-        setTimeout(() => setCopiedId(null), 2000);
-      })
-      .catch(() => {
-        // Fallback
-        const textArea = document.createElement("textarea");
-        textArea.value = text.replace(/\*\*/g, "").replace(/`/g, "");
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        setCopiedId(id);
-        setTimeout(() => setCopiedId(null), 2000);
-      });
+  const handleCopy = async (text, id) => {
+    try {
+      await navigator.clipboard.writeText(text.replace(/\*\*/g, "").replace(/`/g, ""));
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      // Clipboard API not available
+    }
   };
 
   return (
@@ -249,12 +249,12 @@ export default function AnimatedAIChat() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#00ff88] to-[#00cc6a] text-[#0a0a0f] shadow-[0_0_30px_rgba(0,255,136,0.4)] flex items-center justify-center hover:shadow-[0_0_40px_rgba(0,255,136,0.6)]"
+            className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-[#2DCB85] to-[#1FA86B] text-[#1a1e2e] shadow-[0_0_30px_rgba(0,255,136,0.4)] flex items-center justify-center hover:shadow-[0_0_40px_rgba(0,255,136,0.6)]"
             aria-label="Buka chat"
           >
             <MessageCircle size={24} />
             <motion.span
-              className="absolute inset-0 rounded-full border-2 border-[#00ff88]"
+              className="absolute inset-0 rounded-full border-2 border-[#2DCB85]"
               animate={{ scale: [1, 1.3], opacity: [0.5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
@@ -270,14 +270,14 @@ export default function AnimatedAIChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-3rem)] flex flex-col rounded-2xl overflow-hidden border border-[rgba(0,255,136,0.15)] bg-[rgba(10,10,15,0.95)] backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.02)_inset]"
+            className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] h-[600px] max-h-[calc(100vh-3rem)] flex flex-col rounded-2xl overflow-hidden border border-[rgba(45,203,133,0.15)] bg-[rgba(26,30,46,0.95)] backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.02)_inset]"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.05]">
               <div className="flex items-center gap-3">
-                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#00ff88] to-[#00cc6a] flex items-center justify-center">
-                  <Bot size={18} className="text-[#0a0a0f]" />
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#00ff88] border-2 border-[#0a0a0f]" />
+                <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-[#2DCB85] to-[#1FA86B] flex items-center justify-center">
+                  <Bot size={18} className="text-[#1a1e2e]" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#2DCB85] border-2 border-[#1a1e2e]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-white">CekLink AI</h3>
@@ -304,10 +304,10 @@ export default function AnimatedAIChat() {
                     transition={{ duration: 0.3 }}
                     className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}
                   >
-                    <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center ${m.role === "user" ? "bg-white/10" : "bg-gradient-to-br from-[#00ff88]/20 to-[#00cc6a]/20"}`}>
-                      {m.role === "user" ? <User size={14} className="text-white/70" /> : <Sparkles size={14} className="text-[#00ff88]" />}
+                    <div className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center ${m.role === "user" ? "bg-white/10" : "bg-gradient-to-br from-[#2DCB85]/20 to-[#1FA86B]/20"}`}>
+                      {m.role === "user" ? <User size={14} className="text-white/70" /> : <Sparkles size={14} className="text-[#2DCB85]" />}
                     </div>
-                    <div className={`group relative max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === "user" ? "bg-[#00ff88]/10 text-white border border-[#00ff88]/20 rounded-tr-md" : "bg-white/[0.03] text-[#e0e0e0] border border-white/[0.05] rounded-tl-md"}`}>
+                    <div className={`group relative max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${m.role === "user" ? "bg-[#2DCB85]/10 text-white border border-[#2DCB85]/20 rounded-tr-md" : "bg-white/[0.03] text-[#e0e0e0] border border-white/[0.05] rounded-tl-md"}`}>
                       <MsgContent text={m.content} />
                       {m.role === "assistant" && (
                         <button
@@ -315,7 +315,7 @@ export default function AnimatedAIChat() {
                           className="absolute -right-2 -top-2 w-6 h-6 rounded-md bg-white/10 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="Salin"
                         >
-                          {copiedId === m.id ? <Check size={12} className="text-[#00ff88]" /> : <Copy size={12} className="text-white/50" />}
+                          {copiedId === m.id ? <Check size={12} className="text-[#2DCB85]" /> : <Copy size={12} className="text-white/50" />}
                         </button>
                       )}
                     </div>
@@ -327,15 +327,15 @@ export default function AnimatedAIChat() {
               <AnimatePresence>
                 {typing && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#00ff88]/20 to-[#00cc6a]/20 flex items-center justify-center">
-                      <Sparkles size={14} className="text-[#00ff88]" />
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2DCB85]/20 to-[#1FA86B]/20 flex items-center justify-center">
+                      <Sparkles size={14} className="text-[#2DCB85]" />
                     </div>
                     <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl rounded-tl-md px-4 py-3">
                       <div className="flex gap-1.5">
                         {[0, 1, 2].map((i) => (
                           <motion.span
                             key={i}
-                            className="w-2 h-2 rounded-full bg-[#00ff88]/50"
+                            className="w-2 h-2 rounded-full bg-[#2DCB85]/50"
                             animate={{ y: [0, -6, 0] }}
                             transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
                           />
@@ -359,7 +359,7 @@ export default function AnimatedAIChat() {
                       <button
                         key={cmd.command}
                         onClick={() => send(cmd.command)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-[#00ff88]/30 hover:bg-[#00ff88]/5 text-xs text-[#8888aa] hover:text-[#00ff88] transition-all"
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-[#2DCB85]/30 hover:bg-[#2DCB85]/5 text-xs text-[#8888aa] hover:text-[#2DCB85] transition-all"
                       >
                         <Icon size={14} />
                         {cmd.label}
@@ -372,7 +372,7 @@ export default function AnimatedAIChat() {
 
             {/* Input */}
             <div className="px-4 pb-4 pt-2">
-              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.05] focus-within:border-[#00ff88]/30 transition-colors">
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.05] focus-within:border-[#2DCB85]/30 transition-colors">
                 <input
                   ref={inputRef}
                   type="text"
@@ -387,7 +387,7 @@ export default function AnimatedAIChat() {
                 <button
                   onClick={() => send(input)}
                   disabled={!input.trim() || typing}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#00ff88]/10 text-[#00ff88] hover:bg-[#00ff88]/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#2DCB85]/10 text-[#2DCB85] hover:bg-[#2DCB85]/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                   aria-label="Kirim"
                 >
                   <Send size={16} />

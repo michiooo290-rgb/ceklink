@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ShieldCheck, ShieldAlert, ShieldX, Copy, Share2, Flag,
   CheckCircle2, AlertTriangle, XCircle, ChevronDown, ChevronUp,
-  Globe, Lock, Unlock, Link, Search, Info, ExternalLink,
+  Globe, Lock, Unlock, Link, Search, Info, ExternalLink, Microscope,
 } from "lucide-react";
 import ReportModal from "./ReportModal";
 
@@ -37,24 +37,18 @@ export default function ResultCard({ result, url }) {
 
   const glowClass = status === "safe" ? "glow-safe" : status === "warn" ? "glow-warn" : "glow-danger";
 
-  const statusColor = status === "safe" ? "text-[#00ff88]" : status === "warn" ? "text-[#ffaa00]" : "text-[#ff3b3b]";
-  const statusBg = status === "safe" ? "bg-[#00ff88]/10" : status === "warn" ? "bg-[#ffaa00]/10" : "bg-[#ff3b3b]/10";
+  const statusColor = status === "safe" ? "text-[#2DCB85]" : status === "warn" ? "text-[#F5A623]" : "text-[#E55C30]";
+  const statusBg = status === "safe" ? "bg-[#2DCB85]/10" : status === "warn" ? "bg-[#F5A623]/10" : "bg-[#E55C30]/10";
 
-  const handleCopy = () => {
+  const handleCopy = async () => {
     const text = `Hasil Cek Link - CekLink\n\nLink: ${url}\nStatus: ${statusLabel}\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nTemuan:\n${issues.map((i) => `- ${i.label}: ${i.value}`).join("\n")}\n\nCek link lain di: ceklink.id`;
-    navigator.clipboard.writeText(text).then(() => {
+    try {
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    } catch {
+      // Clipboard API not available
+    }
   };
 
   const handleShareWA = () => {
@@ -65,9 +59,9 @@ export default function ResultCard({ result, url }) {
   };
 
   const issueStatusColors = {
-    safe: { bg: "bg-[#00ff88]", text: "text-[#00ff88]", icon: CheckCircle2 },
-    warn: { bg: "bg-[#ffaa00]", text: "text-[#ffaa00]", icon: AlertTriangle },
-    danger: { bg: "bg-[#ff3b3b]", text: "text-[#ff3b3b]", icon: XCircle },
+    safe: { bg: "bg-[#2DCB85]", text: "text-[#2DCB85]", icon: CheckCircle2 },
+    warn: { bg: "bg-[#F5A623]", text: "text-[#F5A623]", icon: AlertTriangle },
+    danger: { bg: "bg-[#E55C30]", text: "text-[#E55C30]", icon: XCircle },
   };
 
   return (
@@ -120,7 +114,7 @@ export default function ResultCard({ result, url }) {
                 <circle cx="40" cy="40" r="35" fill="none" stroke="rgba(26,26,46,0.8)" strokeWidth="5" />
                 <motion.circle
                   cx="40" cy="40" r="35" fill="none"
-                  stroke={status === "safe" ? "#00ff88" : status === "warn" ? "#ffaa00" : "#ff3b3b"}
+                  stroke={status === "safe" ? "#2DCB85" : status === "warn" ? "#F5A623" : "#E55C30"}
                   strokeWidth="5" strokeLinecap="round"
                   initial={{ strokeDasharray: "0 220" }}
                   animate={{ strokeDasharray: `${(score / 100) * 220} 220` }}
@@ -154,7 +148,7 @@ export default function ResultCard({ result, url }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + i * 0.1 }}
               >
-                <div className={`w-8 h-8 rounded-lg ${issue.status === "safe" ? "bg-[#00ff88]/10" : issue.status === "warn" ? "bg-[#ffaa00]/10" : "bg-[#ff3b3b]/10"} flex items-center justify-center flex-shrink-0`}>
+                <div className={`w-8 h-8 rounded-lg ${issue.status === "safe" ? "bg-[#2DCB85]/10" : issue.status === "warn" ? "bg-[#F5A623]/10" : "bg-[#E55C30]/10"} flex items-center justify-center flex-shrink-0`}>
                   <Icon size={16} className={colors.text} />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -174,7 +168,7 @@ export default function ResultCard({ result, url }) {
           <motion.div className="mb-6" variants={itemVariants}>
             <button
               onClick={() => setShowDetails(!showDetails)}
-              className="flex items-center gap-2 text-sm text-[#8888aa] hover:text-[#00ff88] transition-colors w-full"
+              className="flex items-center gap-2 text-sm text-[#8888aa] hover:text-[#2DCB85] transition-colors w-full"
             >
               <Info size={14} />
               <span>Detail Pengurangan Skor</span>
@@ -194,7 +188,7 @@ export default function ResultCard({ result, url }) {
                       <div key={i} className="flex items-center justify-between text-xs p-2 rounded-lg bg-white/[0.02]">
                         <span className="text-[#e0e0e0]">{d.item}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-[#ff3b3b] font-mono">{d.points}</span>
+                          <span className="text-[#E55C30] font-mono">{d.points}</span>
                           <span className="text-[#555570]">{d.reason}</span>
                         </div>
                       </div>
@@ -216,7 +210,7 @@ export default function ResultCard({ result, url }) {
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
                 <span className="text-[#555570]">Protokol</span>
-                <div className={`font-mono ${details.urlParts.protocol === "https" ? "text-[#00ff88]" : "text-[#ff3b3b]"}`}>
+                <div className={`font-mono ${details.urlParts.protocol === "https" ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
                   {details.urlParts.protocol === "https" ? <Lock size={12} className="inline mr-1" /> : <Unlock size={12} className="inline mr-1" />}
                   {details.urlParts.protocol.toUpperCase()}
                 </div>
@@ -234,7 +228,7 @@ export default function ResultCard({ result, url }) {
               {details.urlParts.port && (
                 <div>
                   <span className="text-[#555570]">Port</span>
-                  <div className="font-mono text-[#ffaa00]">{details.urlParts.port}</div>
+                  <div className="font-mono text-[#F5A623]">{details.urlParts.port}</div>
                 </div>
               )}
             </div>
@@ -242,8 +236,8 @@ export default function ResultCard({ result, url }) {
         )}
 
         {/* Recommendations */}
-        <motion.div className="mb-6 p-4 rounded-xl border border-[#00ff88]/20 bg-[#00ff88]/5" variants={itemVariants}>
-          <h3 className="text-sm font-semibold text-[#00ff88] mb-2 flex items-center gap-2">
+        <motion.div className="mb-6 p-4 rounded-xl border border-[#2DCB85]/20 bg-[#2DCB85]/5" variants={itemVariants}>
+          <h3 className="text-sm font-semibold text-[#2DCB85] mb-2 flex items-center gap-2">
             <ShieldCheck size={14} />
             Rekomendasi
           </h3>
@@ -275,9 +269,19 @@ export default function ResultCard({ result, url }) {
 
         {/* Action Buttons */}
         <motion.div className="flex flex-wrap gap-3" variants={itemVariants}>
+          <motion.a
+            href={`/analisis?url=${encodeURIComponent(url)}`}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#F5A623]/10 border border-[#F5A623]/20 text-[#F5A623] hover:bg-[#F5A623]/20 transition-colors text-sm"
+            aria-label="Analisis mendalam"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Microscope size={16} />
+            Analisis Mendalam
+          </motion.a>
           <motion.button
             onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#1a1a2e] text-[#666680] hover:text-[#00ff88] hover:border-[#00ff88]/30 transition-colors text-sm"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2e3348] text-[#666680] hover:text-[#2DCB85] hover:border-[#2DCB85]/30 transition-colors text-sm"
             aria-label="Salin hasil"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
@@ -287,7 +291,7 @@ export default function ResultCard({ result, url }) {
           </motion.button>
           <motion.button
             onClick={handleShareWA}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-green-600/20 border border-green-500/30 text-green-400 hover:bg-green-600/30 transition-colors text-sm"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#2DCB85]/10 border border-[#2DCB85]/20 text-[#2DCB85] hover:bg-[#2DCB85]/20 transition-colors text-sm"
             aria-label="Bagikan ke WhatsApp"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
@@ -297,7 +301,7 @@ export default function ResultCard({ result, url }) {
           </motion.button>
           <motion.button
             onClick={() => setShowReport(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#1a1a2e] text-[#666680] hover:text-[#ff3b3b] hover:border-[#ff3b3b]/30 transition-colors text-sm"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2e3348] text-[#666680] hover:text-[#E55C30] hover:border-[#E55C30]/30 transition-colors text-sm"
             aria-label="Laporkan link"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}

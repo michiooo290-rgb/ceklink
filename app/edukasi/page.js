@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
-import AnimatedAIChat from "../../components/AnimatedAIChat";
+import MeshBackground from "../../components/MeshBackground";
 
 // ─── Phising Stats Data ─────────────────────────────────────────────
 
@@ -23,23 +23,23 @@ const YEARLY_TREND = [
 const MAX_ATTACKS = 89;
 
 const SECTOR_DATA = [
-  { name: "Banking", pct: 35, color: "#00ff88" },
+  { name: "Banking", pct: 35, color: "#2DCB85" },
   { name: "E-commerce", pct: 28, color: "#06b6d4" },
   { name: "Fintech", pct: 18, color: "#8a5cff" },
-  { name: "Pemerintah", pct: 12, color: "#ffaa00" },
+  { name: "Pemerintah", pct: 12, color: "#F5A623" },
   { name: "Lainnya", pct: 7, color: "#666680" },
 ];
 
 const METHOD_DATA = [
-  { name: "SMS", pct: 45, icon: Smartphone, color: "#00ff88" },
+  { name: "SMS", pct: 45, icon: Smartphone, color: "#2DCB85" },
   { name: "Email", pct: 30, icon: Mail, color: "#06b6d4" },
   { name: "WhatsApp", pct: 15, icon: MessageSquare, color: "#25d366" },
   { name: "Social Media", pct: 10, icon: Globe, color: "#8a5cff" },
 ];
 
 const QUICK_STATS = [
-  { value: 89, suffix: " jt", label: "Serangan Phising", sub: "terdeteksi 2024", icon: ShieldAlert, color: "#ff3b3b" },
-  { value: 2.5, suffix: "T", label: "Kerugian Nasional", sub: "Rupiah 2024", icon: TrendingUp, color: "#ffaa00" },
+  { value: 89, suffix: " jt", label: "Serangan Phising", sub: "terdeteksi 2024", icon: ShieldAlert, color: "#E55C30" },
+  { value: 2.5, suffix: "T", label: "Kerugian Nasional", sub: "Rupiah 2024", icon: TrendingUp, color: "#F5A623" },
   { value: 2.5, suffix: " jt", label: "Rata-rata per Korban", sub: "Rupiah", icon: Target, color: "#06b6d4" },
   { value: 68, suffix: "%", label: "Pertumbuhan YoY", sub: "2021 → 2022", icon: BarChart3, color: "#8a5cff" },
 ];
@@ -96,8 +96,8 @@ function PhisingStats() {
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <Award size={28} className="text-[#ffaa00] mx-auto mb-2" />
-          <div className="font-heading font-bold text-3xl text-[#ffaa00]">#1</div>
+          <Award size={28} className="text-[#F5A623] mx-auto mb-2" />
+          <div className="font-heading font-bold text-3xl text-[#F5A623]">#1</div>
           <div className="text-sm text-[#e0e0e0]">Asia Tenggara</div>
           <div className="text-xs text-[#666680]">Target phising terbanyak</div>
         </motion.div>
@@ -122,7 +122,7 @@ function PhisingStats() {
         transition={{ delay: 0.4, duration: 0.5 }}
       >
         <h3 className="font-heading font-semibold text-base text-[#e0e0e0] mb-4 flex items-center gap-2">
-          <TrendingUp size={18} className="text-[#00ff88]" />
+          <TrendingUp size={18} className="text-[#2DCB85]" />
           Tren Serangan Phising (2021–2024)
         </h3>
         <div className="space-y-3">
@@ -137,7 +137,7 @@ function PhisingStats() {
               <span className="text-sm font-mono text-[#8888aa] w-10">{d.year}</span>
               <div className="flex-1 h-7 bg-white/[0.03] rounded-lg overflow-hidden relative">
                 <motion.div
-                  className="h-full rounded-lg bg-gradient-to-r from-[#00ff88] to-[#06b6d4]"
+                  className="h-full rounded-lg bg-gradient-to-r from-[#2DCB85] to-[#06b6d4]"
                   initial={{ width: 0 }}
                   animate={inView ? { width: `${(d.attacks / MAX_ATTACKS) * 100}%` } : {}}
                   transition={{ delay: 0.7 + i * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -147,7 +147,7 @@ function PhisingStats() {
                 </span>
               </div>
               {d.growth && (
-                <span className="text-xs font-mono text-[#00ff88] w-12 text-right">
+                <span className="text-xs font-mono text-[#2DCB85] w-12 text-right">
                   +{d.growth}%
                 </span>
               )}
@@ -167,7 +167,7 @@ function PhisingStats() {
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           <h3 className="font-heading font-semibold text-sm text-[#e0e0e0] mb-4 flex items-center gap-2">
-            <Target size={16} className="text-[#ff3b3b]" />
+            <Target size={16} className="text-[#E55C30]" />
             Sektor Terancam
           </h3>
           <div className="space-y-3">
@@ -204,7 +204,7 @@ function PhisingStats() {
           transition={{ delay: 0.7, duration: 0.5 }}
         >
           <h3 className="font-heading font-semibold text-sm text-[#e0e0e0] mb-4 flex items-center gap-2">
-            <Smartphone size={16} className="text-[#00ff88]" />
+            <Smartphone size={16} className="text-[#2DCB85]" />
             Metode Phising
           </h3>
           <div className="space-y-3">
@@ -623,7 +623,7 @@ function renderContent(section, idx) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <div className="w-2 h-2 rounded-full bg-[#00ff88] mt-2 flex-shrink-0" />
+            <div className="w-2 h-2 rounded-full bg-[#2DCB85] mt-2 flex-shrink-0" />
             <div>
               <span className="text-sm font-medium text-[#e0e0e0]">{item.name}</span>
               <p className="text-xs text-[#666680] mt-1">{item.desc}</p>
@@ -645,7 +645,7 @@ function renderContent(section, idx) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <span className="text-[#00ff88] font-mono text-xs mt-0.5">{">"}</span>
+            <span className="text-[#2DCB85] font-mono text-xs mt-0.5">{">"}</span>
             <span>{step}</span>
           </motion.div>
         ))}
@@ -659,12 +659,12 @@ function renderContent(section, idx) {
         {section.stats.map((stat, i) => (
           <motion.div
             key={i}
-            className="text-center p-4 rounded-xl bg-[#00ff88]/5 border border-[#00ff88]/10"
+            className="text-center p-4 rounded-xl bg-[#2DCB85]/5 border border-[#2DCB85]/10"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1 }}
           >
-            <div className="font-heading font-bold text-2xl text-[#00ff88]">{stat.value}</div>
+            <div className="font-heading font-bold text-2xl text-[#2DCB85]">{stat.value}</div>
             <div className="text-xs text-[#666680] mt-1">{stat.label}</div>
           </motion.div>
         ))}
@@ -677,7 +677,7 @@ function renderContent(section, idx) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[#1a1a2e]">
+            <tr className="border-b border-[#2e3348]">
               {section.table.headers.map((h, i) => (
                 <th key={i} className="text-left py-3 px-3 text-[#8888aa] font-medium">{h}</th>
               ))}
@@ -685,9 +685,9 @@ function renderContent(section, idx) {
           </thead>
           <tbody>
             {section.table.rows.map((row, i) => (
-              <tr key={i} className="border-b border-[#1a1a2e]/30 hover:bg-white/[0.02] transition-colors">
+              <tr key={i} className="border-b border-[#2e3348]/30 hover:bg-white/[0.02] transition-colors">
                 {row.map((cell, j) => (
-                  <td key={j} className={`py-3 px-3 ${j === 0 ? "text-[#00ff88] font-mono text-xs" : "text-[#8888aa]"}`}>
+                  <td key={j} className={`py-3 px-3 ${j === 0 ? "text-[#2DCB85] font-mono text-xs" : "text-[#8888aa]"}`}>
                     {cell}
                   </td>
                 ))}
@@ -723,7 +723,8 @@ export default function EdukasiPage() {
     <>
       <FloatingHeader />
 
-      <main className="min-h-screen pt-24 pb-16">
+      <main className="min-h-screen pt-24 pb-16 relative">
+        <MeshBackground variant="cool" />
         {/* Hero */}
         <section className="max-w-4xl mx-auto px-4 sm:px-6 mb-12">
           <motion.div
@@ -734,15 +735,15 @@ export default function EdukasiPage() {
           >
             <a
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-[#666680] hover:text-[#00ff88] transition-colors mb-6"
+              className="inline-flex items-center gap-2 text-sm text-[#666680] hover:text-[#2DCB85] transition-colors mb-6"
             >
               <ArrowLeft size={16} />
               Kembali ke Beranda
             </a>
 
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-[#00ff88]/10 flex items-center justify-center">
-                <BookOpen size={24} className="text-[#00ff88]" />
+              <div className="w-12 h-12 rounded-xl bg-[#2DCB85]/10 flex items-center justify-center">
+                <BookOpen size={24} className="text-[#2DCB85]" />
               </div>
               <h1 className="font-heading font-bold text-3xl sm:text-4xl">
                 Pusat Edukasi
@@ -797,15 +798,15 @@ export default function EdukasiPage() {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.4, delay: idx * 0.05 }}
                     >
-                      <div className={`glass-card overflow-hidden transition-all duration-300 ${isOpen ? "ring-1 ring-[#00ff88]/20" : ""}`}>
+                      <div className={`glass-card overflow-hidden transition-all duration-300 ${isOpen ? "ring-1 ring-[#2DCB85]/20" : ""}`}>
                         {/* Header */}
                         <button
                           onClick={() => setOpenId(isOpen ? null : article.id)}
                           className="w-full px-6 py-5 text-left flex items-center gap-4 hover:bg-white/[0.02] transition-colors"
                           aria-expanded={isOpen}
                         >
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${isOpen ? "bg-[#00ff88]/20" : "bg-[#00ff88]/10"}`}>
-                            <IconComponent size={22} className="text-[#00ff88]" />
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${isOpen ? "bg-[#2DCB85]/20" : "bg-[#2DCB85]/10"}`}>
+                            <IconComponent size={22} className="text-[#2DCB85]" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h2 className="font-heading font-semibold text-lg text-[#e0e0e0]">
@@ -850,7 +851,7 @@ export default function EdukasiPage() {
                                 {article.content.sections.map((section, sIdx) => (
                                   <div key={sIdx} className="mb-6 last:mb-0">
                                     <h3 className="font-heading font-semibold text-base text-[#e0e0e0] mb-4 flex items-center gap-2">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88]" />
+                                      <span className="w-1.5 h-1.5 rounded-full bg-[#2DCB85]" />
                                       {section.title}
                                     </h3>
                                     {renderContent(section, sIdx)}
@@ -895,7 +896,6 @@ export default function EdukasiPage() {
       </main>
 
       <Footer />
-      <AnimatedAIChat />
     </>
   );
 }

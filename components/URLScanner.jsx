@@ -126,7 +126,7 @@ export default function URLScanner() {
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             >
-              <Search size={28} className="text-[#00ff88]" aria-hidden="true" />
+              <Search size={28} className="text-[#2DCB85]" aria-hidden="true" />
             </motion.div>
             Pemeriksa URL
           </h2>
@@ -202,7 +202,7 @@ export default function URLScanner() {
           <AnimatePresence>
             {error && (
               <motion.div
-                className="mt-3 px-4 py-2 rounded-lg bg-[#ff3b3b]/10 border border-[#ff3b3b]/30 text-[#ff3b3b] text-sm"
+                className="mt-3 px-4 py-2 rounded-lg bg-[#E55C30]/10 border border-[#E55C30]/30 text-[#E55C30] text-sm"
                 role="alert"
                 initial={{ opacity: 0, y: -10, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: "auto" }}
@@ -231,7 +231,7 @@ export default function URLScanner() {
                 setResult(null);
                 setError("");
               }}
-              className="text-sm font-mono text-[#666680] hover:text-[#00ff88] px-3 py-2 rounded-lg border border-[#1a1a2e] hover:border-[#00ff88]/30 transition-colors min-h-[44px] flex items-center"
+              className="text-sm font-mono text-[#666680] hover:text-[#2DCB85] px-3 py-2 rounded-lg border border-[#2e3348] hover:border-[#2DCB85]/30 transition-colors min-h-[44px] flex items-center"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.3, delay: 0.5 + i * 0.1 }}

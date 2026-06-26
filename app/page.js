@@ -5,10 +5,9 @@ import StatsBar from "../components/StatsBar";
 import Features from "../components/Features";
 import PhishingDB from "../components/PhishingDB";
 import Education from "../components/Education";
-import APISection from "../components/APISection";
+import HowItWorks from "../components/HowItWorks";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
-import AnimatedAIChat from "../components/AnimatedAIChat";
 
 export default function Home() {
   return (
@@ -25,11 +24,10 @@ export default function Home() {
         <div className="section-divider" />
         <Education />
         <div className="section-divider" />
-        <APISection />
+        <HowItWorks />
         <CTA />
       </main>
       <Footer />
-      <AnimatedAIChat />
     </>
   );
 }

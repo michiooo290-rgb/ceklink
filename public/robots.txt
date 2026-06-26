@@ -6,5 +6,4 @@ Allow: /
 Disallow: /api/
 Disallow: /.well-known/
 
-# Sitemap (if available)
-# Sitemap: https://ceklink.id/sitemap.xml
+Sitemap: https://ceklink.id/sitemap.xml

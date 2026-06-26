@@ -5,10 +5,10 @@ import { motion, useInView } from "framer-motion";
 import { Search, ShieldAlert, Users, BarChart3 } from "lucide-react";
 
 const STATS = [
-  { label: "Link Discan", value: 12847, icon: Search, color: "text-[#00ff88]" },
-  { label: "Phising Ditemukan", value: 8293, icon: ShieldAlert, color: "text-[#ff3b3b]" },
+  { label: "Link Discan", value: 12847, icon: Search, color: "text-[#2DCB85]" },
+  { label: "Phising Ditemukan", value: 8293, icon: ShieldAlert, color: "text-[#E55C30]" },
   { label: "User Aktif", value: 4554, icon: Users, color: "text-[#e0e0e0]" },
-  { label: "Dilaporkan Hari Ini", value: 47, icon: BarChart3, color: "text-[#ffaa00]" },
+  { label: "Dilaporkan Hari Ini", value: 47, icon: BarChart3, color: "text-[#F5A623]" },
 ];
 
 function AnimatedNumber({ target, duration = 2000, isInView }) {
@@ -78,24 +78,12 @@ export default function StatsBar() {
                   key={stat.label}
                   variants={itemVariants}
                   className="text-center"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <motion.div
-                    className="mb-3 flex justify-center"
-                    aria-hidden="true"
-                    animate={isInView ? {
-                      rotate: [0, 10, -10, 0],
-                    } : {}}
-                    transition={{
-                      duration: 0.5,
-                      delay: i * 0.2 + 0.5,
-                    }}
-                  >
-                    <div className={`w-12 h-12 rounded-xl ${stat.color === "text-[#00ff88]" ? "bg-[#00ff88]/10" : stat.color === "text-[#ff3b3b]" ? "bg-[#ff3b3b]/10" : stat.color === "text-[#ffaa00]" ? "bg-[#ffaa00]/10" : "bg-white/5"} flex items-center justify-center`}>
+                  <div className="mb-3 flex justify-center" aria-hidden="true">
+                    <div className={`w-12 h-12 rounded-xl ${stat.color === "text-[#2DCB85]" ? "bg-[#2DCB85]/10" : stat.color === "text-[#E55C30]" ? "bg-[#E55C30]/10" : stat.color === "text-[#F5A623]" ? "bg-[#F5A623]/10" : "bg-white/5"} flex items-center justify-center`}>
                       <IconComponent size={24} className={stat.color} />
                     </div>
-                  </motion.div>
+                  </div>
                   <div className={`font-heading font-bold text-2xl sm:text-3xl ${stat.color}`}>
                     <AnimatedNumber target={stat.value} isInView={isInView} />
                   </div>
@@ -104,6 +92,9 @@ export default function StatsBar() {
               );
             })}
           </div>
+          <p className="text-center text-[10px] text-[#555570] mt-4">
+            * Data ilustrasi — bukan data real-time
+          </p>
         </motion.div>
       </div>
     </section>

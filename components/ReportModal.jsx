@@ -116,11 +116,11 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                 animate={{ opacity: 1, scale: 1 }}
               >
                 <motion.div
-                  className="w-16 h-16 rounded-full bg-[#00ff88]/10 flex items-center justify-center mx-auto mb-4"
+                  className="w-16 h-16 rounded-full bg-[#2DCB85]/10 flex items-center justify-center mx-auto mb-4"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 0.5 }}
                 >
-                  <CheckCircle2 size={32} className="text-[#00ff88]" />
+                  <CheckCircle2 size={32} className="text-[#2DCB85]" />
                 </motion.div>
                 <h3 className="font-heading font-bold text-xl text-white mb-2">
                   Laporan Terkirim!
@@ -137,8 +137,8 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
             ) : (
               <>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-[#ff3b3b]/10 flex items-center justify-center">
-                    <Flag size={20} className="text-[#ff3b3b]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#E55C30]/10 flex items-center justify-center">
+                    <Flag size={20} className="text-[#E55C30]" />
                   </div>
                   <div>
                     <h3 className="font-heading font-bold text-lg text-white">
@@ -154,7 +154,7 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                   {/* Reason Selection */}
                   <div>
                     <label className="block text-sm text-[#e0e0e0] mb-3">
-                      Alasan Pelaporan <span className="text-[#ff3b3b]">*</span>
+                      Alasan Pelaporan <span className="text-[#E55C30]">*</span>
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       {REPORT_REASONS.map((reason) => {
@@ -167,8 +167,8 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                             onClick={() => setSelectedReason(reason.id)}
                             className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
                               isSelected
-                                ? "bg-[#ff3b3b]/10 border border-[#ff3b3b]/40 text-[#ff3b3b]"
-                                : "bg-white/[0.03] border border-white/[0.05] text-[#8888aa] hover:border-[#ff3b3b]/20 hover:text-[#ff3b3b]"
+                                ? "bg-[#E55C30]/10 border border-[#E55C30]/40 text-[#E55C30]"
+                                : "bg-white/[0.03] border border-white/[0.05] text-[#8888aa] hover:border-[#E55C30]/20 hover:text-[#E55C30]"
                             }`}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -217,8 +217,8 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                   </div>
 
                   {/* Disclaimer */}
-                  <div className="bg-[#ffaa00]/5 border border-[#ffaa00]/20 rounded-xl p-3">
-                    <p className="text-[#ffaa00] text-xs flex items-start gap-2">
+                  <div className="bg-[#F5A623]/5 border border-[#F5A623]/20 rounded-xl p-3">
+                    <p className="text-[#F5A623] text-xs flex items-start gap-2">
                       <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
                       <span>
                         Laporan palsu dapat merugikan pemilik website yang sah.
@@ -232,14 +232,14 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="flex-1 px-4 py-3 rounded-xl text-sm font-medium border border-[#1a1a2e] text-[#666680] hover:text-white hover:border-[#00ff88]/30 transition-colors"
+                      className="flex-1 px-4 py-3 rounded-xl text-sm font-medium border border-[#2e3348] text-[#666680] hover:text-white hover:border-[#2DCB85]/30 transition-colors"
                     >
                       Batal
                     </button>
                     <motion.button
                       type="submit"
                       disabled={!selectedReason || submitting}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-[#ff3b3b] text-white hover:bg-[#ff3b3b]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-[#E55C30] text-white hover:bg-[#E55C30]/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >

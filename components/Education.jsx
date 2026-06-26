@@ -68,12 +68,7 @@ export default function Education() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3 flex items-center justify-center gap-3">
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-            >
-              <GraduationCap size={28} className="text-[#00ff88]" aria-hidden="true" />
-            </motion.div>
+            <GraduationCap size={28} className="text-[#2DCB85]" aria-hidden="true" />
             Edukasi Keamanan Digital
           </h2>
           <p className="text-[#666680]">
@@ -94,17 +89,12 @@ export default function Education() {
               <motion.div
                 key={i}
                 variants={itemVariants}
-                whileHover={{ y: -5, scale: 1.02 }}
-                className="glass-card glass-card-hover p-5 text-center cursor-default"
+                whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                className="glass-card p-5 text-center cursor-default"
               >
-                <motion.div
-                  className="mb-2 flex justify-center"
-                  aria-hidden="true"
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <IconComponent size={24} className="text-[#00ff88]" />
-                </motion.div>
+                <div className="mb-2 flex justify-center" aria-hidden="true">
+                  <IconComponent size={24} className="text-[#2DCB85]" />
+                </div>
                 <h3 className="font-heading font-semibold text-sm mb-1">{tip.title}</h3>
                 <p className="text-[#666680] text-xs">{tip.desc}</p>
               </motion.div>
@@ -127,10 +117,8 @@ export default function Education() {
             >
               <motion.button
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 hover:bg-[#00ff88]/5 transition-colors"
+                className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 hover:bg-[#2DCB85]/5 transition-colors"
                 aria-expanded={openIndex === i}
-                whileHover={{ x: 4 }}
-                transition={{ duration: 0.2 }}
               >
                 <span className="font-medium text-sm text-[#e0e0e0]">
                   {tip.q}
@@ -155,7 +143,7 @@ export default function Education() {
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="px-6 pb-4 text-sm text-[#666680] leading-relaxed border-t border-[#1a1a2e]/30 pt-3">
+                    <div className="px-6 pb-4 text-sm text-[#666680] leading-relaxed border-t border-[#2e3348]/30 pt-3">
                       {tip.a}
                     </div>
                   </motion.div>
@@ -174,7 +162,7 @@ export default function Education() {
         >
           <a
             href="/edukasi"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border border-[#00ff88]/30 text-[#00ff88] hover:bg-[#00ff88]/10 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border border-[#2DCB85]/30 text-[#2DCB85] hover:bg-[#2DCB85]/10 transition-all"
           >
             <GraduationCap size={18} />
             Baca Panduan Lengkap

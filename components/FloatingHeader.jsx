@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { label: "Cek Link", href: "/#cek-link" },
   { label: "Database", href: "/#database" },
   { label: "Edukasi", href: "/edukasi" },
-  { label: "API", href: "/#api" },
+  { label: "Cara Kerja", href: "/#cara-kerja" },
 ];
 
 export default function FloatingHeader() {
@@ -26,10 +26,12 @@ export default function FloatingHeader() {
 
   useEffect(() => {
     // Cache section elements once on mount
-    sectionRefs.current = NAV_ITEMS.map((item) => ({
-      href: item.href,
-      el: document.getElementById(item.href.replace("#", "")),
-    }));
+    sectionRefs.current = NAV_ITEMS
+      .filter((item) => item.href.startsWith("/#"))
+      .map((item) => ({
+        href: item.href,
+        el: document.getElementById(item.href.replace("/#", "")),
+      }));
   }, []);
 
   const updateHeader = useCallback(() => {
@@ -60,6 +62,10 @@ export default function FloatingHeader() {
         setActiveSection(href);
         break;
       }
+    }
+    // If no section detected and we're at top, set home
+    if (window.scrollY < 100) {
+      setActiveSection("/#beranda");
     }
 
     ticking.current = false;
@@ -107,7 +113,7 @@ export default function FloatingHeader() {
                 href="#beranda"
                 className="flex items-center gap-2.5 font-bold text-lg text-white group transition-all"
               >
-                <span className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#F5A623] to-[#D48F1A] text-[#1a1e2e] shadow-[0_0_20px_rgba(245,166,35,0.3)] group-hover:shadow-[0_0_30px_rgba(245,166,35,0.5)] transition-shadow">
+                <span className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#F5A623] to-[#D48F1A] text-[#1a1e2e]">
                   <ShieldCheck size={18} strokeWidth={2.5} aria-hidden="true" />
                 </span>
                 <span className="font-heading bg-gradient-to-r from-[#F5A623] to-[#E8B84A] bg-clip-text text-transparent">

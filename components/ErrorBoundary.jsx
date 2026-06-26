@@ -24,8 +24,8 @@ export default class ErrorBoundary extends Component {
       return (
         <div className="min-h-screen flex items-center justify-center bg-[#1a1e2e] p-4">
           <div className="text-center max-w-md">
-            <div className="w-16 h-16 rounded-2xl bg-[#ff3b3b]/10 flex items-center justify-center mx-auto mb-6">
-              <ShieldX size={32} className="text-[#ff3b3b]" />
+            <div className="w-16 h-16 rounded-2xl bg-[#E55C30]/10 flex items-center justify-center mx-auto mb-6">
+              <ShieldX size={32} className="text-[#E55C30]" />
             </div>
             <h2 className="font-heading font-bold text-xl text-white mb-3">
               Terjadi Kesalahan

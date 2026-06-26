@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Search, Flag, BarChart3, Share2, GraduationCap, Link } from "lucide-react";
+import { Search, Flag, BarChart3, Share2, GraduationCap, Eye } from "lucide-react";
 
 const FEATURES = [
   {
@@ -31,9 +31,9 @@ const FEATURES = [
     desc: "Belajar cara mengenali link phising, email palsu, dan tips keamanan digital lainnya.",
   },
   {
-    icon: Link,
-    title: "API Publik",
-    desc: "Integrasikan fitur CekLink ke website atau aplikasi kamu sendiri. Gratis untuk developer.",
+    icon: Eye,
+    title: "Cara Kerja Transparan",
+    desc: "Lihat bagaimana CekLink menganalisis setiap link — prosesnya terbuka dan bisa dipahami semua orang.",
   },
 ];
 
@@ -92,20 +92,15 @@ export default function Features() {
               <motion.div
                 key={i}
                 variants={cardVariants}
-                whileHover={{
-                  y: -8,
-                  transition: { duration: 0.3 },
-                }}
-                className="glass-card glass-card-hover p-6 flex flex-col gap-4 cursor-default"
+                whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                className="glass-card p-6 flex flex-col gap-4 cursor-default"
               >
-                <motion.div
-                  className="w-12 h-12 rounded-xl bg-[#00ff88]/10 flex items-center justify-center"
+                <div
+                  className="w-12 h-12 rounded-xl bg-[#2DCB85]/10 flex items-center justify-center"
                   aria-hidden="true"
-                  whileHover={{ rotate: 5, scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <IconComponent size={22} className="text-[#00ff88]" />
-                </motion.div>
+                  <IconComponent size={22} className="text-[#2DCB85]" />
+                </div>
                 <h3 className="font-heading font-semibold text-lg text-[#e0e0e0]">
                   {feature.title}
                 </h3>
