@@ -117,12 +117,11 @@ export default function FloatingHeader() {
                 <Image
                   src="/logo.png"
                   alt="Urlveil"
-                  width={32}
-                  height={32}
-                  className="rounded-lg"
+                  width={120}
+                  height={40}
+                  className="object-contain"
                   priority
                 />
-                <span className="font-heading text-white text-base tracking-tight">Urlveil</span>
               </a>
 
               {/* Desktop Nav */}
