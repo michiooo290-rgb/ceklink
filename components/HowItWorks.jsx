@@ -15,7 +15,7 @@ const STEPS = [
     num: 2,
     icon: ScanLine,
     title: "Analisis Multi-Layer",
-    desc: "CekLink memindai SSL, reputasi domain, redirect chain, dan blacklist global.",
+    desc: "Urlveil memindai SSL, reputasi domain, redirect chain, dan blacklist global.",
   },
   {
     num: 3,
@@ -56,7 +56,7 @@ export default function HowItWorks() {
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section id="cara-kerja" className="py-16 sm:py-24" aria-label="Cara kerja CekLink">
+    <section id="cara-kerja" className="py-16 sm:py-24" aria-label="Cara kerja Urlveil">
       <div className="max-w-5xl mx-auto px-4 sm:px-6" ref={ref}>
         <motion.div
           className="text-center mb-12"
@@ -66,7 +66,7 @@ export default function HowItWorks() {
         >
           <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3 flex items-center justify-center gap-3">
             <ScanLine size={28} className="text-[#2DCB85]" aria-hidden="true" />
-            Cara Kerja CekLink
+            Cara Kerja Urlveil
           </h2>
           <p className="text-[#666680] max-w-lg mx-auto">
             Dari tempel link sampai hasil keamanan — semuanya dalam hitungan detik

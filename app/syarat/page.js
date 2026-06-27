@@ -9,11 +9,11 @@ import MeshBackground from "../../components/MeshBackground";
 const SECTIONS = [
   {
     title: "Penerimaan Syarat",
-    content: "Dengan mengakses dan menggunakan CekLink, kamu menyetujui syarat dan ketentuan ini. Jika kamu tidak setuju, mohon untuk tidak menggunakan layanan kami.",
+    content: "Dengan mengakses dan menggunakan Urlveil, kamu menyetujui syarat dan ketentuan ini. Jika kamu tidak setuju, mohon untuk tidak menggunakan layanan kami.",
   },
   {
     title: "Deskripsi Layanan",
-    content: "CekLink menyediakan alat pengecekan keamanan URL secara gratis. Hasil analisis bersifat informatif dan tidak menjamin keamanan mutlak dari sebuah link. Pengguna tetap bertanggung jawab atas keputusan mereka sendiri.",
+    content: "Urlveil menyediakan alat pengecekan keamanan URL secara gratis. Hasil analisis bersifat informatif dan tidak menjamin keamanan mutlak dari sebuah link. Pengguna tetap bertanggung jawab atas keputusan mereka sendiri.",
   },
   {
     title: "Penggunaan yang Diizinkan",
@@ -27,20 +27,20 @@ const SECTIONS = [
   {
     title: "Penggunaan yang Dilarang",
     items: [
-      "Menggunakan CekLink untuk tujuan ilegal atau merugikan orang lain.",
+      "Menggunakan Urlveil untuk tujuan ilegal atau merugikan orang lain.",
       "Mengirim laporan palsu atau menyesatkan.",
       "Mencoba mengeksploitasi atau merusak layanan kami.",
       "Menggunakan bot atau script otomatis melebihi batas wajar.",
-      "Menggunakan nama atau brand CekLink tanpa izin.",
+      "Menggunakan nama atau brand Urlveil tanpa izin.",
     ],
   },
   {
     title: "Batasan Tanggung Jawab",
-    content: "CekLink disediakan 'sebagaimana adanya'. Kami tidak menjamin keakuratan 100% dari hasil analisis. Kami tidak bertanggung jawab atas kerugian yang timbul dari penggunaan layanan ini. Hasil pengecekan adalah referensi, bukan keputusan final.",
+    content: "Urlveil disediakan 'sebagaimana adanya'. Kami tidak menjamin keakuratan 100% dari hasil analisis. Kami tidak bertanggung jawab atas kerugian yang timbul dari penggunaan layanan ini. Hasil pengecekan adalah referensi, bukan keputusan final.",
   },
   {
     title: "Hak Kekayaan Intelektual",
-    content: "Kode sumber CekLink dilisensikan di bawah lisensi open source. Brand, logo, dan nama 'CekLink' adalah milik pengembang CekLink.",
+    content: "Kode sumber Urlveil dilisensikan di bawah lisensi open source. Brand, logo, dan nama 'Urlveil' adalah milik pengembang Urlveil.",
   },
   {
     title: "Perubahan Syarat",
@@ -48,7 +48,7 @@ const SECTIONS = [
   },
   {
     title: "Kontak",
-    content: "Untuk pertanyaan tentang syarat dan ketentuan ini, hubungi kami di security@ceklink.id.",
+    content: "Untuk pertanyaan tentang syarat dan ketentuan ini, hubungi kami di security@urlveil.id.",
   },
 ];
 

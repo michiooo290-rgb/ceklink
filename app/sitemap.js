@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = "https://ceklink.id";
+  const baseUrl = "https://urlveil.id";
 
   return [
     {

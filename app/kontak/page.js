@@ -10,15 +10,15 @@ const CONTACTS = [
   {
     icon: Mail,
     label: "Email Keamanan",
-    value: "security@ceklink.id",
-    href: "mailto:security@ceklink.id",
+    value: "security@urlveil.id",
+    href: "mailto:security@urlveil.id",
     desc: "Untuk laporan kerentanan keamanan dan pertanyaan privasi",
   },
   {
     icon: MessageSquare,
     label: "Email Umum",
-    value: "hello@ceklink.id",
-    href: "mailto:hello@ceklink.id",
+    value: "hello@urlveil.id",
+    href: "mailto:hello@urlveil.id",
     desc: "Untuk pertanyaan umum, kerjasama, dan masukan",
   },
 ];
@@ -26,19 +26,19 @@ const CONTACTS = [
 const FAQ = [
   {
     q: "Bagaimana cara melaporkan link phising?",
-    a: "Gunakan fitur 'Laporkan' yang muncul setelah kamu mengecek link di CekLink. Isi alasan dan deskripsi, lalu kirim.",
+    a: "Gunakan fitur 'Laporkan' yang muncul setelah kamu mengecek link di Urlveil. Isi alasan dan deskripsi, lalu kirim.",
   },
   {
-    q: "Apakah CekLink gratis?",
-    a: "Ya, CekLink 100% gratis untuk penggunaan pribadi. API publik juga gratis dengan batas 100 request per hari.",
+    q: "Apakah Urlveil gratis?",
+    a: "Ya, Urlveil 100% gratis untuk penggunaan pribadi. API publik juga gratis dengan batas 100 request per hari.",
   },
   {
     q: "Bagaimana cara berkontribusi?",
-    a: "CekLink adalah proyek open source. Kunjungi repository GitHub kami untuk mulai berkontribusi.",
+    a: "Urlveil adalah proyek open source. Kunjungi repository GitHub kami untuk mulai berkontribusi.",
   },
   {
     q: "Saya menemukan bug, ke mana saya lapor?",
-    a: "Kirim email ke security@ceklink.id dengan detail bug yang kamu temukan. Kami merespons dalam 48 jam.",
+    a: "Kirim email ke security@urlveil.id dengan detail bug yang kamu temukan. Kami merespons dalam 48 jam.",
   },
 ];
 

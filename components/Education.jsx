@@ -11,7 +11,7 @@ const TIPS = [
   },
   {
     q: "Apa yang harus dilakukan jika sudah klik link phising?",
-    a: "Jangan panik. Langkah: (1) Jangan isi form apapun, (2) Tutup halaman segera, (3) Jika sudah isi data, segera ganti password, (4) Hubungi bank jika data finansial bocor, (5) Laporkan link di CekLink.",
+    a: "Jangan panik. Langkah: (1) Jangan isi form apapun, (2) Tutup halaman segera, (3) Jika sudah isi data, segera ganti password, (4) Hubungi bank jika data finansial bocor, (5) Laporkan link di Urlveil.",
   },
   {
     q: "Apa itu HTTPS dan kenapa penting?",
@@ -19,7 +19,7 @@ const TIPS = [
   },
   {
     q: "Bagaimana cara melindungi keluarga dari phising?",
-    a: "Edukasi mereka tentang: (1) Jangan klik link dari nomor tidak dikenal, (2) Cek link di CekLink sebelum buka, (3) Bank tidak pernah minta password via chat, (4) Install browser extension CekLink untuk proteksi otomatis.",
+    a: "Edukasi mereka tentang: (1) Jangan klik link dari nomor tidak dikenal, (2) Cek link di Urlveil sebelum buka, (3) Bank tidak pernah minta password via chat, (4) Install browser extension Urlveil untuk proteksi otomatis.",
   },
   {
     q: "Apa bedanya phising dan malware?",

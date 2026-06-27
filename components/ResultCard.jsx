@@ -41,7 +41,7 @@ export default function ResultCard({ result, url }) {
   const statusBg = status === "safe" ? "bg-[#2DCB85]/10" : status === "warn" ? "bg-[#F5A623]/10" : "bg-[#E55C30]/10";
 
   const handleCopy = async () => {
-    const text = `Hasil Cek Link - CekLink\n\nLink: ${url}\nStatus: ${statusLabel}\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nTemuan:\n${issues.map((i) => `- ${i.label}: ${i.value}`).join("\n")}\n\nCek link lain di: ceklink.id`;
+    const text = `Hasil Cek Link - Urlveil\n\nLink: ${url}\nStatus: ${statusLabel}\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nTemuan:\n${issues.map((i) => `- ${i.label}: ${i.value}`).join("\n")}\n\nCek link lain di: urlveil.id`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -53,7 +53,7 @@ export default function ResultCard({ result, url }) {
 
   const handleShareWA = () => {
     const text = encodeURIComponent(
-      `*Hasil Cek Link - CekLink*\n\nLink: ${url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nCek link lain di: ceklink.id`
+      `*Hasil Cek Link - Urlveil*\n\nLink: ${url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nCek link lain di: urlveil.id`
     );
     window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
   };
@@ -253,7 +253,7 @@ export default function ResultCard({ result, url }) {
                 <li>• Jangan isi data pribadi di halaman ini</li>
                 <li>• Verifikasi keaslian link ke sumber resmi</li>
                 <li>• Laporkan link ini jika mencurigakan</li>
-                <li>• Gunakan browser extension CekLink untuk proteksi otomatis</li>
+                <li>• Gunakan browser extension Urlveil untuk proteksi otomatis</li>
               </>
             ) : (
               <>

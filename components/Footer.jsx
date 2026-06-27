@@ -74,7 +74,7 @@ export default function Footer() {
               className="flex items-center gap-2 font-heading font-bold text-xl text-[#2DCB85] mb-3"
             >
               <ShieldCheck size={20} aria-hidden="true" />
-              CekLink
+              Urlveil
             </a>
             <p className="text-[#666680] text-sm leading-relaxed">
               Lindungi diri dan keluarga dari ancaman phising. Cek link sebelum
@@ -119,7 +119,7 @@ export default function Footer() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <p>
-            © {currentYear} CekLink. Privacy-First. Open Source.
+            © {currentYear} Urlveil. Privacy-First. Open Source.
           </p>
           <p className="flex items-center gap-1">
             Made with care by{" "}

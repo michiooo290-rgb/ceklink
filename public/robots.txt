@@ -6,4 +6,4 @@ Allow: /
 Disallow: /api/
 Disallow: /.well-known/
 
-Sitemap: https://ceklink.id/sitemap.xml
+Sitemap: https://urlveil.id/sitemap.xml

@@ -43,7 +43,7 @@ const WELCOME = {
   id: "welcome",
   role: "assistant",
   content: [
-    "👋 **Halo! Saya Asisten CekLink.**",
+    "👋 **Halo! Saya Asisten Urlveil.**",
     "",
     "Saya bisa membantu:",
     "• 🔍 Mengecek keamanan link",
@@ -107,7 +107,7 @@ async function getResponse(input) {
   if (l.includes("phising") || l.includes("phishing"))
     return ["🎣 **Phising** = penipuan mencuri data via link palsu","","**Ciri:** URL salah eja, permintaan mendesak, tidak HTTPS","","Ketik `/cek <url>` untuk cek link."].join("\n");
   if (l.includes("api"))
-    return ["🔌 **API CekLink:**","",`GET https://ceklink.id/api/check?url=<url>`,"Rate Limit: 100/hari (gratis)","","Lihat bagian API Publik di bawah."].join("\n");
+    return ["🔌 **API Urlveil:**","",`GET https://urlveil.id/api/check?url=<url>`,"Rate Limit: 100/hari (gratis)","","Lihat bagian API Publik di bawah."].join("\n");
   return ["🤔 Coba perintah:","• `/cek <url>` — Cek link","• `/tips` — Tips aman","• `/contoh` — Contoh phising"].join("\n");
 }
 
@@ -280,7 +280,7 @@ export default function AnimatedAIChat() {
                   <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#2DCB85] border-2 border-[#1a1e2e]" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white">CekLink AI</h3>
+                  <h3 className="text-sm font-semibold text-white">Urlveil AI</h3>
                   <p className="text-xs text-[#666680]">Online · Siap membantu</p>
                 </div>
               </div>

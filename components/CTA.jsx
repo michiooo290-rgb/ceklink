@@ -117,7 +117,7 @@ export default function CTA() {
                   </h3>
                   <p className="text-[#666680] text-sm">
                     Kami akan mengirim email ke <span className="text-[#2DCB85]">{email}</span> saat
-                    CekLink Extension untuk {selectedBrowser} tersedia.
+                    Urlveil Extension untuk {selectedBrowser} tersedia.
                   </p>
                 </div>
               ) : (
@@ -135,7 +135,7 @@ export default function CTA() {
                   </div>
 
                   <p className="text-[#666680] text-sm mb-4">
-                    Masukkan email kamu dan kami akan memberitahu saat extension CekLink untuk
+                    Masukkan email kamu dan kami akan memberitahu saat extension Urlveil untuk
                     {selectedBrowser === "Chrome" ? " Google Chrome" : " Mozilla Firefox"} siap digunakan.
                   </p>
 

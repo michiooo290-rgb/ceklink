@@ -52,13 +52,13 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
 
     // Store locally as a temporary measure (production: send to backend)
     try {
-      const reports = JSON.parse(localStorage.getItem("ceklink_reports") || "[]");
+      const reports = JSON.parse(localStorage.getItem("urlveil_reports") || "[]");
       // Limit to 100 reports to prevent localStorage abuse
       if (reports.length >= 100) {
         reports.shift(); // Remove oldest
       }
       reports.push(report);
-      localStorage.setItem("ceklink_reports", JSON.stringify(reports));
+      localStorage.setItem("urlveil_reports", JSON.stringify(reports));
     } catch {
       // localStorage may be unavailable; fail silently
     }

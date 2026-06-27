@@ -152,7 +152,7 @@ function AnalisisContent() {
 
   const handleCopy = async () => {
     if (!result) return;
-    const text = `Analisis Mendalam - CekLink\n\nLink: ${result.url}\nStatus: ${result.statusLabel}\nSkor: ${result.score}/100\nDomain: ${result.domain}\n\n${result.summary}\n\nCek analisis lengkap di: ceklink.id/analisis?url=${encodeURIComponent(result.url)}`;
+    const text = `Analisis Mendalam - Urlveil\n\nLink: ${result.url}\nStatus: ${result.statusLabel}\nSkor: ${result.score}/100\nDomain: ${result.domain}\n\n${result.summary}\n\nCek analisis lengkap di: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -659,7 +659,7 @@ function AnalisisContent() {
             </motion.button>
             <motion.button
               onClick={() => {
-                const text = encodeURIComponent(`*Hasil Analisis CekLink*\n\nLink: ${result.url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\n\nCek analisis: ceklink.id/analisis?url=${encodeURIComponent(result.url)}`);
+                const text = encodeURIComponent(`*Hasil Analisis Urlveil*\n\nLink: ${result.url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\n\nCek analisis: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`);
                 window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
               }}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#2DCB85]/10 border border-[#2DCB85]/20 text-[#2DCB85] hover:bg-[#2DCB85]/20 transition-colors text-sm"

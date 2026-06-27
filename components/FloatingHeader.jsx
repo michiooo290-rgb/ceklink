@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ShieldCheck } from "lucide-react";
+import { LogIn } from "lucide-react";
+import Image from "next/image";
 
 const NAV_ITEMS = [
   { label: "Beranda", href: "/#beranda" },
@@ -113,12 +114,14 @@ export default function FloatingHeader() {
                 href="#beranda"
                 className="flex items-center gap-2.5 font-bold text-lg text-white group transition-all"
               >
-                <span className="relative flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#F5A623] to-[#D48F1A] text-[#1a1e2e]">
-                  <ShieldCheck size={18} strokeWidth={2.5} aria-hidden="true" />
-                </span>
-                <span className="font-heading bg-gradient-to-r from-[#F5A623] to-[#E8B84A] bg-clip-text text-transparent">
-                  CekLink
-                </span>
+                <Image
+                  src="/logo.png"
+                  alt="Urlveil"
+                  width={32}
+                  height={32}
+                  className="rounded-lg"
+                  priority
+                />
               </a>
 
               {/* Desktop Nav */}
@@ -144,16 +147,25 @@ export default function FloatingHeader() {
                 })}
               </div>
 
-              {/* CTA Button */}
-              <a
-                href="#cek-link"
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e] hover:shadow-[0_0_24px_rgba(245,166,35,0.4)] transition-all duration-300 hover:-translate-y-0.5"
-              >
-                Mulai Scan
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </a>
+              {/* CTA Buttons */}
+              <div className="hidden md:flex items-center gap-2">
+                <a
+                  href="/login"
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
+                >
+                  <LogIn size={16} />
+                  Masuk
+                </a>
+                <a
+                  href="#cek-link"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e] hover:shadow-[0_0_24px_rgba(245,166,35,0.4)] transition-all duration-300 hover:-translate-y-0.5"
+                >
+                  Mulai Scan
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </a>
+              </div>
 
               {/* Mobile Hamburger */}
               <button
@@ -197,8 +209,16 @@ export default function FloatingHeader() {
                   );
                 })}
                 <a
+                  href="/login"
+                  className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <LogIn size={16} />
+                  Masuk
+                </a>
+                <a
                   href="#cek-link"
-                  className="block px-4 py-3 mt-2 text-sm font-semibold text-center rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e]"
+                  className="block px-4 py-3 mt-1 text-sm font-semibold text-center rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e]"
                   onClick={() => setMobileOpen(false)}
                 >
                   Mulai Scan →

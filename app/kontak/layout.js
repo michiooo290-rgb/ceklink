@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "Kontak — CekLink",
+  title: "Kontak — Urlveil",
   description:
-    "Hubungi tim CekLink untuk pertanyaan, laporan keamanan, atau kerjasama.",
+    "Hubungi tim Urlveil untuk pertanyaan, laporan keamanan, atau kerjasama.",
 };
 
 export default function KontakLayout({ children }) {

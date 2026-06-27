@@ -310,7 +310,7 @@ const ARTICLES = [
         {
           title: "Statistik di Indonesia",
           stats: [
-            { value: "892+", label: "Link phising dilaporkan di CekLink" },
+            { value: "892+", label: "Link phising dilaporkan di Urlveil" },
             { value: "Rp 2.5T", label: "Kerugian akibat penipuan online (2024)" },
             { value: "73%", label: "Serangan dimulai dari email phising" },
           ],
@@ -573,7 +573,7 @@ const ARTICLES = [
             "5. Aktifkan 2FA di semua akun penting",
             "6. Hubungi bank jika data finansial bocor — blokir kartu jika perlu",
             "7. Scan device dengan antivirus — pastikan tidak ada malware",
-            "8. Laporkan link phising di CekLink — bantu melindungi orang lain",
+            "8. Laporkan link phising di Urlveil — bantu melindungi orang lain",
             "9. Laporkan ke pihak berwajib — buat laporan di polisi atau Kominfo",
             "10. Monitor rekening dan akun — cek transaksi mencurigakan secara rutin",
           ],
@@ -594,9 +594,9 @@ const ARTICLES = [
           },
         },
         {
-          title: "Cara Melaporkan di CekLink",
+          title: "Cara Melaporkan di Urlveil",
           steps: [
-            "Buka CekLink di ceklink.id",
+            "Buka Urlveil di urlveil.id",
             "Paste link phising di kolom Pemeriksa URL",
             "Klik 'Cek' untuk analisis",
             "Jika hasilnya Bahaya, klik tombol 'Laporkan'",

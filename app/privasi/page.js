@@ -38,7 +38,7 @@ const SECTIONS = [
     icon: Globe,
     title: "Cookie & Tracking",
     content: [
-      "CekLink tidak menggunakan cookie tracking atau iklan.",
+      "Urlveil tidak menggunakan cookie tracking atau iklan.",
       "Kami tidak menggunakan Google Analytics atau layanan tracking pihak ketiga.",
       "Tidak ada fingerprinting atau pelacakan lintas situs.",
     ],
@@ -48,8 +48,8 @@ const SECTIONS = [
     title: "Hak Kamu",
     content: [
       "Kamu bisa meminta penghapusan data yang terkait dengan email kamu.",
-      "Kamu bisa menggunakan CekLink tanpa memberikan data pribadi apapun.",
-      "Hubungi kami di security@ceklink.id untuk pertanyaan privasi.",
+      "Kamu bisa menggunakan Urlveil tanpa memberikan data pribadi apapun.",
+      "Hubungi kami di security@urlveil.id untuk pertanyaan privasi.",
     ],
   },
 ];
@@ -122,8 +122,8 @@ export default function PrivasiPage() {
             >
               <p className="text-[#666680] text-sm">
                 Jika ada pertanyaan tentang kebijakan privasi ini, hubungi kami di{" "}
-                <a href="mailto:security@ceklink.id" className="text-[#F5A623] hover:underline">
-                  security@ceklink.id
+                <a href="mailto:security@urlveil.id" className="text-[#F5A623] hover:underline">
+                  security@urlveil.id
                 </a>
               </p>
             </motion.div>

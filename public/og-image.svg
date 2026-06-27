@@ -20,13 +20,13 @@
   </g>
 
   <!-- Title -->
-  <text x="600" y="370" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="64" fill="#F5A623">CekLink</text>
+  <text x="600" y="370" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="800" font-size="64" fill="#F5A623">Urlveil</text>
 
   <!-- Subtitle -->
   <text x="600" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="400" font-size="28" fill="#a0a5b8">Cek Keamanan Link dalam Hitungan Detik</text>
 
   <!-- URL -->
-  <text x="600" y="520" text-anchor="middle" font-family="monospace" font-size="20" fill="#666680">ceklink.id</text>
+  <text x="600" y="520" text-anchor="middle" font-family="monospace" font-size="20" fill="#666680">urlveil.id</text>
 
   <!-- Bottom accent -->
   <rect x="0" y="626" width="1200" height="4" fill="url(#accent)"/>

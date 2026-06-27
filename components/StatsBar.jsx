@@ -61,7 +61,7 @@ export default function StatsBar() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
-    <section className="py-12 sm:py-16" aria-label="Statistik CekLink">
+    <section className="py-12 sm:py-16" aria-label="Statistik Urlveil">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <motion.div
           ref={ref}

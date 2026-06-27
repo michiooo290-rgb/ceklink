@@ -50,7 +50,7 @@ export default function NotFound() {
         </div>
 
         <p className="text-[#555570] text-xs mt-8">
-          © {new Date().getFullYear()} CekLink — Lindungi diri dari phising
+          © {new Date().getFullYear()} Urlveil — Lindungi diri dari phising
         </p>
       </motion.div>
     </div>

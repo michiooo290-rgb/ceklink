@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Analisis Mendalam — CekLink",
+  title: "Analisis Mendalam — Urlveil",
   description:
     "Analisis keamanan link secara mendalam dan komprehensif. Periksa SSL, domain, typosquatting, dan pola phising.",
 };

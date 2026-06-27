@@ -1,7 +1,7 @@
 export const metadata = {
-  title: "Kebijakan Privasi — CekLink",
+  title: "Kebijakan Privasi — Urlveil",
   description:
-    "Kebijakan privasi CekLink. Kami menghargai privasi kamu dan tidak menjual data ke pihak ketiga.",
+    "Kebijakan privasi Urlveil. Kami menghargai privasi kamu dan tidak menjual data ke pihak ketiga.",
 };
 
 export default function PrivasiLayout({ children }) {

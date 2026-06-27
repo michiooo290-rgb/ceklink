@@ -1,7 +1,7 @@
 {
-  "name": "ceklink",
+  "name": "urlveil",
   "version": "1.0.0",
-  "description": "CekLink — Pengecek Keamanan Link Indonesia",
+  "description": "Urlveil — Pengecek Keamanan Link Indonesia",
   "private": true,
   "scripts": {
     "dev": "next dev",

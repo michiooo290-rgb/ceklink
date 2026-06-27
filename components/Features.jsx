@@ -33,7 +33,7 @@ const FEATURES = [
   {
     icon: Eye,
     title: "Cara Kerja Transparan",
-    desc: "Lihat bagaimana CekLink menganalisis setiap link — prosesnya terbuka dan bisa dipahami semua orang.",
+    desc: "Lihat bagaimana Urlveil menganalisis setiap link — prosesnya terbuka dan bisa dipahami semua orang.",
   },
 ];
 

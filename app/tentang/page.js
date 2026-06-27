@@ -37,12 +37,12 @@ export default function TentangPage() {
                 <ShieldCheck size={24} className="text-[#F5A623]" />
               </div>
               <h1 className="font-heading font-bold text-3xl sm:text-4xl">
-                Tentang CekLink
+                Tentang Urlveil
               </h1>
             </div>
 
             <p className="text-[#8888aa] text-lg leading-relaxed mb-8">
-              CekLink adalah alat pengecek keamanan link yang dibuat untuk melindungi masyarakat Indonesia
+              Urlveil adalah alat pengecek keamanan link yang dibuat untuk melindungi masyarakat Indonesia
               dari serangan phising dan penipuan online. Kami percaya bahwa keamanan digital adalah hak
               semua orang.
             </p>
@@ -106,7 +106,7 @@ export default function TentangPage() {
                 Open Source
               </h2>
               <p className="text-[#8888aa] leading-relaxed">
-                CekLink adalah proyek open source. Kami percaya transparansi adalah kunci keamanan.
+                Urlveil adalah proyek open source. Kami percaya transparansi adalah kunci keamanan.
                 Kontribusi dari komunitas sangat kami hargai.
               </p>
             </div>
