@@ -16,7 +16,7 @@ const QUESTIONS = [
     ],
     correct: 1,
     feedback: {
-      correct: "Tepat! HTTPS tidak menjamin keamanan. TLD .xyz dan nama domain seperti "bca-konfirmasi-akun" adalah tanda merah besar. Selalu scan dulu di Urlveil.",
+      correct: "Tepat! HTTPS tidak menjamin keamanan. TLD .xyz dan nama domain seperti bca-konfirmasi-akun adalah tanda merah besar. Selalu scan dulu di Urlveil.",
       wrong: "HTTPS hanya mengenkripsi koneksi — bukan jaminan situs aman. Domain bca-konfirmasi-akun.xyz jelas phising. Scan dulu sebelum buka.",
     },
   },
