@@ -122,6 +122,7 @@ export default function FloatingHeader() {
                   className="rounded-lg"
                   priority
                 />
+                <span className="font-heading text-white text-base tracking-tight">Urlveil</span>
               </a>
 
               {/* Desktop Nav */}
