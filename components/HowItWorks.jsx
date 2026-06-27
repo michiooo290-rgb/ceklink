@@ -9,25 +9,25 @@ const STEPS = [
     num: 1,
     icon: ClipboardPaste,
     title: "Tempel Link",
-    desc: "Masukkan URL dari WhatsApp, email, atau media sosial ke kolom scanner.",
+    desc: "Copy paste aja link yang kamu dapat dari WhatsApp, email, atau DM media sosial.",
   },
   {
     num: 2,
     icon: ScanLine,
-    title: "Analisis Multi-Layer",
-    desc: "Urlveil memindai SSL, reputasi domain, redirect chain, dan blacklist global.",
+    title: "Sistem Mulai Cek",
+    desc: "Otomatis dicek SSL-nya, reputasi domainnya, sampai jejak redirect-nya ke database blacklist global.",
   },
   {
     num: 3,
     icon: ShieldCheck,
-    title: "Hasil Keamanan",
-    desc: "Dapatkan skor keamanan dan detail ancaman dalam hitungan detik.",
+    title: "Lihat Hasilnya",
+    desc: "Muncul skor keamanan dan kalau ada ancaman, langsung kelihatan detailnya.",
   },
   {
     num: 4,
     icon: Share2,
-    title: "Bagikan & Laporkan",
-    desc: "Share hasil ke keluarga atau laporkan link berbahaya untuk melindungi orang lain.",
+    title: "Share atau Lapor",
+    desc: "Aman buat dibagikan ke keluarga, atau langsung laporkan kalau ternyata phishing.",
   },
 ];
 
@@ -66,10 +66,10 @@ export default function HowItWorks() {
         >
           <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3 flex items-center justify-center gap-3">
             <ScanLine size={28} className="text-[#2DCB85]" aria-hidden="true" />
-            Cara Kerja Urlveil
+            Gimana Urlveil Bekerja
           </h2>
           <p className="text-[#666680] max-w-lg mx-auto">
-            Dari tempel link sampai hasil keamanan — semuanya dalam hitungan detik
+            Nggak perlu ribet — tempel link, tunggu beberapa detik, langsung tahu aman atau nggak.
           </p>
         </motion.div>
 
