@@ -1128,3 +1128,79 @@ a[href^="#"] {
 .footer-author {
   color: var(--color-accent);
 }
+
+/* ═══════════════════════════════════════════════
+   REDESIGN — PhishingDB
+   ═══════════════════════════════════════════════ */
+
+.pdb-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+  flex-shrink: 0;
+}
+
+.pdb-refresh:hover:not(:disabled) {
+  color: var(--color-text);
+  border-color: var(--color-text-dim);
+}
+
+.pdb-refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pdb-spin {
+  animation: spin 1s linear infinite;
+}
+
+.pdb-loading {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pdb-loading-bar {
+  width: 100%;
+  max-width: 200px;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--color-paper-4);
+  overflow: hidden;
+  position: relative;
+}
+
+.pdb-loading-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.pdb-loading-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-dim);
+}
