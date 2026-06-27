@@ -7,77 +7,38 @@ import {
   Lock,
   Eye,
   EyeOff,
-  LogIn,
   ArrowLeft,
-  ShieldCheck,
-  AlertCircle,
   CheckCircle2,
+  AlertCircle,
   Loader2,
+  LogIn,
 } from "lucide-react";
-import MeshBackground from "../../components/MeshBackground";
 
-/* ── Framer Motion Variants ─────────────────────── */
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      delay: 0.15 + i * 0.1,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  }),
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 32, scale: 0.97 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-/* ── Validation Helpers ─────────────────────────── */
+/* ── Validation ─────────────────────────────────── */
 function validateEmail(email) {
   if (!email) return "Email wajib diisi";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Format email tidak valid";
   return null;
 }
-
 function validatePassword(password) {
-  if (!password) return "Password wajib diisi";
-  if (password.length < 6) return "Password minimal 6 karakter";
+  if (!password) return "Kata sandi wajib diisi";
+  if (password.length < 6) return "Kata sandi minimal 6 karakter";
   return null;
 }
 
-/* ── Google Icon (inline SVG) ───────────────────── */
-function GoogleIcon({ className }) {
+/* ── Google Icon ─────────────────────────────────── */
+function GoogleIcon() {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-        fill="#34A853"
-      />
-      <path
-        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-        fill="#EA4335"
-      />
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
     </svg>
   );
 }
 
-/* ── Main Page Component ────────────────────────── */
+/* ── Main ─────────────────────────────────────────── */
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -102,10 +63,8 @@ export default function LoginPage() {
     (field, value) => {
       if (field === "email") setEmail(value);
       else setPassword(value);
-
       if (touched[field]) {
-        const error =
-          field === "email" ? validateEmail(value) : validatePassword(value);
+        const error = field === "email" ? validateEmail(value) : validatePassword(value);
         setErrors((prev) => ({ ...prev, [field]: error }));
       }
     },
@@ -116,336 +75,275 @@ export default function LoginPage() {
     async (e) => {
       e.preventDefault();
       setSubmitStatus(null);
-
       const emailError = validateEmail(email);
       const passwordError = validatePassword(password);
-
       setTouched({ email: true, password: true });
       setErrors({ email: emailError, password: passwordError });
-
       if (emailError || passwordError) return;
-
       setIsLoading(true);
-
-      // Simulate API call (no backend yet)
-      await new Promise((resolve) => setTimeout(resolve, 1800));
-
+      await new Promise((r) => setTimeout(r, 1600));
       setIsLoading(false);
       setSubmitStatus("success");
-
-      // Reset after showing success
       setTimeout(() => setSubmitStatus(null), 3000);
     },
     [email, password]
   );
 
-  const inputBaseClasses =
-    "w-full pl-11 pr-4 py-3.5 rounded-xl text-sm font-body transition-all duration-200";
-
-  const inputBgClasses =
-    "bg-[oklch(14%_0.008_250/80%)] border text-[var(--color-text)] placeholder:text-[var(--color-text-dim)]";
-
-  function getInputStateClasses(field) {
-    if (errors[field] && touched[field]) {
-      return "border-[var(--color-danger)] focus:border-[var(--color-danger)] focus:shadow-[0_0_0_3px_var(--color-danger-glow)]";
-    }
-    if (!errors[field] && touched[field] && (field === "email" ? email : password)) {
-      return "border-[var(--color-secondary)] focus:border-[var(--color-secondary)] focus:shadow-[0_0_0_3px_var(--color-secondary-glow)]";
-    }
-    return "border-[var(--color-border)] focus:border-[var(--color-accent)] focus:shadow-[0_0_0_3px_var(--color-accent-glow)]";
-  }
+  const fieldBorder = (field) => {
+    if (errors[field] && touched[field]) return "border-[var(--color-danger)]";
+    if (!errors[field] && touched[field] && (field === "email" ? email : password))
+      return "border-[var(--color-secondary)]";
+    return "border-[var(--color-border)] focus:border-[var(--color-text-secondary)]";
+  };
 
   return (
-    <>
-      <main className="min-h-screen flex items-center justify-center py-16 relative px-4">
-        <MeshBackground variant="warm" intensity="subtle" />
-
-        <motion.div
-          className="w-full max-w-md relative z-10"
-          initial="hidden"
-          animate="visible"
-          variants={cardVariants}
+    <main className="min-h-screen flex items-center justify-center px-4 py-16"
+      style={{ background: "var(--color-paper)" }}>
+      <motion.div
+        className="w-full max-w-sm"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {/* Back */}
+        <a
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm mb-8 transition-colors"
+          style={{ color: "var(--color-text-muted)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-text)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
-          {/* Back to Home */}
-          <motion.div variants={fadeUp} custom={0} className="mb-6">
-            <a
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
-            >
-              <ArrowLeft size={16} />
-              Kembali ke Beranda
-            </a>
-          </motion.div>
+          <ArrowLeft size={14} />
+          Kembali
+        </a>
 
-          {/* Glass Card */}
-          <div className="glass-card p-8 sm:p-10">
-            {/* Header */}
-            <motion.div className="text-center mb-8" variants={fadeUp} custom={1}>
-              <div className="w-14 h-14 rounded-2xl bg-[var(--color-accent)]/10 flex items-center justify-center mx-auto mb-4">
-                <ShieldCheck size={28} className="text-[var(--color-accent)]" />
-              </div>
-              <h1 className="font-heading font-bold text-2xl sm:text-3xl mb-2">
-                Masuk ke <span className="text-[var(--color-accent)]">Urlveil</span>
-              </h1>
-              <p className="text-sm text-[var(--color-text-muted)]">
-                Akses fitur lengkap pengecekan keamanan link
-              </p>
-            </motion.div>
+        {/* Wordmark */}
+        <p className="text-sm font-medium mb-6" style={{ color: "var(--color-text-dim)" }}>
+          Urlveil
+        </p>
 
-            {/* Google Social Login */}
-            <motion.div variants={fadeUp} custom={2}>
-              <button
-                type="button"
-                className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-xl border border-[var(--color-border)] bg-[oklch(16%_0.008_250/50%)] text-sm font-medium text-[var(--color-text)] hover:bg-[oklch(18%_0.008_250/60%)] hover:border-[var(--color-border-hover)] transition-all duration-200"
-                onClick={() => alert("Login Google belum tersedia")}
-                aria-label="Masuk dengan Google"
-              >
-                <GoogleIcon className="w-5 h-5" />
-                Masuk dengan Google
-              </button>
+        {/* Heading */}
+        <h1 className="text-2xl font-semibold mb-1" style={{ color: "var(--color-text)", fontFamily: "var(--font-body)" }}>
+          Selamat datang kembali
+        </h1>
+        <p className="text-sm mb-8" style={{ color: "var(--color-text-muted)" }}>
+          Masuk untuk mengakses riwayat dan pengaturan akunmu.
+        </p>
 
-              {/* Divider */}
-              <div className="flex items-center gap-4 my-6">
-                <div className="flex-1 h-px bg-[var(--color-border)]" />
-                <span className="text-xs text-[var(--color-text-dim)] uppercase tracking-wider">
-                  atau
-                </span>
-                <div className="flex-1 h-px bg-[var(--color-border)]" />
-              </div>
-            </motion.div>
+        {/* Google */}
+        <button
+          type="button"
+          onClick={() => alert("Login Google belum tersedia")}
+          className="w-full flex items-center justify-center gap-2.5 py-2.5 rounded-lg text-sm font-medium mb-4 transition-colors"
+          style={{
+            background: "var(--color-paper-2)",
+            border: "1px solid var(--color-border)",
+            color: "var(--color-text)",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--color-border-hover)")}
+          onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--color-border)")}
+        >
+          <GoogleIcon />
+          Lanjutkan dengan Google
+        </button>
 
-            {/* Form */}
-            <motion.form onSubmit={handleSubmit} variants={fadeUp} custom={3} noValidate>
-              {/* Email Field */}
-              <div className="mb-5">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
+        {/* Divider */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px" style={{ background: "var(--color-border)" }} />
+          <span className="text-xs" style={{ color: "var(--color-text-dim)" }}>atau dengan email</span>
+          <div className="flex-1 h-px" style={{ background: "var(--color-border)" }} />
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          {/* Email */}
+          <div>
+            <label htmlFor="email" className="block text-xs font-medium mb-1.5"
+              style={{ color: "var(--color-text-secondary)" }}>
+              Email
+            </label>
+            <div className="relative">
+              <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ color: "var(--color-text-dim)" }} />
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="nama@email.com"
+                value={email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                onBlur={() => handleBlur("email")}
+                className={`w-full pl-9 pr-9 py-2.5 rounded-lg text-sm outline-none transition-colors ${fieldBorder("email")}`}
+                style={{
+                  background: "var(--color-paper-2)",
+                  border: "1px solid",
+                  color: "var(--color-text)",
+                  fontFamily: "var(--font-body)",
+                }}
+              />
+              {touched.email && !errors.email && email && (
+                <CheckCircle2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: "var(--color-secondary)" }} />
+              )}
+              {touched.email && errors.email && (
+                <AlertCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: "var(--color-danger)" }} />
+              )}
+            </div>
+            <AnimatePresence>
+              {touched.email && errors.email && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-xs mt-1"
+                  style={{ color: "var(--color-danger)" }}
                 >
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail
-                    size={18}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-dim)] pointer-events-none"
-                  />
-                  <input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="nama@email.com"
-                    value={email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    onBlur={() => handleBlur("email")}
-                    className={`${inputBaseClasses} ${inputBgClasses} ${getInputStateClasses("email")}`}
-                    aria-invalid={!!(errors.email && touched.email)}
-                    aria-describedby={errors.email && touched.email ? "email-error" : undefined}
-                  />
-                  {touched.email && !errors.email && email && (
-                    <CheckCircle2
-                      size={16}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-secondary)]"
-                    />
-                  )}
-                  {errors.email && touched.email && (
-                    <AlertCircle
-                      size={16}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-danger)]"
-                    />
-                  )}
-                </div>
-                <AnimatePresence>
-                  {errors.email && touched.email && (
-                    <motion.p
-                      id="email-error"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-xs text-[var(--color-danger)] mt-1.5 flex items-center gap-1"
-                      role="alert"
-                    >
-                      <AlertCircle size={12} />
-                      {errors.email}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Password Field */}
-              <div className="mb-5">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock
-                    size={18}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-dim)] pointer-events-none"
-                  />
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="Masukkan password"
-                    value={password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    onBlur={() => handleBlur("password")}
-                    className={`${inputBaseClasses} pr-11 ${inputBgClasses} ${getInputStateClasses("password")}`}
-                    aria-invalid={!!(errors.password && touched.password)}
-                    aria-describedby={errors.password && touched.password ? "password-error" : undefined}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-dim)] hover:text-[var(--color-text-secondary)] transition-colors p-0.5"
-                    aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-                <AnimatePresence>
-                  {errors.password && touched.password && (
-                    <motion.p
-                      id="password-error"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-xs text-[var(--color-danger)] mt-1.5 flex items-center gap-1"
-                      role="alert"
-                    >
-                      <AlertCircle size={12} />
-                      {errors.password}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Remember Me + Forgot Password */}
-              <div className="flex items-center justify-between mb-6">
-                <label className="flex items-center gap-2.5 cursor-pointer group">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="sr-only peer"
-                      aria-label="Ingat saya"
-                    />
-                    <div className="w-[18px] h-[18px] rounded-[5px] border border-[var(--color-border)] bg-[oklch(14%_0.008_250/80%)] peer-checked:bg-[var(--color-accent)] peer-checked:border-[var(--color-accent)] transition-all duration-200 flex items-center justify-center">
-                      {rememberMe && (
-                        <svg
-                          className="w-3 h-3 text-[var(--color-paper)]"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-sm text-[var(--color-text-muted)] group-hover:text-[var(--color-text-secondary)] transition-colors select-none">
-                    Ingat saya
-                  </span>
-                </label>
-
-                <a
-                  href="/lupa-password"
-                  className="text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-dim)] transition-colors font-medium"
-                >
-                  Lupa password?
-                </a>
-              </div>
-
-              {/* Submit Button */}
-              <motion.button
-                type="submit"
-                disabled={isLoading}
-                className="btn-glow w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
-                whileHover={!isLoading ? { scale: 1.01, y: -1 } : {}}
-                whileTap={!isLoading ? { scale: 0.98 } : {}}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Memproses...
-                  </>
-                ) : (
-                  <>
-                    <LogIn size={18} />
-                    Masuk
-                  </>
-                )}
-              </motion.button>
-
-              {/* Submit Status Feedback */}
-              <AnimatePresence>
-                {submitStatus === "success" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-4 p-3.5 rounded-xl border border-[var(--color-secondary)]/30 bg-[var(--color-secondary)]/5 flex items-center gap-3"
-                    role="status"
-                  >
-                    <CheckCircle2 size={18} className="text-[var(--color-secondary)] flex-shrink-0" />
-                    <span className="text-sm text-[var(--color-secondary)]">
-                      Login berhasil! Mengalihkan...
-                    </span>
-                  </motion.div>
-                )}
-                {submitStatus === "error" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-4 p-3.5 rounded-xl border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/5 flex items-center gap-3"
-                    role="alert"
-                  >
-                    <AlertCircle size={18} className="text-[var(--color-danger)] flex-shrink-0" />
-                    <span className="text-sm text-[var(--color-danger)]">
-                      Email atau password salah. Silakan coba lagi.
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.form>
+                  {errors.email}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Sign Up Link */}
-          <motion.div className="text-center mt-6" variants={fadeUp} custom={4}>
-            <p className="text-sm text-[var(--color-text-muted)]">
-              Belum punya akun?{" "}
-              <a
-                href="/signup"
-                className="text-[var(--color-accent)] hover:text-[var(--color-accent-dim)] font-semibold transition-colors"
+          {/* Password */}
+          <div>
+            <label htmlFor="password" className="block text-xs font-medium mb-1.5"
+              style={{ color: "var(--color-text-secondary)" }}>
+              Kata sandi
+            </label>
+            <div className="relative">
+              <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ color: "var(--color-text-dim)" }} />
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Masukkan kata sandi"
+                value={password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                onBlur={() => handleBlur("password")}
+                className={`w-full pl-9 pr-9 py-2.5 rounded-lg text-sm outline-none transition-colors ${fieldBorder("password")}`}
+                style={{
+                  background: "var(--color-paper-2)",
+                  border: "1px solid",
+                  color: "var(--color-text)",
+                  fontFamily: "var(--font-body)",
+                }}
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
+                aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                style={{ color: "var(--color-text-dim)" }}
               >
-                Daftar
-              </a>
-            </p>
-          </motion.div>
+                {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+              </button>
+            </div>
+            <AnimatePresence>
+              {touched.password && errors.password && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="text-xs mt-1"
+                  style={{ color: "var(--color-danger)" }}
+                >
+                  {errors.password}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </div>
 
-          {/* Trust Badge */}
-          <motion.div className="text-center mt-4" variants={fadeUp} custom={5}>
-            <p className="text-xs text-[var(--color-text-dim)] flex items-center justify-center gap-1.5">
-              <Lock size={12} />
-              Data Anda terenkripsi dan aman bersama kami
-            </p>
-          </motion.div>
-        </motion.div>
-      </main>
-    </>
+          {/* Remember + Forgot */}
+          <div className="flex items-center justify-between pt-0.5">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="sr-only peer"
+              />
+              <span
+                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-colors"
+                style={{
+                  border: `1px solid ${rememberMe ? "var(--color-text-secondary)" : "var(--color-border)"}`,
+                  background: rememberMe ? "var(--color-text-secondary)" : "var(--color-paper-2)",
+                }}
+              >
+                {rememberMe && (
+                  <svg width="9" height="7" viewBox="0 0 9 7" fill="none" aria-hidden="true">
+                    <path d="M1 3.5L3.5 6L8 1" stroke="var(--color-paper)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </span>
+              <span className="text-xs select-none" style={{ color: "var(--color-text-muted)" }}>Ingat saya</span>
+            </label>
+            <a href="/lupa-password" className="text-xs transition-colors"
+              style={{ color: "var(--color-text-muted)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-text)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}>
+              Lupa kata sandi?
+            </a>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium mt-2 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{
+              background: "var(--color-text)",
+              color: "var(--color-paper)",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />
+                Masuk...
+              </>
+            ) : (
+              <>
+                <LogIn size={15} />
+                Masuk
+              </>
+            )}
+          </button>
+
+          {/* Success */}
+          <AnimatePresence>
+            {submitStatus === "success" && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-2 text-sm px-3 py-2.5 rounded-lg"
+                style={{
+                  background: "oklch(62% 0.14 185 / 8%)",
+                  border: "1px solid oklch(62% 0.14 185 / 25%)",
+                  color: "var(--color-secondary)",
+                }}
+              >
+                <CheckCircle2 size={15} />
+                Berhasil masuk.
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </form>
+
+        {/* Footer */}
+        <p className="text-center text-xs mt-8" style={{ color: "var(--color-text-dim)" }}>
+          Belum punya akun?{" "}
+          <a href="/signup" className="transition-colors font-medium"
+            style={{ color: "var(--color-text-muted)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-text)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}>
+            Daftar sekarang
+          </a>
+        </p>
+      </motion.div>
+    </main>
   );
 }
