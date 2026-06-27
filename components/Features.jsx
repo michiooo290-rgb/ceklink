@@ -6,111 +6,87 @@ import { Search, Flag, BarChart3, Share2, GraduationCap, Eye } from "lucide-reac
 
 const FEATURES = [
   {
+    num: "01",
     icon: Search,
     title: "Scan URL Instan",
-    desc: "Analisis keamanan link dalam hitungan detik. Cek SSL, domain, redirect, dan blacklist otomatis.",
+    desc: "Analisis keamanan link dalam detik. SSL, domain, redirect, dan blacklist otomatis.",
   },
   {
+    num: "02",
     icon: Flag,
     title: "Laporkan Phising",
-    desc: "Temukan link phising? Laporkan untuk melindungi orang lain dari penipuan online.",
+    desc: "Temukan link phising? Satu klik untuk melaporkan dan melindungi pengguna lain.",
   },
   {
+    num: "03",
     icon: BarChart3,
-    title: "Statistik Real-time",
-    desc: "Lihat tren phising terbaru di Indonesia. Data diperbarui setiap hari dari laporan komunitas.",
+    title: "Tren Phising Indonesia",
+    desc: "Data harian dari laporan komunitas — lihat pola serangan yang sedang aktif.",
   },
   {
+    num: "04",
     icon: Share2,
-    title: "Share ke WhatsApp",
-    desc: "Bagikan hasil cek ke keluarga dan teman langsung via WhatsApp dalam satu klik.",
+    title: "Bagikan via WhatsApp",
+    desc: "Kirim hasil cek ke keluarga atau teman dengan satu tap.",
   },
   {
+    num: "05",
     icon: GraduationCap,
-    title: "Pusat Edukasi",
-    desc: "Belajar cara mengenali link phising, email palsu, dan tips keamanan digital lainnya.",
+    title: "Edukasi Keamanan",
+    desc: "Kenali ciri link phising, email palsu, dan modus penipuan digital terbaru.",
   },
   {
+    num: "06",
     icon: Eye,
-    title: "Cara Kerja Transparan",
-    desc: "Lihat bagaimana Urlveil menganalisis setiap link — prosesnya terbuka dan bisa dipahami semua orang.",
+    title: "Proses Transparan",
+    desc: "Setiap langkah analisis terbuka — kamu tahu persis mengapa sebuah link dianggap berbahaya.",
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
 export default function Features() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.15 });
 
   return (
-    <section id="fitur" className="py-16 sm:py-24" aria-label="Fitur unggulan">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <section id="fitur" className="features-section">
+      <div className="features-inner" ref={ref}>
+        {/* Section label */}
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="features-header"
+          initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.5 }}
         >
-          <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3">
-            Fitur Unggulan
+          <span className="section-label">Apa yang bisa dilakukan</span>
+          <h2 className="features-title">
+            Satu alat,<br />semua yang kamu butuhkan.
           </h2>
-          <p className="text-[#666680] max-w-xl mx-auto">
-            Semua yang kamu butuhkan untuk melindungi diri dari ancaman digital
-          </p>
         </motion.div>
 
-        <motion.div
-          ref={ref}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          {FEATURES.map((feature, i) => {
-            const IconComponent = feature.icon;
+        {/* Feature list — horizontal rows, not icon cards */}
+        <div className="features-list">
+          {FEATURES.map((f, i) => {
+            const Icon = f.icon;
             return (
               <motion.div
                 key={i}
-                variants={cardVariants}
-                whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                className="glass-card p-6 flex flex-col gap-4 cursor-default"
+                className="feature-row"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div
-                  className="w-12 h-12 rounded-xl bg-[#2DCB85]/10 flex items-center justify-center"
-                  aria-hidden="true"
-                >
-                  <IconComponent size={22} className="text-[#2DCB85]" />
+                <span className="feature-num">{f.num}</span>
+                <div className="feature-icon-wrap">
+                  <Icon size={18} />
                 </div>
-                <h3 className="font-heading font-semibold text-lg text-[#e0e0e0]">
-                  {feature.title}
-                </h3>
-                <p className="text-[#666680] text-sm leading-relaxed flex-1">
-                  {feature.desc}
-                </p>
+                <div className="feature-text">
+                  <h3 className="feature-name">{f.title}</h3>
+                  <p className="feature-desc">{f.desc}</p>
+                </div>
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
