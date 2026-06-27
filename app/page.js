@@ -7,7 +7,7 @@ import Education from "../components/Education";
 import HowItWorks from "../components/HowItWorks";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
-import StatsBar from "../components/StatsBar";
+import DataSources from "../components/DataSources";
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
       <main>
         <Hero />
         <URLScanner />
-        <StatsBar />
+        <DataSources />
         <div className="section-divider" />
         <Features />
         <div className="section-divider" />
