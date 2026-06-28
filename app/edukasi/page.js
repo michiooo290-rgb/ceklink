@@ -15,33 +15,32 @@ import MeshBackground from "../../components/MeshBackground";
 // ─── Phising Stats Data ─────────────────────────────────────────────
 
 const YEARLY_TREND = [
-  { year: 2021, attacks: 25, growth: null },
-  { year: 2022, attacks: 42, growth: 68 },
-  { year: 2023, attacks: 65, growth: 55 },
-  { year: 2024, attacks: 89, growth: 37 },
+  { year: 2021, attacks: 254, growth: null },
+  { year: 2022, attacks: 508, growth: 100 },
+  { year: 2023, attacks: 710, growth: 40 },
+  { year: 2024, attacks: 893, growth: 26 },
 ];
-const MAX_ATTACKS = 89;
+const MAX_ATTACKS = 893;
 
 const SECTOR_DATA = [
-  { name: "Banking", pct: 35, color: "#2DCB85" },
-  { name: "E-commerce", pct: 28, color: "#06b6d4" },
-  { name: "Fintech", pct: 18, color: "#8a5cff" },
-  { name: "Pemerintah", pct: 12, color: "#F5A623" },
-  { name: "Lainnya", pct: 7, color: "#666680" },
+  { name: "Portal Online", pct: 16.46, color: "#2DCB85" },
+  { name: "Toko Online", pct: 12.22, color: "#06b6d4" },
+  { name: "Bank", pct: 11.29, color: "#8a5cff" },
+  { name: "Jasa Pengiriman", pct: 8.30, color: "#F5A623" },
+  { name: "Lainnya", pct: 51.73, color: "#666680" },
 ];
 
 const METHOD_DATA = [
-  { name: "SMS", pct: 45, icon: Smartphone, color: "#2DCB85" },
-  { name: "Email", pct: 30, icon: Mail, color: "#06b6d4" },
-  { name: "WhatsApp", pct: 15, icon: MessageSquare, color: "#25d366" },
-  { name: "Social Media", pct: 10, icon: Globe, color: "#8a5cff" },
+  { name: "WhatsApp", pct: 82.71, icon: MessageSquare, color: "#25d366" },
+  { name: "Telegram", pct: 14.12, icon: Smartphone, color: "#2DCB85" },
+  { name: "Viber", pct: 3.17, icon: Mail, color: "#8a5cff" },
 ];
 
 const QUICK_STATS = [
-  { value: 89, suffix: " jt", label: "Serangan Phising", sub: "terdeteksi 2024", icon: ShieldAlert, color: "#E55C30" },
-  { value: 2.5, suffix: "T", label: "Kerugian Nasional", sub: "Rupiah 2024", icon: TrendingUp, color: "#F5A623" },
-  { value: 2.5, suffix: " jt", label: "Rata-rata per Korban", sub: "Rupiah", icon: Target, color: "#06b6d4" },
-  { value: 68, suffix: "%", label: "Pertumbuhan YoY", sub: "2021 → 2022", icon: BarChart3, color: "#8a5cff" },
+  { value: 26.8, suffix: " jt", label: "Aktivitas Phising", sub: "terdeteksi 2024", icon: ShieldAlert, color: "#E55C30" },
+  { value: 18, suffix: "T", label: "Kerugian Siber Nasional", sub: "Rupiah, 2024", icon: TrendingUp, color: "#F5A623" },
+  { value: 514, suffix: " rb", label: "Aktivitas Ransomware", sub: "Indonesia, 2024", icon: Target, color: "#06b6d4" },
+  { value: 35, suffix: "%", label: "Paham Ciri Email Phising", sub: "Survei Kominfo 2023", icon: BarChart3, color: "#8a5cff" },
 ];
 
 // ─── Animated Counter ───────────────────────────────────────────────
@@ -81,10 +80,10 @@ function PhisingStats() {
         transition={{ duration: 0.6 }}
       >
         <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-2">
-          Phising di Indonesia dalam Angka
+          Phising dalam Angka
         </h2>
         <p className="text-[#666680] text-sm">
-          Data dari laporan keamanan siber nasional & internasional
+          Data Indonesia dari BSSN & Kominfo, dipadukan dengan tren global Kaspersky
         </p>
       </motion.div>
 
@@ -97,9 +96,9 @@ function PhisingStats() {
           transition={{ delay: 0.2, duration: 0.5 }}
         >
           <Award size={28} className="text-[#F5A623] mx-auto mb-2" />
-          <div className="font-heading font-bold text-3xl text-[#F5A623]">#1</div>
+          <div className="font-heading font-bold text-3xl text-[#F5A623]">#2</div>
           <div className="text-sm text-[#e0e0e0]">Asia Tenggara</div>
-          <div className="text-xs text-[#666680]">Target phising terbanyak</div>
+          <div className="text-xs text-[#666680]">85.908 serangan phising finansial 2024, setelah Thailand</div>
         </motion.div>
         <motion.div
           className="glass-card p-5 text-center"
@@ -108,9 +107,9 @@ function PhisingStats() {
           transition={{ delay: 0.3, duration: 0.5 }}
         >
           <Globe size={28} className="text-[#06b6d4] mx-auto mb-2" />
-          <div className="font-heading font-bold text-3xl text-[#06b6d4]">Top 10</div>
-          <div className="text-sm text-[#e0e0e0]">Global</div>
-          <div className="text-xs text-[#666680]">Target phising dunia</div>
+          <div className="font-heading font-bold text-3xl text-[#06b6d4]">#1</div>
+          <div className="text-sm text-[#e0e0e0]">Asia Tenggara</div>
+          <div className="text-xs text-[#666680]">57.554 serangan ransomware 2024, tertinggi di kawasan</div>
         </motion.div>
       </div>
 
@@ -123,7 +122,7 @@ function PhisingStats() {
       >
         <h3 className="font-heading font-semibold text-base text-[#e0e0e0] mb-4 flex items-center gap-2">
           <TrendingUp size={18} className="text-[#2DCB85]" />
-          Tren Serangan Phising (2021–2024)
+          Tren Serangan Phising Global (2021–2024)
         </h3>
         <div className="space-y-3">
           {YEARLY_TREND.map((d, i) => (
@@ -168,7 +167,7 @@ function PhisingStats() {
         >
           <h3 className="font-heading font-semibold text-sm text-[#e0e0e0] mb-4 flex items-center gap-2">
             <Target size={16} className="text-[#E55C30]" />
-            Sektor Terancam
+            Sasaran Phising Global
           </h3>
           <div className="space-y-3">
             {SECTOR_DATA.map((s, i) => (
@@ -205,7 +204,7 @@ function PhisingStats() {
         >
           <h3 className="font-heading font-semibold text-sm text-[#e0e0e0] mb-4 flex items-center gap-2">
             <Smartphone size={16} className="text-[#2DCB85]" />
-            Metode Phising
+            Distribusi via Messenger (Global)
           </h3>
           <div className="space-y-3">
             {METHOD_DATA.map((m, i) => {
@@ -269,7 +268,7 @@ function PhisingStats() {
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 1.5, duration: 0.5 }}
       >
-        Sumber: APWG, Kaspersky Security Network, Kominfo, BSSN (2021–2024)
+        Sumber: BSSN (2024), survei Kominfo (2023), Kaspersky Spam &amp; Phishing Report (2021–2024), Group-IB High-Tech Crime Trends Report (2025)
       </motion.p>
     </section>
   );
@@ -285,34 +284,34 @@ const ARTICLES = [
     desc: "Pengenalan lengkap tentang phising — jenis-jenis, cara kerja, dan statistik di Indonesia.",
     tags: ["dasar", "phising", "pengenalan"],
     content: {
-      intro: "Phising adalah teknik penipuan online di mana pelaku menyamar sebagai pihak terpercaya untuk mencuri data pribadi seperti password, nomor kartu kredit, atau informasi sensitif lainnya.",
+      intro: "Phising itu intinya penipuan online — pelaku nyamar jadi pihak yang kamu percaya (bank, e-commerce, bahkan teman) supaya kamu mau ngasih password, nomor kartu, atau data sensitif lainnya.",
       sections: [
         {
           title: "Jenis-jenis Phising",
           items: [
-            { name: "Email Phishing", desc: "Email palsu yang meniru perusahaan resmi (bank, e-commerce, dll) dengan link ke situs palsu." },
-            { name: "SMS Phishing (Smishing)", desc: "Pesan SMS yang mengaku dari bank atau layanan, meminta klik link atau kirim OTP." },
-            { name: "Voice Phishing (Vishing)", desc: "Telepon dari 'petugas bank' atau 'polisi' yang meminta data pribadi." },
-            { name: "Spear Phishing", desc: "Serangan yang ditargetkan ke individu tertentu dengan informasi personal yang sudah dikumpulkan." },
-            { name: "Whaling", desc: "Spear phishing yang menargetkan eksekutif atau pejabat tinggi perusahaan." },
+            { name: "Email Phishing", desc: "Yang paling umum. Email palsu yang niru tampilan bank atau e-commerce, isinya link ke situs tiruan." },
+            { name: "SMS Phishing (Smishing)", desc: "SMS ngaku-ngaku dari bank, minta kamu klik link atau kirim kode OTP." },
+            { name: "Voice Phishing (Vishing)", desc: "Ditelepon orang yang ngaku 'petugas bank' atau bahkan 'polisi', lalu diminta data pribadi." },
+            { name: "Spear Phishing", desc: "Lebih licik — diincar khusus ke satu orang, pakai info personal yang udah dikumpulin sebelumnya." },
+            { name: "Whaling", desc: "Sama kayak spear phishing, tapi targetnya bos besar atau pejabat tinggi perusahaan." },
           ],
         },
         {
           title: "Cara Kerja Phiser",
           steps: [
-            "Membuat situs palsu yang mirip dengan situs resmi (tokopedia, BCA, dll)",
-            "Mengirim link phising via email, SMS, WhatsApp, atau media sosial",
-            "Korban mengklik link dan melihat halaman yang mirip asli",
-            "Korban memasukkan data pribadi (password, OTP, nomor kartu)",
-            "Data dicuri dan digunakan untuk akses akun atau pencurian uang",
+            "Bikin situs palsu yang mirip banget sama yang asli (Tokopedia, BCA, dll)",
+            "Sebar link-nya lewat email, SMS, WhatsApp, atau medsos",
+            "Korban klik, lihat halaman yang kelihatan asli",
+            "Korban masukin data — password, OTP, nomor kartu",
+            "Data itu langsung dipakai buat bobol akun atau curi uang",
           ],
         },
         {
           title: "Statistik di Indonesia",
           stats: [
-            { value: "892+", label: "Link phising dilaporkan di Urlveil" },
-            { value: "Rp 2.5T", label: "Kerugian akibat penipuan online (2024)" },
-            { value: "73%", label: "Serangan dimulai dari email phising" },
+            { value: "26,8 jt", label: "Aktivitas phising terdeteksi (BSSN, 2024)" },
+            { value: "Rp 18 T", label: "Kerugian siber nasional (BSSN, 2024)" },
+            { value: "Lebih dari 90%", label: "Serangan siber dimulai dari email phising (CISA)" },
           ],
         },
       ],
@@ -325,21 +324,21 @@ const ARTICLES = [
     desc: "10 ciri-ciri link phising yang wajib kamu ketahui beserta contoh nyata.",
     tags: ["praktis", "link", "deteksi"],
     content: {
-      intro: "Mengenali link phising adalah skill paling penting di era digital. Berikut 10 ciri-ciri yang harus kamu waspadai:",
+      intro: "Skill ini wajib dimiliki siapa aja di era digital. Coba perhatikan 10 hal ini sebelum klik link apapun:",
       sections: [
         {
           title: "10 Ciri-ciri Link Phising",
           items: [
-            { name: "1. URL Salah Eja", desc: "tokoped1a.com (angka 1 mengganti i), sh0pee.co.id (angka 0 mengganti o), bca-prom0.com" },
-            { name: "2. Tidak HTTPS", desc: "Tidak ada ikon gembok di browser. Website resmi pasti menggunakan HTTPS." },
-            { name: "3. Domain Mencurigakan", desc: "Ekstensi .xyz, .top, .click, .link, .work — jarang digunakan website resmi." },
-            { name: "4. Subdomain Berlebihan", desc: "login.bca.co.id.evil.com — perhatikan domain sebenarnya di ujung." },
-            { name: "5. URL Shortener", desc: "bit.ly, tinyurl, t.co — menyembunyikan tujuan asli." },
-            { name: "6. Meminta Data Mendesak", desc: "'Akun Anda akan diblokir dalam 24 jam!' — tekanan psikologis." },
-            { name: "7. Grammar Berantakan", desc: "Teks dengan typo atau grammar yang aneh." },
-            { name: "8. Terlalu Bagus", desc: "'Selamat! Anda menang iPhone 15!' — hadiah yang tidak pernah diikuti." },
-            { name: "9. Pengirim Tidak Dikenal", desc: "Email/SMS dari nomor atau alamat yang tidak dikenal." },
-            { name: "10. Di Luar Konteks", desc: "Link dikirim tanpa konteks atau alasan yang jelas." },
+            { name: "1. URL Salah Eja", desc: "tokoped1a.com (angka 1 ganti i), sh0pee.co.id (angka 0 ganti o), bca-prom0.com — perhatiin baik-baik tiap huruf." },
+            { name: "2. Tidak HTTPS", desc: "Nggak ada ikon gembok di browser. Website resmi udah pasti pakai HTTPS." },
+            { name: "3. Domain Mencurigakan", desc: "Ekstensi kayak .xyz, .top, .click, .link — jarang dipakai website resmi." },
+            { name: "4. Subdomain Berlebihan", desc: "login.bca.co.id.evil.com — domain sebenarnya itu yang di ujung, bukan yang di awal." },
+            { name: "5. URL Shortener", desc: "bit.ly, tinyurl, t.co — bisa nyembunyiin ke mana sebenarnya link itu mengarah." },
+            { name: "6. Bikin Panik", desc: "'Akun Anda akan diblokir dalam 24 jam!' — ini tekanan psikologis biar kamu nggak sempat berpikir." },
+            { name: "7. Grammar Berantakan", desc: "Typo atau susunan kalimat yang aneh, kayak hasil terjemahan asal-asalan." },
+            { name: "8. Terlalu Bagus untuk Jadi Nyata", desc: "'Selamat! Anda menang iPhone 15!' tanpa kamu pernah ikut undian apapun." },
+            { name: "9. Pengirim Tidak Dikenal", desc: "Email atau SMS dari nomor/alamat yang asing." },
+            { name: "10. Nggak Nyambung Konteksnya", desc: "Link nyasar masuk chat tanpa alasan atau penjelasan jelas." },
           ],
         },
         {
@@ -364,26 +363,26 @@ const ARTICLES = [
     desc: "Teknik manipulasi psikologis yang digunakan penipu untuk mendapatkan akses ke data kamu.",
     tags: ["manipulasi", "psikologi", "teknik"],
     content: {
-      intro: "Social engineering adalah teknik manipulasi psikologis yang mengeksploitasi kepercayaan, rasa takut, atau keserakahan manusia. Phising adalah salah satu bentuknya.",
+      intro: "Social engineering itu manipulasi psikologis — main di rasa percaya, takut, atau serakah orang. Phising sendiri sebenarnya cuma satu bentuk dari teknik ini.",
       sections: [
         {
           title: "6 Teknik Umum",
           items: [
-            { name: "Pretexting", desc: "Membuat skenario palsu untuk mendapatkan kepercayaan. Contoh: 'Saya dari IT bank, saya butuh verifikasi akun Anda.'" },
-            { name: "Baiting", desc: "Menawarkan sesuatu yang menggiurkan (USB gratis, voucher, hadiah) untuk menarik korban." },
-            { name: "Tailgating", desc: "Mengikuti orang masuk ke area terbatas dengan berpura-pura sebagai karyawan." },
-            { name: "Quid Pro Quo", desc: "Menawarkan bantuan/layanan sebagai imbalan informasi. Contoh: 'Saya bantu fix laptop Anda, tapi butuh password WiFi.'" },
-            { name: "Watering Hole", desc: "Menginfeksi website yang sering dikunjungi target." },
-            { name: "Phishing", desc: "Mengirim link/email palsu untuk mencuri data melalui halaman tiruan." },
+            { name: "Pretexting", desc: "Bikin skenario palsu biar dipercaya. Contoh: 'Saya dari IT bank, perlu verifikasi akun Anda sebentar.'" },
+            { name: "Baiting", desc: "Nawarin sesuatu yang menggiurkan — USB gratis, voucher, hadiah — buat menjebak korban." },
+            { name: "Tailgating", desc: "Nyelip masuk area terbatas dengan pura-pura jadi karyawan." },
+            { name: "Quid Pro Quo", desc: "'Saya bantu fix laptop-nya, tapi boleh minta password WiFi?' — bantuan ditukar info." },
+            { name: "Watering Hole", desc: "Nginfeksi website yang sering dikunjungi target, biar kena pas mampir." },
+            { name: "Phishing", desc: "Kirim link atau email palsu buat curi data lewat halaman tiruan." },
           ],
         },
         {
           title: "Contoh Kasus di Indonesia",
           items: [
-            { name: "Modus OTP", desc: "Penelpon mengaku dari bank, meminta OTP yang dikirim ke HP. Korban kehilangan uang di rekening." },
-            { name: "Modus Undian", desc: "SMS/WA: 'Selamat! Anda menang undian GoPay Rp 10 juta. Klik link untuk klaim.'" },
-            { name: "Modus Kurir", desc: "Pesan palsu dari 'JNE/J&T' dengan link tracking palsu yang mengarah ke situs phising." },
-            { name: "Modus Bantuan Pemerintah", desc: "Link palsu bantuan sosial/bansos yang meminta data KTP dan rekening." },
+            { name: "Modus OTP", desc: "Penelpon ngaku dari bank, minta OTP yang baru masuk ke HP. Begitu dikasih, uang di rekening langsung raib." },
+            { name: "Modus Undian", desc: "SMS/WA: 'Selamat! Anda menang undian GoPay Rp 10 juta. Klik link untuk klaim.' — udah jelas modus." },
+            { name: "Modus Kurir", desc: "Pesan ngaku dari JNE/J&T dengan link tracking palsu yang sebenarnya ngarah ke situs phising." },
+            { name: "Modus Bantuan Pemerintah", desc: "Link palsu bansos yang ujung-ujungnya minta data KTP dan rekening." },
           ],
         },
       ],
@@ -396,24 +395,24 @@ const ARTICLES = [
     desc: "Cara membuat password yang kuat, menggunakan password manager, dan menghindari kebocoran.",
     tags: ["password", "keamanan", "praktis"],
     content: {
-      intro: "Password adalah pertahanan pertama akun kamu. 81% pelanggaran data terjadi karena password yang lemah atau bocor.",
+      intro: "Password adalah pertahanan pertama akun kamu. Menurut Verizon Data Breach Investigations Report, 81% pelanggaran data terkait hacking melibatkan password yang lemah atau bocor.",
       sections: [
         {
           title: "5 Tips Password Kuat",
           items: [
-            { name: "Minimal 12 Karakter", desc: "Semakin panjang semakin aman. Gunakan frasa yang mudah diingat: 'KucingSayaMakanIkan2024!'" },
-            { name: "Kombinasikan Karakter", desc: "Huruf besar, huruf kecil, angka, dan simbol (!@#$%)." },
-            { name: "Jangan Pakai Info Personal", desc: "Hindari nama, tanggal lahir, nama hewan peliharaan." },
-            { name: "Unik untuk Setiap Akun", desc: "Jangan gunakan password yang sama untuk semua akun." },
-            { name: "Gunakan Password Manager", desc: "Aplikasi yang menyimpan semua password secara aman dan terenkripsi." },
+            { name: "Minimal 12 Karakter", desc: "Makin panjang makin susah ditebak. Coba pakai frasa yang gampang diingat kayak 'KucingSayaMakanIkan2024!'" },
+            { name: "Kombinasikan Karakter", desc: "Campur huruf besar, kecil, angka, sama simbol (!@#$%)." },
+            { name: "Jangan Pakai Info Personal", desc: "Hindari nama, tanggal lahir, atau nama hewan peliharaan — itu yang pertama ditebak orang." },
+            { name: "Unik untuk Setiap Akun", desc: "Sekali kena bocor di satu situs, jangan sampai akun lain ikut kena gara-gara pakai password sama." },
+            { name: "Gunakan Password Manager", desc: "Biar nggak perlu ngingat ratusan password, aplikasi ini yang nyimpenin semuanya secara aman." },
           ],
         },
         {
           title: "Rekomendasi Password Manager",
           items: [
-            { name: "Bitwarden", desc: "Gratis, open-source, tersedia di semua platform. Pilihan terbaik untuk pemula." },
-            { name: "1Password", desc: "Berbayar tapi sangat mudah digunakan. Fitur family sharing." },
-            { name: "KeePass", desc: "Gratis, offline, cocok untuk yang peduli privasi maksimal." },
+            { name: "Bitwarden", desc: "Gratis, open-source, ada di semua platform. Cocok buat yang baru mulai." },
+            { name: "1Password", desc: "Berbayar tapi interfacenya enak banget dipakai, plus ada family sharing." },
+            { name: "KeePass", desc: "Gratis dan offline — pilihan buat yang concern banget soal privasi." },
           ],
         },
         {
@@ -421,8 +420,8 @@ const ARTICLES = [
           steps: [
             "Buka haveibeenpwned.com",
             "Masukkan email atau password kamu",
-            "Situs akan menunjukkan apakah data kamu pernah bocor",
-            "Jika bocor, segera ganti password di semua akun yang menggunakan password tersebut",
+            "Situs akan kasih tahu kalau data kamu pernah ikut bocor",
+            "Kalau iya, langsung ganti password di semua akun yang pakai password itu",
           ],
         },
       ],
@@ -435,14 +434,14 @@ const ARTICLES = [
     desc: "Lapisan keamanan tambahan yang wajib diaktifkan di semua akun penting.",
     tags: ["2fa", "otp", "keamanan"],
     content: {
-      intro: "2FA adalah lapisan keamanan tambahan di atas password. Bahkan jika password bocor, penyerang tetap tidak bisa masuk tanpa faktor kedua.",
+      intro: "2FA itu lapisan keamanan ekstra di atas password. Jadi walaupun password kamu bocor, penyerang masih kejebak — nggak bisa masuk tanpa faktor kedua.",
       sections: [
         {
           title: "Jenis-jenis 2FA",
           items: [
-            { name: "SMS OTP", desc: "Kode dikirim via SMS. Cukup aman tapi rentan SIM-swap attack." },
-            { name: "Authenticator App", desc: "Google Authenticator, Authy, Microsoft Authenticator. Lebih aman dari SMS." },
-            { name: "Hardware Key", desc: "YubiKey, Google Titan. Paling aman — fisik, tidak bisa di-hack remot." },
+            { name: "SMS OTP", desc: "Kode lewat SMS. Cukup aman, tapi ada risiko SIM-swap attack." },
+            { name: "Authenticator App", desc: "Google Authenticator, Authy, Microsoft Authenticator — lebih aman dibanding SMS." },
+            { name: "Hardware Key", desc: "YubiKey, Google Titan. Paling aman karena fisik, nggak bisa di-hack dari jauh." },
           ],
         },
         {
@@ -477,39 +476,39 @@ const ARTICLES = [
     desc: "Jenis-jenis malware, cara penyebaran, dan tips pencegahan.",
     tags: ["malware", "virus", "keamanan"],
     content: {
-      intro: "Malware (malicious software) adalah program yang dirancang untuk merusak, mengganggu, atau mendapat akses tidak sah ke sistem komputer.",
+      intro: "Malware itu singkatan dari malicious software — program yang sengaja dibuat buat merusak atau diam-diam masuk ke sistem komputer kamu tanpa izin.",
       sections: [
         {
           title: "Jenis-jenis Malware",
           items: [
-            { name: "Trojan", desc: "Menyamar sebagai software yang sah tapi mengandung kode berbahaya di dalamnya." },
-            { name: "Ransomware", desc: "Mengenkripsi file kamu dan meminta tebusan untuk membukanya. Sangat berbahaya!" },
-            { name: "Spyware", desc: "Diam-diam memantau aktivitas kamu — merekam ketikan, screenshot, browsing history." },
-            { name: "Adware", desc: "Menampilkan iklan berlebihan dan bisa mengarahkan ke situs berbahaya." },
-            { name: "Worm", desc: "Menyebar sendiri melalui jaringan tanpa perlu interaksi manusia." },
-            { name: "Keylogger", desc: "Merekam setiap ketikan keyboard — password, chat, kartu kredit." },
+            { name: "Trojan", desc: "Pura-pura jadi software biasa, tapi di dalamnya nyembunyiin kode jahat." },
+            { name: "Ransomware", desc: "Ngenkrip semua file kamu, lalu minta tebusan buat bukanya lagi. Salah satu yang paling bahaya." },
+            { name: "Spyware", desc: "Diam-diam ngintip semua aktivitas — ketikan, screenshot, riwayat browsing." },
+            { name: "Adware", desc: "Nge-spam iklan berlebihan, kadang malah ngarahin ke situs berbahaya." },
+            { name: "Worm", desc: "Nyebar sendiri lewat jaringan, nggak butuh kamu klik apapun." },
+            { name: "Keylogger", desc: "Merekam tiap tombol yang kamu pencet — password, chat, sampai nomor kartu kredit." },
           ],
         },
         {
           title: "Cara Penyebaran",
           items: [
-            { name: "Email Lampiran", desc: "File .exe, .doc, .pdf yang mengandung macro berbahaya." },
-            { name: "Download Software Bajakan", desc: "Crack, keygen, software gratis dari situs tidak resmi." },
-            { name: "Link Phising", desc: "Klik link yang mengarah ke download malware." },
-            { name: "USB/Flashdisk", desc: "Flashdisk yang sudah terinfeksi malware." },
-            { name: "Iklan Berbahaya", desc: "Klik iklan yang mengarah ke download otomatis." },
+            { name: "Lampiran Email", desc: "File .exe, .doc, .pdf yang ada macro berbahaya nyelip di dalamnya." },
+            { name: "Software Bajakan", desc: "Crack, keygen, atau software 'gratis' dari situs yang nggak resmi." },
+            { name: "Link Phising", desc: "Klik link yang ujung-ujungnya download malware tanpa kamu sadari." },
+            { name: "USB/Flashdisk", desc: "Colok flashdisk yang udah kena infeksi sebelumnya." },
+            { name: "Iklan Berbahaya", desc: "Klik iklan yang langsung trigger download otomatis." },
           ],
         },
         {
           title: "7 Tips Pencegahan",
           steps: [
             "Update OS dan software secara rutin",
-            "Jangan download software bajakan",
-            "Gunakan antivirus yang terpercaya (Windows Defender sudah cukup untuk kebanyakan orang)",
-            "Jangan klik lampiran email dari pengirim tidak dikenal",
-            "Scan USB/flashdisk sebelum membuka isinya",
-            "Gunakan browser dengan built-in malware protection",
-            "Backup data secara rutin ke cloud atau hard disk eksternal",
+            "Hindari download software bajakan",
+            "Pakai antivirus yang terpercaya (Windows Defender aja udah cukup buat kebanyakan orang)",
+            "Jangan klik lampiran email dari pengirim yang nggak dikenal",
+            "Scan dulu USB/flashdisk sebelum dibuka isinya",
+            "Pakai browser yang punya built-in malware protection",
+            "Backup data secara rutin, baik ke cloud atau hard disk eksternal",
           ],
         },
       ],
@@ -522,33 +521,33 @@ const ARTICLES = [
     desc: "Cara melindungi anak dan orang tua dari ancaman digital.",
     tags: ["keluarga", "anak", "edukasi"],
     content: {
-      intro: "Anak-anak dan orang tua adalah target empuk penipu online. Edukasi keluarga adalah investasi keamanan terbaik.",
+      intro: "Anak-anak dan orang tua sering jadi target empuk penipu online. Ngajak ngobrol soal ini ke seluruh keluarga itu investasi keamanan yang murah tapi efeknya besar.",
       sections: [
         {
           title: "Edukasi Anak",
           items: [
-            { name: "Jangan Bagikan Info Personal", desc: "Nama lengkap, alamat, nama sekolah, nomor HP — jangan pernah dibagikan ke stranger online." },
-            { name: "Curiga ke Stranger Online", desc: "Orang yang baik di internet belum tentu baik. Jangan mudah percaya." },
-            { name: "Laporkan ke Orang Tua", desc: "Jika menemukan konten aneh, bullying, atau orang mencurigakan — langsung lapor." },
-            { name: "Jangan Klik Sembarang Link", desc: "Link dari game, chat, atau social media bisa berbahaya." },
+            { name: "Jangan Bagikan Info Personal", desc: "Nama lengkap, alamat, nama sekolah, nomor HP — jangan pernah dibagikan ke orang asing di internet." },
+            { name: "Curiga ke Stranger Online", desc: "Orang yang kelihatan baik di internet belum tentu beneran baik. Jangan gampang percaya." },
+            { name: "Laporkan ke Orang Tua", desc: "Nemu konten aneh, bullying, atau orang mencurigakan? Langsung cerita ke orang tua." },
+            { name: "Jangan Klik Sembarang Link", desc: "Link dari game, chat, atau medsos bisa aja berbahaya, meski kelihatan biasa." },
           ],
         },
         {
           title: "Tips untuk Orang Tua",
           items: [
-            { name: "Pasang Parental Control", desc: "Google Family Link, Apple Screen Time — kontrol konten dan waktu layar anak." },
-            { name: "Kenali Tanda-tanda", desc: "Anak tiba-tiba menutup layar, marah saat diminta HP, atau punya 'teman' baru yang tidak dikenal." },
-            { name: "Komunikasi Terbuka", desc: "Buat anak nyaman untuk cerita. Jangan langsung marah — edukasi dengan sabar." },
-            { name: "Contohkan yang Baik", desc: "Orang tua juga harus menerapkan keamanan digital. Anak meniru apa yang dilihat." },
+            { name: "Pasang Parental Control", desc: "Google Family Link atau Apple Screen Time bisa bantu kontrol konten dan waktu layar anak." },
+            { name: "Kenali Tanda-tanda", desc: "Anak tiba-tiba nutup layar pas kamu deketin, marah waktu diminta HP, atau punya 'teman' baru yang nggak kamu kenal." },
+            { name: "Komunikasi Terbuka", desc: "Bikin anak nyaman buat cerita. Jangan langsung marah — edukasi dengan sabar." },
+            { name: "Contohkan yang Baik", desc: "Orang tua juga harus terapin keamanan digital yang sama. Anak nirunya dari yang dilihat, bukan yang didengar." },
           ],
         },
         {
           title: "Bahaya Oversharing di Social Media",
           items: [
-            { name: "Foto Boarding Pass", desc: "Barcode bisa di-scan untuk dapatkan data penerbangan dan identitas." },
-            { name: "Check-in Lokasi", desc: "Penjahat tahu kapan rumah kosong." },
-            { name: "Foto Dokumen", desc: "KTP, SIM, kartu mahasiswa — data bisa disalahgunakan." },
-            { name: "Curhat Berlebihan", desc: "Informasi personal bisa digunakan untuk social engineering." },
+            { name: "Foto Boarding Pass", desc: "Barcode-nya bisa di-scan buat dapetin data penerbangan dan identitas kamu." },
+            { name: "Check-in Lokasi", desc: "Tanpa sadar, kamu lagi ngasih tahu orang jahat kapan rumah kosong." },
+            { name: "Foto Dokumen", desc: "KTP, SIM, kartu mahasiswa — sekali keliatan, datanya bisa disalahgunakan." },
+            { name: "Curhat Berlebihan", desc: "Cerita personal yang kebanyakan justru bisa dimanfaatkan buat social engineering." },
           ],
         },
       ],
@@ -561,21 +560,21 @@ const ARTICLES = [
     desc: "Checklist darurat 10 langkah yang harus dilakukan jika sudah terkena phising atau penipuan.",
     tags: ["darurat", "korban", "langkah"],
     content: {
-      intro: "Jangan panik! Semakin cepat kamu bertindak, semakin kecil kerugian. Ikuti checklist ini:",
+      intro: "Jangan panik. Makin cepat kamu gerak, makin kecil kerugiannya. Ikutin checklist ini:",
       sections: [
         {
           title: "10 Langkah Darurat",
           steps: [
-            "1. Jangan panik — tetap tenang agar bisa berpikir jernih",
-            "2. Tutup halaman phising segera — jangan isi data apapun lagi",
-            "3. Ganti password akun yang terdampak — gunakan password baru yang kuat",
-            "4. Ganti password di semua akun yang menggunakan password serupa",
-            "5. Aktifkan 2FA di semua akun penting",
-            "6. Hubungi bank jika data finansial bocor — blokir kartu jika perlu",
-            "7. Scan device dengan antivirus — pastikan tidak ada malware",
-            "8. Laporkan link phising di Urlveil — bantu melindungi orang lain",
-            "9. Laporkan ke pihak berwajib — buat laporan di polisi atau Kominfo",
-            "10. Monitor rekening dan akun — cek transaksi mencurigakan secara rutin",
+            "1. Tarik napas dulu — panik cuma bikin kamu salah ambil keputusan",
+            "2. Tutup halaman phising-nya sekarang, jangan isi data apapun lagi",
+            "3. Ganti password akun yang kena — pakai password baru yang kuat",
+            "4. Kalau password itu dipakai di akun lain juga, ganti semuanya",
+            "5. Aktifkan 2FA di semua akun penting kamu",
+            "6. Data finansial bocor? Langsung telepon bank, blokir kartu kalau perlu",
+            "7. Scan HP/laptop pakai antivirus, pastikan nggak ada malware nyangkut",
+            "8. Laporkan link phising-nya di Urlveil biar orang lain nggak kena juga",
+            "9. Bikin laporan resmi ke polisi atau Kominfo",
+            "10. Pantau rekening dan akun kamu beberapa hari ke depan, jaga-jaga ada transaksi aneh",
           ],
         },
         {
@@ -588,8 +587,8 @@ const ARTICLES = [
               ["Bank Mandiri", "14000", "Blokir kartu/akun segera"],
               ["Bank BNI", "1500046", "Blokir kartu/akun segera"],
               ["Kominfo", "aduankonten.id", "Lapor konten/nomor penipuan"],
-              ["Polisi Online", "polri.go.id", "Buat laporan online"],
-              ["Dumas Presisi", "0812-1234-1234", "Pengaduan masyarakat Polri"],
+              ["Polri - Call Center 110", "110", "Layanan pengaduan & pelaporan kepolisian 24 jam"],
+              ["Polisi Online", "polri.go.id/presisi", "Buat laporan kejahatan siber secara online"],
             ],
           },
         },
@@ -597,10 +596,10 @@ const ARTICLES = [
           title: "Cara Melaporkan di Urlveil",
           steps: [
             "Buka Urlveil di urlveil.id",
-            "Paste link phising di kolom Pemeriksa URL",
-            "Klik 'Cek' untuk analisis",
-            "Jika hasilnya Bahaya, klik tombol 'Laporkan'",
-            "Isi alasan pelaporan dan deskripsi",
+            "Paste link phising-nya di kolom Pemeriksa URL",
+            "Klik 'Cek' buat dianalisis",
+            "Kalau hasilnya Bahaya, klik tombol 'Laporkan'",
+            "Isi alasan dan deskripsi singkat",
             "Klik 'Kirim Laporan'",
           ],
         },
