@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 /**
- * Middleware ini generate "nonce" acak untuk setiap request, lalu pasang
- * di header CSP. Cuma <script> yang punya nonce yang cocok yang boleh
- * dijalankan browser — jadi kalau ada script jahat disuntik (XSS), browser
- * akan blokir karena nonce-nya nggak match.
+ * Middleware ini melakukan DUA hal di setiap request:
  *
- * 'strict-dynamic' mengizinkan script yang dimuat OLEH script ber-nonce
- * (misal Next.js memuat chunk JS-nya sendiri secara dinamis) tetap dipercaya,
- * tanpa perlu nonce di setiap chunk satu-satu.
+ * 1. Generate "nonce" acak untuk CSP — cuma <script> yang nonce-nya cocok
+ *    yang boleh dijalankan browser (lihat penjelasan lengkap di bawah).
+ * 2. Refresh session login Supabase (kalau ada cookie auth yang mau expired,
+ *    di-refresh otomatis di sini supaya user nggak ke-logout tiba-tiba).
  */
-export function middleware(request) {
+export async function middleware(request) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 
   const cspHeader = [
     "default-src 'self'",
@@ -22,7 +22,9 @@ export function middleware(request) {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
-    "connect-src 'self'",
+    // Supabase auth/API dipanggil langsung dari browser, jadi domain-nya
+    // perlu diizinkan di connect-src.
+    `connect-src 'self' ${supabaseUrl}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -31,8 +33,34 @@ export function middleware(request) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
 
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  let response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set("Content-Security-Policy", cspHeader);
+
+  // ── Refresh session Supabase ──────────────────────────────────────
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          response.headers.set("Content-Security-Policy", cspHeader);
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  // WAJIB dipanggil — ini yang memicu refresh token kalau perlu.
+  // Jangan dihapus / dipindah, dan jangan ditaruh logic di antara
+  // createServerClient() dan getUser() (lihat docs Supabase).
+  await supabase.auth.getUser();
 
   return response;
 }

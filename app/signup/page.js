@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, User, Mail, Lock, Eye, EyeOff,
   ShieldCheck, Check, X, Loader2, UserPlus,
-  Star, Users, TrendingUp,
+  Star, Users, TrendingUp, AlertCircle,
 } from "lucide-react";
+import { createClient } from "../../lib/supabase/client";
 
 /* ── Password rules ─────────────────────────────── */
 const PWD_RULES = [
@@ -161,6 +163,8 @@ function StrengthBar({ score }) {
 
 /* ── Main Component ─────────────────────────────── */
 export default function SignupPage() {
+  const router = useRouter();
+  const supabase = createClient();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -169,6 +173,7 @@ export default function SignupPage() {
   const [touched, setTouched] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [authError, setAuthError] = useState(null);
 
   const pwdScore = useMemo(() => getStrength(form.password), [form.password]);
 
@@ -192,17 +197,43 @@ export default function SignupPage() {
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
+    setAuthError(null);
     const allFields = ["name", "email", "password", "confirm"];
     const newErrors = Object.fromEntries(allFields.map((f) => [f, validate(f, form[f])]));
     setTouched(Object.fromEntries(allFields.map((f) => [f, true])));
     setErrors(newErrors);
     if (Object.values(newErrors).some(Boolean) || !agreed) return;
+
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1800));
+    const { error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+      options: { data: { full_name: form.name } },
+    });
     setIsLoading(false);
+
+    if (error) {
+      setAuthError(
+        error.message === "User already registered"
+          ? "Email ini sudah terdaftar"
+          : error.message
+      );
+      return;
+    }
+
     setSubmitStatus("success");
-    setTimeout(() => setSubmitStatus(null), 3000);
-  }, [form, validate, agreed]);
+    // Supabase default minta verifikasi email dulu sebelum bisa login.
+    // Kalau verifikasi email dimatikan di dashboard, ganti baris di bawah
+    // jadi router.push("/") karena user sudah otomatis login.
+    setTimeout(() => router.push("/login"), 2000);
+  }, [form, validate, agreed, supabase, router]);
+
+  const handleGoogleSignup = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  }, [supabase]);
 
   function inputCls(field) {
     const base = "w-full pl-10 pr-4 py-3 rounded-xl text-sm font-body transition-all duration-200 outline-none";
@@ -250,7 +281,7 @@ export default function SignupPage() {
           <motion.div variants={fadeUp} custom={2} className="mb-5">
             <button
               type="button"
-              onClick={() => alert("Google signup belum tersedia")}
+              onClick={handleGoogleSignup}
               className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-medium transition-all duration-200"
               style={{ border: "1px solid var(--color-border)", background: "oklch(16% 0.008 250 / 40%)", color: "var(--color-text)" }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--color-border-hover)"}
@@ -269,6 +300,15 @@ export default function SignupPage() {
 
           {/* Form */}
           <motion.form variants={fadeUp} custom={4} onSubmit={handleSubmit} noValidate>
+            {authError && (
+              <div
+                className="mb-4 flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs"
+                style={{ background: "rgba(229,92,48,0.1)", border: "1px solid rgba(229,92,48,0.25)", color: "var(--color-danger)" }}
+              >
+                <AlertCircle size={14} />
+                {authError}
+              </div>
+            )}
             {/* Name */}
             <div className="mb-3.5">
               <label htmlFor="name" className="block text-xs font-medium mb-1.5 tracking-wide uppercase" style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-mono)" }}>Nama Lengkap</label>

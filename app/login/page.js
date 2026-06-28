@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail, Lock, Eye, EyeOff, LogIn, ArrowLeft,
   ShieldCheck, AlertCircle, CheckCircle2, Loader2,
   Shield, Zap, Globe,
 } from "lucide-react";
+import { createClient } from "../../lib/supabase/client";
 
 /* ── Variants ───────────────────────────────────── */
 const fadeUp = {
@@ -137,6 +139,8 @@ function LeftPanel() {
 
 /* ── Main Component ─────────────────────────────── */
 export default function LoginPage() {
+  const router = useRouter();
+  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -145,6 +149,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [authError, setAuthError] = useState(null);
 
   const handleBlur = useCallback((field) => {
     setTouched((p) => ({ ...p, [field]: true }));
@@ -164,17 +169,37 @@ export default function LoginPage() {
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     setSubmitStatus(null);
+    setAuthError(null);
     const ee = validateEmail(email);
     const pe = validatePassword(password);
     setTouched({ email: true, password: true });
     setErrors({ email: ee, password: pe });
     if (ee || pe) return;
+
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1600));
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setIsLoading(false);
+
+    if (error) {
+      setAuthError(
+        error.message === "Invalid login credentials"
+          ? "Email atau password salah"
+          : error.message
+      );
+      return;
+    }
+
     setSubmitStatus("success");
-    setTimeout(() => setSubmitStatus(null), 3000);
-  }, [email, password]);
+    router.push("/");
+    router.refresh();
+  }, [email, password, supabase, router]);
+
+  const handleGoogleLogin = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+  }, [supabase]);
 
   function inputClass(field) {
     const base = "w-full pl-10 pr-4 py-3 rounded-xl text-sm font-body transition-all duration-200 outline-none";
@@ -226,7 +251,7 @@ export default function LoginPage() {
           <motion.div variants={fadeUp} custom={2} className="mb-5">
             <button
               type="button"
-              onClick={() => alert("Google login belum tersedia")}
+              onClick={handleGoogleLogin}
               className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-medium text-[var(--color-text)] transition-all duration-200"
               style={{ border: "1px solid var(--color-border)", background: "oklch(16% 0.008 250 / 40%)" }}
               onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--color-border-hover)"}
@@ -246,6 +271,15 @@ export default function LoginPage() {
 
           {/* Form */}
           <motion.form variants={fadeUp} custom={4} onSubmit={handleSubmit} noValidate>
+            {authError && (
+              <div
+                className="mb-4 flex items-center gap-2 px-3 py-2.5 rounded-lg text-xs"
+                style={{ background: "rgba(229,92,48,0.1)", border: "1px solid rgba(229,92,48,0.25)", color: "var(--color-danger)" }}
+              >
+                <AlertCircle size={14} />
+                {authError}
+              </div>
+            )}
             {/* Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-xs font-medium mb-1.5 tracking-wide uppercase" style={{ color: "var(--color-text-secondary)", fontFamily: "var(--font-mono)" }}>
