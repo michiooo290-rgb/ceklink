@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { ShieldCheck, AlertTriangle, XCircle } from "lucide-react";
+import ShapeGrid from "./ShapeGrid";
 
 // Scan line animation — specific to URL security, not generic swirl
 function URLDemoScan() {
@@ -136,8 +137,18 @@ export default function Hero() {
       id="beranda"
       className="hero-section"
     >
-      {/* Subtle grid background — not a swirl */}
-      <div className="hero-grid" aria-hidden="true" />
+      {/* ShapeGrid background */}
+      <div className="hero-shapegrid" aria-hidden="true">
+        <ShapeGrid
+          direction="diagonal"
+          speed={0.3}
+          squareSize={40}
+          borderColor="oklch(75% 0.17 75 / 8%)"
+          hoverFillColor="oklch(75% 0.17 75 / 15%)"
+          shape="square"
+          hoverTrailAmount={4}
+        />
+      </div>
       <div className="hero-vignette" aria-hidden="true" />
 
       <div className="hero-inner">

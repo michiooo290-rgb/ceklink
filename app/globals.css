@@ -289,14 +289,17 @@ a[href^="#"] {
   padding-top: 5rem;
 }
 
-/* Subtle dot grid — evokes a technical/security tool, not a swirl */
-.hero-grid {
+/* ShapeGrid background wrapper */
+.hero-shapegrid {
   position: absolute;
   inset: 0;
-  background-image:
-    radial-gradient(circle, oklch(75% 0.17 75 / 12%) 1px, transparent 1px);
-  background-size: 36px 36px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%);
+  opacity: 0.6;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 40%, black 20%, transparent 100%);
+  pointer-events: none;
+}
+
+.hero-shapegrid canvas {
+  pointer-events: auto;
 }
 
 /* Edge vignette to keep text readable */
