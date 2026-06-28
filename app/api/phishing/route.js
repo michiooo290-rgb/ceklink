@@ -17,6 +17,8 @@ function extractTarget(url) {
       netflix: "Netflix", amazon: "Amazon", discord: "Discord",
       tiktok: "TikTok", spotify: "Spotify", steam: "Steam",
     };
+    // Kalau IP address → label "IP Langsung"
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) return "IP Langsung";
     for (const part of parts) {
       if (known[part]) return known[part];
     }
@@ -36,7 +38,11 @@ function threatToStatus(threat) {
 
 function relativeTime(dateStr) {
   try {
-    const date = new Date(dateStr);
+    if (!dateStr) return "-";
+    // URLhaus format: "2026-06-28 06:49:29 UTC" → parse manual
+    const normalized = dateStr.replace(" UTC", "").replace(" ", "T") + "Z";
+    const date = new Date(normalized);
+    if (isNaN(date.getTime())) return "-";
     const diffMin = Math.floor((Date.now() - date) / 60000);
     const diffHour = Math.floor(diffMin / 60);
     const diffDay = Math.floor(diffHour / 24);
@@ -50,38 +56,28 @@ function relativeTime(dateStr) {
 
 function parseCSV(text) {
   const lines = text.split("\n").filter(l => l.trim() && !l.startsWith("#"));
-  
-  // Log baris pertama buat debug
-  console.log("[URLhaus] First non-comment line:", lines[0]);
-  console.log("[URLhaus] Total lines:", lines.length);
 
   const results = [];
   for (const line of lines) {
-    // Handle quoted CSV fields
     const cols = line.split('","').map(c => c.replace(/^"|"$/g, '').trim());
-    
     if (cols.length < 4) continue;
 
-    // Format URLhaus CSV: id, dateadded, url, url_status, last_online, threat, tags, urlhaus_link, reporter
-    const dateadded = cols[0];
+    // URLhaus CSV: id, dateadded, url, url_status, last_online, threat, tags, urlhaus_link, reporter
+    const dateadded = cols[1]; // index 1, bukan 0
     const url = cols[2];
     const url_status = cols[3];
     const threat = cols[5] || "";
 
     if (!url || !url.startsWith("http")) continue;
 
-    // Ambil semua — tidak filter status dulu
-    results.push({ 
-      dateadded: dateadded?.trim(), 
-      url: url?.trim(), 
+    results.push({
+      dateadded: dateadded?.trim(),
+      url: url?.trim(),
       threat: threat?.trim(),
       url_status: url_status?.trim(),
     });
   }
-  
-  console.log("[URLhaus] Parsed entries:", results.length);
-  if (results.length > 0) console.log("[URLhaus] Sample:", results[0]);
-  
+
   return results;
 }
 
@@ -99,11 +95,18 @@ export async function GET() {
     if (!res.ok) throw new Error(`URLhaus responded ${res.status}`);
 
     const text = await res.text();
-    console.log("[URLhaus] Response length:", text.length);
-    console.log("[URLhaus] First 500 chars:", text.slice(0, 500));
-
     const entries = parseCSV(text);
-    const top = entries.slice(0, 8);
+
+    // Prioritaskan yang bukan IP address murni
+    const sorted = [...entries].sort((a, b) => {
+      const aIsIP = /^\d+\.\d+\.\d+\.\d+/.test(new URL(a.url).hostname);
+      const bIsIP = /^\d+\.\d+\.\d+\.\d+/.test(new URL(b.url).hostname);
+      if (aIsIP && !bIsIP) return 1;
+      if (!aIsIP && bIsIP) return -1;
+      return 0;
+    });
+
+    const top = sorted.slice(0, 8);
 
     const urls = top.map((entry) => ({
       link: (() => {
