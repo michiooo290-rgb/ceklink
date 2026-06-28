@@ -5,12 +5,6 @@ import { ArrowLeft, ShieldCheck, Heart, Zap, Globe, Lock } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
 
-const STATS = [
-  { value: "12K+", label: "Link diperiksa", note: "sejak diluncurkan" },
-  { value: "8K+", label: "Phising terdeteksi", note: "dari total scan" },
-  { value: "4.5K+", label: "Pengguna aktif", note: "bulan ini" },
-];
-
 const FEATURES = [
   { icon: Zap, title: "URL Scanner", desc: "Analisis SSL, domain, redirect, dan blacklist dalam detik — tanpa install apapun." },
   { icon: Globe, title: "Database Phising", desc: "Data real-time dari URLhaus dan laporan komunitas Indonesia." },
@@ -33,38 +27,16 @@ export default function TentangPage() {
               <ArrowLeft size={14} /> Kembali ke Beranda
             </a>
 
-            {/* Hero */}
-            <div className="grid lg:grid-cols-2 gap-12 mb-16 items-center">
-              <div>
-                <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Tentang Urlveil</span>
-                <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
-                  Keamanan digital<br />untuk semua orang.
-                </h1>
-                <p className="text-[#8888aa] text-base leading-relaxed">
-                  Urlveil dibuat untuk melindungi masyarakat Indonesia dari phising dan penipuan online.
-                  Kami percaya keamanan digital bukan hak eksklusif — siapapun bisa dan harus bisa mengecek link mencurigakan.
-                </p>
-              </div>
-
-              {/* Stats */}
-              <div className="space-y-4">
-                {STATS.map((s, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-[#2e3348] bg-[#1f2438]"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.08 }}
-                  >
-                    <div className="font-heading font-bold text-2xl text-[#F5A623] w-20 flex-shrink-0">{s.value}</div>
-                    <div>
-                      <div className="text-sm font-medium text-white">{s.label}</div>
-                      <div className="text-xs font-mono text-[#555570]">{s.note}</div>
-                    </div>
-                  </motion.div>
-                ))}
-                <p className="text-[10px] text-[#555570] font-mono px-1">* Data ilustrasi, bukan real-time</p>
-              </div>
+            {/* Hero — single column, tanpa stat card kanan */}
+            <div className="max-w-2xl mb-16">
+              <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Tentang Urlveil</span>
+              <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
+                Keamanan digital<br />untuk semua orang.
+              </h1>
+              <p className="text-[#8888aa] text-base leading-relaxed">
+                Urlveil dibuat untuk melindungi masyarakat Indonesia dari phising dan penipuan online.
+                Kami percaya keamanan digital bukan hak eksklusif — siapapun bisa dan harus bisa mengecek link mencurigakan.
+              </p>
             </div>
 
             {/* Misi */}
