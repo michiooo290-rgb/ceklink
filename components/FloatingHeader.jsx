@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { LogIn } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon } from "lucide-react";
 import Image from "next/image";
+import { createClient } from "../lib/supabase/client";
 
 const NAV_ITEMS = [
   { label: "Beranda", href: "/#beranda" },
@@ -22,6 +23,25 @@ export default function FloatingHeader() {
   const [atTop, setAtTop] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#beranda");
+  const [user, setUser] = useState(null);
+
+  const supabase = useRef(createClient()).current;
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, [supabase]);
+
+  const handleLogout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    window.location.href = "/";
+  }, [supabase]);
 
   const lastY = useRef(0);
   const rafId = useRef(null);
@@ -121,13 +141,29 @@ export default function FloatingHeader() {
               </div>
 
               <div className="hidden md:flex items-center gap-2">
-                <a
-                  href="/login"
-                  className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
-                >
-                  <LogIn size={16} />
-                  Masuk
-                </a>
+                {user ? (
+                  <>
+                    <span className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#8888aa]">
+                      <UserIcon size={16} />
+                      {user.user_metadata?.full_name || user.email}
+                    </span>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
+                    >
+                      <LogOut size={16} />
+                      Keluar
+                    </button>
+                  </>
+                ) : (
+                  <a
+                    href="/login"
+                    className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
+                  >
+                    <LogIn size={16} />
+                    Masuk
+                  </a>
+                )}
                 <a
                   href="#cek-link"
                   className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e] hover:shadow-[0_0_24px_rgba(245,166,35,0.4)] transition-all duration-300 hover:-translate-y-0.5"
@@ -171,14 +207,24 @@ export default function FloatingHeader() {
                     </a>
                   );
                 })}
-                <a
-                  href="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
-                >
-                  <LogIn size={16} />
-                  Masuk
-                </a>
+                {user ? (
+                  <button
+                    onClick={() => { setMobileOpen(false); handleLogout(); }}
+                    className="w-full flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                  >
+                    <LogOut size={16} />
+                    Keluar ({user.user_metadata?.full_name || user.email})
+                  </button>
+                ) : (
+                  <a
+                    href="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                  >
+                    <LogIn size={16} />
+                    Masuk
+                  </a>
+                )}
                 <a
                   href="#cek-link"
                   onClick={() => setMobileOpen(false)}
