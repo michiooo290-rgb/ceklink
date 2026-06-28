@@ -36,3 +36,7 @@ next-env.d.ts
 
 # hallmarks
 .hallmark/
+
+# debug / verification screenshots (taken during dev, not site assets)
+/*.png
+!public/**/*.png
