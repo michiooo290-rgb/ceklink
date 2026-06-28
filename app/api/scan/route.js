@@ -3,48 +3,12 @@
  * Menggunakan Google Safe Browsing + URLScan.io
  */
 
+import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
+
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
 
-// ── Rate limiting (per IP, in-memory) ──────────────────────────────────
-// Catatan: ini cuma efektif selama satu instance server hidup (cocok buat
-// VPS/server biasa). Di Vercel/serverless, tiap instance punya memory sendiri
-// jadi limit ini lebih ke "garis pertahanan pertama", bukan jaminan absolut.
-// Untuk produksi serius, ganti dengan Upstash/Vercel KV atau Redis.
-const RATE_LIMIT_MAX = 20; // request per window
-const RATE_LIMIT_WINDOW_MS = 60_000; // 1 menit
-const rateLimitStore = new Map();
-
-function getClientIp(req) {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return req.headers.get("x-real-ip") || "unknown";
-}
-
-function checkRateLimit(ip) {
-  const now = Date.now();
-  const entry = rateLimitStore.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return { allowed: true };
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return { allowed: false, retryAfter: Math.ceil((entry.resetAt - now) / 1000) };
-  }
-
-  entry.count += 1;
-  return { allowed: true };
-}
-
-// Bersihkan entry lama tiap beberapa menit biar Map nggak bocor memori
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, entry] of rateLimitStore) {
-    if (now > entry.resetAt) rateLimitStore.delete(ip);
-  }
-}, 5 * 60_000);
+const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
 
 // ── Google Safe Browsing ──────────────────────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
