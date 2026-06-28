@@ -6,109 +6,98 @@ import { ClipboardPaste, ScanLine, ShieldCheck, Share2 } from "lucide-react";
 
 const STEPS = [
   {
-    num: 1,
+    num: "01",
     icon: ClipboardPaste,
     title: "Tempel Link",
-    desc: "Copy paste aja link yang kamu dapat dari WhatsApp, email, atau DM media sosial.",
+    desc: "Copy paste link dari WhatsApp, email, atau DM — langsung ke kolom scan.",
+    color: "#F5A623",
   },
   {
-    num: 2,
+    num: "02",
     icon: ScanLine,
     title: "Sistem Mulai Cek",
-    desc: "Otomatis dicek SSL-nya, reputasi domainnya, sampai jejak redirect-nya ke database blacklist global.",
+    desc: "SSL, reputasi domain, redirect, dan blacklist global dicek dalam detik.",
+    color: "#2DCB85",
   },
   {
-    num: 3,
+    num: "03",
     icon: ShieldCheck,
     title: "Lihat Hasilnya",
-    desc: "Muncul skor keamanan dan kalau ada ancaman, langsung kelihatan detailnya.",
+    desc: "Skor keamanan muncul langsung. Kalau berbahaya, detail ancaman ikut tampil.",
+    color: "#2DCB85",
   },
   {
-    num: 4,
+    num: "04",
     icon: Share2,
     title: "Share atau Lapor",
-    desc: "Aman buat dibagikan ke keluarga, atau langsung laporkan kalau ternyata phishing.",
+    desc: "Bagikan hasilnya ke keluarga lewat WhatsApp, atau laporkan kalau ternyata phising.",
+    color: "#F5A623",
   },
 ];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-  },
-};
 
 export default function HowItWorks() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section id="cara-kerja" className="py-16 sm:py-24" aria-label="Cara kerja Urlveil">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6" ref={ref}>
+    <section id="cara-kerja" className="hiw-section" aria-label="Cara kerja Urlveil">
+      <div className="hiw-inner" ref={ref}>
+
+        {/* Header — left aligned */}
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="hiw-header"
+          initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3 flex items-center justify-center gap-3">
-            <ScanLine size={28} className="text-[#2DCB85]" aria-hidden="true" />
-            Gimana Urlveil Bekerja
+          <span className="section-label">Cara kerja</span>
+          <h2 className="hiw-title">
+            Dari link mencurigakan<br />ke jawaban — dalam detik.
           </h2>
-          <p className="text-[#666680] max-w-lg mx-auto">
-            Nggak perlu ribet — tempel link, tunggu beberapa detik, langsung tahu aman atau nggak.
-          </p>
         </motion.div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
+        {/* Steps */}
+        <div className="hiw-steps">
           {STEPS.map((step, i) => {
             const Icon = step.icon;
             return (
               <motion.div
                 key={i}
-                variants={cardVariants}
-                className="glass-card p-5 relative group"
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="hiw-step"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
               >
-                {/* Step Number */}
-                <span className="absolute -top-2.5 -left-1 w-7 h-7 rounded-full bg-[#2DCB85]/10 border border-[#2DCB85]/20 text-[#2DCB85] text-xs font-bold flex items-center justify-center">
-                  {step.num}
-                </span>
-
-                {/* Icon */}
-                <div className="w-11 h-11 rounded-xl bg-[#2DCB85]/8 flex items-center justify-center mb-3 mx-auto">
-                  <Icon size={22} className="text-[#2DCB85]" />
+                {/* Number + connector */}
+                <div className="hiw-step-top">
+                  <div className="hiw-step-num" style={{ color: step.color, borderColor: step.color + "33", background: step.color + "10" }}>
+                    {step.num}
+                  </div>
+                  {i < STEPS.length - 1 && <div className="hiw-connector" />}
                 </div>
 
-                {/* Content */}
-                <h3 className="font-heading font-semibold text-sm text-[#e0e0e0] text-center mb-1.5">
-                  {step.title}
-                </h3>
-                <p className="text-xs text-[#666680] text-center leading-relaxed">
-                  {step.desc}
-                </p>
+                {/* Icon */}
+                <div className="hiw-icon" style={{ color: step.color }}>
+                  <Icon size={20} />
+                </div>
+
+                {/* Text */}
+                <h3 className="hiw-step-title">{step.title}</h3>
+                <p className="hiw-step-desc">{step.desc}</p>
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
+
+        {/* Bottom note */}
+        <motion.p
+          className="hiw-note"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          Gratis · Tanpa daftar · Tanpa install apapun
+        </motion.p>
       </div>
     </section>
   );
