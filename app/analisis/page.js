@@ -1,415 +1,830 @@
 "use client";
 
-import { Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  ShieldCheck, ShieldAlert, ShieldX, ArrowLeft,
-  Globe, Lock, Unlock, AlertTriangle, CheckCircle2,
-  XCircle, Microscope, Info, ChevronRight,
+  ShieldCheck, ShieldAlert, ShieldX, ArrowLeft, Search, Globe, Lock, Unlock,
+  Link, AlertTriangle, CheckCircle2, XCircle, Info, Copy, Share2, Flag,
+  Shield, Eye, Code, Layers, Hash, Fingerprint, Zap, Target, FileText,
+  ChevronDown, ChevronUp, ExternalLink, Smartphone,
 } from "lucide-react";
+import { scanURL } from "../../lib/scanner";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
-import { scanURL } from "../../lib/scanner";
+import ReportModal from "../../components/ReportModal";
+import MeshBackground from "../../components/MeshBackground";
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i = 0) => ({
+    opacity: 1, y: 0,
+    transition: { duration: 0.5, delay: 0.1 + i * 0.05, ease: [0.16, 1, 0.3, 1] },
+  }),
+};
+
+const statusColors = {
+  safe: { text: "text-[#2DCB85]", bg: "bg-[#2DCB85]/10", border: "border-[#2DCB85]/20", color: "#2DCB85" },
+  warn: { text: "text-[#F5A623]", bg: "bg-[#F5A623]/10", border: "border-[#F5A623]/20", color: "#F5A623" },
+  danger: { text: "text-[#E55C30]", bg: "bg-[#E55C30]/10", border: "border-[#E55C30]/20", color: "#E55C30" },
+};
+
+function getStatusColor(status) {
+  return statusColors[status] || statusColors.warn;
+}
+
+// ── Score Circle ────────────────────────────────────────────────────
+function ScoreCircle({ score, status }) {
+  const sc = getStatusColor(status);
+  return (
+    <div className="relative w-32 h-32">
+      <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(46,51,72,0.8)" strokeWidth="8" />
+        <motion.circle
+          cx="60" cy="60" r="52" fill="none"
+          stroke={sc.color} strokeWidth="8" strokeLinecap="round"
+          initial={{ strokeDasharray: "0 327" }}
+          animate={{ strokeDasharray: `${(score / 100) * 327} 327` }}
+          transition={{ delay: 0.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <motion.span
+          className={`font-heading font-bold text-4xl ${sc.text}`}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, type: "spring" }}
+        >
+          {score}
+        </motion.span>
+        <span className="text-xs text-[#666680]">/100</span>
+      </div>
+    </div>
+  );
+}
+
+// ── Check Item ──────────────────────────────────────────────────────
+function CheckItem({ label, status, detail }) {
+  const sc = getStatusColor(status);
+  const Icon = status === "safe" ? CheckCircle2 : status === "warn" ? AlertTriangle : XCircle;
+  return (
+    <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+      <div className={`w-8 h-8 rounded-lg ${sc.bg} flex items-center justify-center flex-shrink-0`}>
+        <Icon size={16} className={sc.text} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="text-sm font-medium text-[#e0e0e0]">{label}</span>
+        <p className="text-xs text-[#666680] mt-0.5">{detail}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Section Wrapper ─────────────────────────────────────────────────
+function Section({ icon: Icon, title, children, delay = 0 }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={delay}
+      initial="hidden"
+      animate="visible"
+      className="glass-card p-6 sm:p-8"
+    >
+      <h2 className="font-heading font-semibold text-lg text-[#e0e0e0] mb-5 flex items-center gap-2">
+        <Icon size={20} className="text-[#F5A623]" />
+        {title}
+      </h2>
+      {children}
+    </motion.div>
+  );
+}
+
+// ── Bar Chart ───────────────────────────────────────────────────────
+function BarItem({ label, value, maxValue, color }) {
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-[#8888aa]">{label}</span>
+        <span className="font-mono" style={{ color }}>{value}</span>
+      </div>
+      <div className="h-2 bg-white/[0.03] rounded-full overflow-hidden">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ backgroundColor: color }}
+          initial={{ width: 0 }}
+          animate={{ width: `${Math.min((Math.abs(value) / maxValue) * 100, 100)}%` }}
+          transition={{ delay: 0.5, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Main Content ────────────────────────────────────────────────────
 function AnalisisContent() {
   const searchParams = useSearchParams();
-  const urlParam = searchParams.get("url") || "";
-
+  const urlParam = searchParams.get("url");
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [url, setUrl] = useState(urlParam);
+  const [copied, setCopied] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [externalCheck, setExternalCheck] = useState(null);
+  const [externalLoading, setExternalLoading] = useState(false);
+  const [urlscanUUID, setUrlscanUUID] = useState(null);
 
-  // Auto scan jika URL dikirim dari ResultCard
   useEffect(() => {
-    if (urlParam) {
-      setUrl(urlParam);
-      runScan(urlParam);
+    if (!urlParam) {
+      setError("URL tidak ditemukan. Silakan masukkan URL terlebih dahulu.");
+      setLoading(false);
+      return;
     }
+
+    const runScan = async () => {
+      try {
+        let normalizedUrl = urlParam.trim();
+        if (!/^https?:\/\//i.test(normalizedUrl)) {
+          normalizedUrl = "https://" + normalizedUrl;
+        }
+        const data = await scanURL(normalizedUrl);
+        setResult(data);
+
+        // External API check (non-blocking)
+        setExternalLoading(true);
+        try {
+          const extRes = await fetch("/api/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: normalizedUrl }),
+          });
+          const extData = await extRes.json();
+          setExternalCheck(extData);
+          if (extData.urlscan?.uuid) {
+            setUrlscanUUID(extData.urlscan.uuid);
+          }
+        } catch {
+          // External check gagal — client-side tetap tampil
+        } finally {
+          setExternalLoading(false);
+        }
+      } catch (err) {
+        console.error("Scan error:", err);
+        setError("Terjadi kesalahan saat menganalisis URL. Pastikan URL valid.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    runScan();
   }, [urlParam]);
 
-  const runScan = async (target) => {
-    if (!target.trim()) return;
-    setLoading(true);
-    setError("");
-    setResult(null);
+  // Poll URLScan result setiap 5 detik sampai siap
+  useEffect(() => {
+    if (!urlscanUUID) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uuid: urlscanUUID }),
+        });
+        const data = await res.json();
+        if (data.ready) {
+          setExternalCheck((prev) => ({ ...prev, urlscan: { ...prev?.urlscan, ...data } }));
+          clearInterval(interval);
+          setUrlscanUUID(null);
+        }
+      } catch {}
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [urlscanUUID]);
+
+  const handleCopy = async () => {
+    if (!result) return;
+    const text = `Analisis Mendalam - Urlveil\n\nLink: ${result.url}\nStatus: ${result.statusLabel}\nSkor: ${result.score}/100\nDomain: ${result.domain}\n\n${result.summary}\n\nCek analisis lengkap di: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`;
     try {
-      const data = await scanURL(target.trim());
-      setResult(data);
-    } catch {
-      setError("Gagal menganalisis URL. Coba lagi.");
-    } finally {
-      setLoading(false);
-    }
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    runScan(url);
-  };
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 rounded-full border-4 border-[#2e3348]" />
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#F5A623] animate-spin" />
+          </div>
+          <p className="text-[#666680] text-sm">Menganalisis link secara mendalam...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const issueIcon = { safe: CheckCircle2, warn: AlertTriangle, danger: XCircle };
-  const issueColor = {
-    safe: { text: "text-[#2DCB85]", bg: "bg-[#2DCB85]/10", border: "border-[#2DCB85]/20" },
-    warn: { text: "text-[#F5A623]", bg: "bg-[#F5A623]/10", border: "border-[#F5A623]/20" },
-    danger: { text: "text-[#E55C30]", bg: "bg-[#E55C30]/10", border: "border-[#E55C30]/20" },
-  };
+  // Error state
+  if (error || !result) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center max-w-md">
+          <AlertTriangle size={48} className="text-[#E55C30] mx-auto mb-4" />
+          <h2 className="font-heading font-bold text-xl text-white mb-2">Gagal Menganalisis</h2>
+          <p className="text-[#666680] text-sm mb-6">{error || "URL tidak valid."}</p>
+          <a href="/" className="btn-glow inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm">
+            <ArrowLeft size={16} /> Kembali ke Beranda
+          </a>
+        </div>
+      </div>
+    );
+  }
 
-  const statusPalette = result
-    ? result.status === "safe"
-      ? { text: "text-[#2DCB85]", bg: "bg-[#2DCB85]/10", glow: "glow-safe", Icon: ShieldCheck }
-      : result.status === "warn"
-      ? { text: "text-[#F5A623]", bg: "bg-[#F5A623]/10", glow: "glow-warn", Icon: ShieldAlert }
-      : { text: "text-[#E55C30]", bg: "bg-[#E55C30]/10", glow: "glow-danger", Icon: ShieldX }
-    : null;
+  const { status, statusLabel, score, summary, issues, domain, riskLevel, details } = result;
+  const sc = getStatusColor(status);
+  const StatusIcon = status === "safe" ? ShieldCheck : status === "warn" ? ShieldAlert : ShieldX;
+
+  const maxDeduction = details?.deductions?.length > 0
+    ? Math.max(...details.deductions.map((d) => Math.abs(d.points)))
+    : 10;
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--color-paper)" }}>
-      <FloatingHeader />
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      {/* Back Button */}
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+        <a href="/" className="inline-flex items-center gap-2 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-6">
+          <ArrowLeft size={16} /> Kembali ke Beranda
+        </a>
+      </motion.div>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-28 pb-20">
+      {/* Header */}
+      <motion.div variants={fadeUp} custom={0} initial="hidden" animate="visible" className="mb-8">
+        <h1 className="font-heading font-bold text-2xl sm:text-3xl mb-2 flex items-center gap-3">
+          <Search size={28} className="text-[#F5A623]" />
+          Analisis Mendalam
+        </h1>
+        <p className="text-[#666680] font-mono text-sm break-all">{result.url}</p>
+      </motion.div>
 
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-[#444460] font-mono mb-8">
-          <a href="/" className="hover:text-[#2DCB85] transition-colors flex items-center gap-1">
-            <ArrowLeft size={12} /> Beranda
-          </a>
-          <ChevronRight size={12} />
-          <span className="text-[#666680]">Analisis Mendalam</span>
-        </div>
+      <div className="space-y-6">
 
-        {/* Header */}
-        <motion.div
-          className="mb-10"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[#F5A623]/10 flex items-center justify-center">
-              <Microscope size={20} className="text-[#F5A623]" />
+        {/* ── 0. External Check (GSB + URLScan) ───────────────────── */}
+        {(externalLoading || externalCheck) && (
+          <motion.div variants={fadeUp} custom={0} initial="hidden" animate="visible"
+            className="glass-card p-5 border border-[#2e3348]">
+            <h2 className="font-heading font-semibold text-sm text-[#8888aa] mb-3 flex items-center gap-2">
+              <Zap size={16} className="text-[#F5A623]" />
+              Verifikasi Eksternal
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Google Safe Browsing */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm bg-white/10 flex items-center justify-center text-[10px]">G</div>
+                  <span className="text-xs font-medium text-[#e0e0e0]">Google Safe Browsing</span>
+                </div>
+                {externalLoading && !externalCheck?.googleSafeBrowsing ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : externalCheck?.googleSafeBrowsing?.available ? (
+                  <p className={`text-xs font-medium ${externalCheck.googleSafeBrowsing.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                    {externalCheck.googleSafeBrowsing.label}
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#555570]">{externalCheck?.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+              {/* URLScan.io */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm bg-white/10 flex items-center justify-center text-[10px]">U</div>
+                  <span className="text-xs font-medium text-[#e0e0e0]">URLScan.io</span>
+                </div>
+                {externalLoading && !externalCheck?.urlscan ? (
+                  <p className="text-xs text-[#555570]">Mengirim scan...</p>
+                ) : externalCheck?.urlscan?.available ? (
+                  externalCheck.urlscan.ready ? (
+                    <div>
+                      <p className={`text-xs font-medium ${externalCheck.urlscan.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                        {externalCheck.urlscan.label}
+                      </p>
+                      {externalCheck.urlscan.resultUrl && (
+                        <a href={externalCheck.urlscan.resultUrl} target="_blank" rel="noopener noreferrer"
+                          className="text-[10px] text-[#F5A623] hover:underline mt-0.5 inline-block">
+                          Lihat laporan lengkap ↗
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-[#555570]">
+                      {urlscanUUID ? "⏳ Menunggu hasil scan..." : externalCheck.urlscan.label}
+                    </p>
+                  )
+                ) : (
+                  <p className="text-xs text-[#555570]">{externalCheck?.urlscan?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <h1 className="font-heading font-bold text-2xl text-white">Analisis Mendalam</h1>
-              <p className="text-xs text-[#555570] font-mono">Pemindaian lengkap seluruh aspek URL</p>
-            </div>
-          </div>
-          <p className="text-sm text-[#666680] leading-relaxed mt-2">
-            Analisis mendalam memeriksa setiap komponen URL secara detail — protokol, domain, subdomain, path, query parameter, entropy, dan pola phising — untuk memberikan gambaran lengkap tentang keamanan link.
-          </p>
-        </motion.div>
-
-        {/* Input form */}
-        <motion.form
-          onSubmit={handleSubmit}
-          className="flex gap-3 mb-10"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Masukkan URL untuk dianalisis..."
-            className="input-glow flex-1 px-4 py-3 rounded-xl text-sm font-mono text-[#e0e0e0] placeholder:text-[#444460]"
-          />
-          <button
-            type="submit"
-            disabled={loading || !url.trim()}
-            className="btn-glow px-5 py-3 rounded-xl text-sm font-semibold disabled:opacity-50 flex items-center gap-2 whitespace-nowrap"
-          >
-            {loading ? (
-              <motion.div
-                className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              />
-            ) : (
-              <Microscope size={16} />
-            )}
-            {loading ? "Menganalisis..." : "Analisis"}
-          </button>
-        </motion.form>
-
-        {/* Error */}
-        {error && (
-          <div className="mb-6 px-4 py-3 rounded-xl bg-[#E55C30]/10 border border-[#E55C30]/30 text-[#E55C30] text-sm">
-            {error}
-          </div>
+          </motion.div>
         )}
 
-        {/* Result */}
-        {result && statusPalette && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-5"
-          >
-
-            {/* Status banner */}
-            <div className={`glass-card ${statusPalette.glow} p-6`}>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl ${statusPalette.bg} flex items-center justify-center`}>
-                    <statusPalette.Icon size={24} className={statusPalette.text} />
-                  </div>
-                  <div>
-                    <div className={`font-heading font-bold text-2xl ${statusPalette.text}`}>
-                      {result.statusLabel}
-                    </div>
-                    <div className="text-xs text-[#555570] font-mono mt-0.5">{result.domain}</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className={`font-heading font-bold text-4xl ${statusPalette.text}`}>{result.score}</div>
-                  <div className="text-[10px] text-[#444460] font-mono">/ 100</div>
-                </div>
+        {/* ── 1. Ringkasan Skor ────────────────────────────────────── */}
+        <Section icon={Shield} title="Ringkasan Skor" delay={1}>
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <ScoreCircle score={score} status={status} />
+            <div className="flex-1 text-center sm:text-left">
+              <div className={`font-heading font-bold text-3xl ${sc.text} mb-2`}>{statusLabel}</div>
+              <div className="flex items-center gap-2 justify-center sm:justify-start mb-3">
+                <span className={`text-xs px-3 py-1 rounded-full ${sc.bg} ${sc.text} font-medium`}>
+                  Risiko: {riskLevel}
+                </span>
+                <span className="text-xs text-[#555570]">Domain: {domain}</span>
               </div>
-              <p className="mt-4 text-sm text-[#a0a5b8] leading-relaxed">{result.summary}</p>
+              <p className="text-[#8888aa] text-sm leading-relaxed">{summary}</p>
+            </div>
+          </div>
+        </Section>
+
+        {/* ── 2. Breakdown Skor ────────────────────────────────────── */}
+        {details?.deductions?.length > 0 && (
+          <Section icon={Hash} title="Breakdown Skor (Pengurangan)" delay={2}>
+            <div className="space-y-3">
+              {details.deductions.map((d, i) => (
+                <BarItem key={i} label={d.item} value={d.points} maxValue={maxDeduction} color="#E55C30" />
+              ))}
+            </div>
+            <div className="mt-4 p-3 rounded-lg bg-[#E55C30]/5 border border-[#E55C30]/10">
+              <p className="text-xs text-[#E55C30]">
+                Total pengurangan: <span className="font-mono font-bold">{100 - score}</span> poin dari skor awal 100
+              </p>
+            </div>
+          </Section>
+        )}
+
+        {/* ── 3. Analisis Domain ───────────────────────────────────── */}
+        <Section icon={Globe} title="Analisis Domain" delay={3}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Domain Parts */}
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+              <h3 className="text-xs font-semibold text-[#8888aa] mb-3">Struktur Domain</h3>
+              {details?.technicalDetails?.domainParts?.length > 0 ? (
+                <div className="space-y-2">
+                  {details.technicalDetails.domainParts.map((part, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#555570] w-16">
+                        {i === 0 ? "Sub/Utama" : i === details.technicalDetails.domainParts.length - 1 ? "TLD" : "Domain"}
+                      </span>
+                      <span className="font-mono text-sm text-[#e0e0e0] bg-white/[0.03] px-2 py-1 rounded">{part}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-[#666680]">Tidak tersedia</p>
+              )}
             </div>
 
-            {/* Temuan */}
-            <div className="glass-card p-5 space-y-3">
-              <div className="text-[10px] font-mono text-[#444460] uppercase tracking-widest mb-4">
-                Temuan Pemeriksaan ({result.issues.length})
+            {/* Domain Stats */}
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+              <h3 className="text-xs font-semibold text-[#8888aa] mb-3">Statistik Domain</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#666680]">Panjang Total</span>
+                  <span className="font-mono text-[#e0e0e0]">{details?.domainLength?.total || domain.length} karakter</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#666680]">Panjang Utama</span>
+                  <span className="font-mono text-[#e0e0e0]">{details?.domainLength?.main || domain.split(".")[0].length} karakter</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#666680]">Jumlah Subdomain</span>
+                  <span className="font-mono text-[#e0e0e0]">{details?.technicalDetails?.subdomainCount || 0}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#666680]">Panjang URL Total</span>
+                  <span className="font-mono text-[#e0e0e0]">{details?.technicalDetails?.urlLength || result.url.length} karakter</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#666680]">Domain Terpercaya</span>
+                  <span className={details?.technicalDetails?.isSafeDomain ? "text-[#2DCB85]" : "text-[#E55C30]"}>
+                    {details?.technicalDetails?.isSafeDomain ? "✓ Ya" : "✗ Tidak"}
+                  </span>
+                </div>
               </div>
-              {result.issues.map((issue, i) => {
-                const Icon = issueIcon[issue.status];
-                const col = issueColor[issue.status];
+            </div>
+
+            {/* Entropy */}
+            {details?.entropy && (
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03] sm:col-span-2">
+                <h3 className="text-xs font-semibold text-[#8888aa] mb-3 flex items-center gap-2">
+                  <Fingerprint size={14} /> Entropy (Randomness) Domain
+                </h3>
+                <div className="flex items-center gap-4">
+                  <div className="font-mono text-2xl font-bold" style={{
+                    color: details.entropy.level === "very_high" ? "#E55C30" :
+                           details.entropy.level === "high" ? "#F5A623" :
+                           details.entropy.level === "medium" ? "#F5A623" : "#2DCB85"
+                  }}>
+                    {details.entropy.score}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-[#8888aa]">{details.entropy.description}</p>
+                    <p className="text-[10px] text-[#555570] mt-1">
+                      Semakin tinggi entropy, semakin acak domain — domain acak sering dipakai phising
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Section>
+
+        {/* ── 4. Deteksi Typosquatting ─────────────────────────────── */}
+        {details?.urlParts && (
+          <Section icon={Target} title="Deteksi Typosquatting" delay={4}>
+            {(() => {
+              const hasTyposquat = issues.some((i) => i.label === "Impersonasi Brand");
+              const typosquatIssue = issues.find((i) => i.label === "Impersonasi Brand");
+
+              if (hasTyposquat && typosquatIssue) {
                 return (
-                  <div
-                    key={i}
-                    className={`flex gap-3 p-3 rounded-xl border ${col.border} ${col.bg}`}
-                  >
-                    <div className={`w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                      <Icon size={14} className={col.text} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 flex-wrap mb-0.5">
-                        <span className="text-sm font-medium text-[#d0d0e0]">{issue.label}</span>
-                        <span className={`text-xs font-mono ${col.text}`}>{issue.value}</span>
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-xl bg-[#E55C30]/5 border border-[#E55C30]/20">
+                      <div className="flex items-center gap-3 mb-2">
+                        <XCircle size={20} className="text-[#E55C30]" />
+                        <span className="font-heading font-semibold text-[#E55C30]">Terdeteksi!</span>
                       </div>
-                      <p className="text-xs text-[#666680] leading-relaxed">{issue.detail}</p>
+                      <p className="text-sm text-[#8888aa]">{typosquatIssue.detail}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 rounded-lg bg-[#E55C30]/5 border border-[#E55C30]/10">
+                        <span className="text-[10px] text-[#E55C30] block mb-1">Domain Palsu</span>
+                        <span className="font-mono text-sm text-[#E55C30] break-all">{domain}</span>
+                      </div>
+                      <div className="p-3 rounded-lg bg-[#2DCB85]/5 border border-[#2DCB85]/10">
+                        <span className="text-[10px] text-[#2DCB85] block mb-1">Domain Asli</span>
+                        <span className="font-mono text-sm text-[#2DCB85] break-all">{typosquatIssue.value?.replace("Menyamar sebagai ", "")}</span>
+                      </div>
                     </div>
                   </div>
                 );
-              })}
+              }
+
+              return (
+                <div className="p-4 rounded-xl bg-[#2DCB85]/5 border border-[#2DCB85]/20">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 size={20} className="text-[#2DCB85]" />
+                    <span className="text-sm text-[#2DCB85]">Tidak terdeteksi typosquatting — domain terlihat asli</span>
+                  </div>
+                </div>
+              );
+            })()}
+          </Section>
+        )}
+
+        {/* ── 5. Karakter Mencurigakan ─────────────────────────────── */}
+        {details?.homoglyphs && (
+          <Section icon={Code} title="Analisis Karakter Mencurigakan" delay={5}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <h3 className="text-xs font-semibold text-[#8888aa] mb-3">Homoglyphs (Karakter Mirip)</h3>
+                {details.homoglyphs.found.length > 0 ? (
+                  <div className="space-y-2">
+                    {details.homoglyphs.found.map((h, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs">
+                        <span className="font-mono text-[#E55C30]">&quot;{h.char}&quot;</span>
+                        <span className="text-[#555570]">terlihat seperti</span>
+                        <span className="font-mono text-[#F5A623]">&quot;{h.looksLike}&quot;</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#2DCB85]">Tidak ditemukan karakter mirip</p>
+                )}
+              </div>
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <h3 className="text-xs font-semibold text-[#8888aa] mb-3">Punycode / IDN</h3>
+                <div className="flex items-center gap-2">
+                  {details.homoglyphs.hasPunycode ? (
+                    <>
+                      <AlertTriangle size={16} className="text-[#E55C30]" />
+                      <span className="text-xs text-[#E55C30]">Domain menggunakan Punycode (IDN) — bisa menyembunyikan karakter asing</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 size={16} className="text-[#2DCB85]" />
+                      <span className="text-xs text-[#2DCB85]">Tidak ada Punycode terdeteksi</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Section>
+        )}
+
+        {/* ── 6. Analisis Path & Query ─────────────────────────────── */}
+        <Section icon={Layers} title="Analisis Path & Query" delay={6}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Path */}
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+              <h3 className="text-xs font-semibold text-[#8888aa] mb-3">Path Analysis</h3>
+              {details?.pathAnalysis?.segments?.length > 0 ? (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-1">
+                    {details.pathAnalysis.segments.map((seg, i) => (
+                      <span key={i} className="text-xs font-mono px-2 py-1 rounded bg-white/[0.03] text-[#e0e0e0]">
+                        /{seg}
+                      </span>
+                    ))}
+                  </div>
+                  {details.pathAnalysis.suspicious.length > 0 && (
+                    <div className="mt-2 p-2 rounded bg-[#E55C30]/5 border border-[#E55C30]/10">
+                      <p className="text-[10px] text-[#E55C30]">
+                        Kata kunci mencurigakan: {details.pathAnalysis.suspicious.join(", ")}
+                      </p>
+                    </div>
+                  )}
+                  <p className="text-[10px] text-[#666680]">{details.pathAnalysis.description}</p>
+                </div>
+              ) : (
+                <p className="text-xs text-[#2DCB85]">Path root — tidak ada halaman spesifik</p>
+              )}
             </div>
 
-            {/* Detail teknis */}
-            {result.details && (
-              <div className="glass-card p-5 space-y-5">
-                <div className="text-[10px] font-mono text-[#444460] uppercase tracking-widest">
-                  Detail Teknis
+            {/* Query */}
+            <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+              <h3 className="text-xs font-semibold text-[#8888aa] mb-3">Query Parameters</h3>
+              {details?.queryAnalysis?.total > 0 ? (
+                <div className="space-y-2">
+                  <p className="text-xs text-[#e0e0e0]">{details.queryAnalysis.total} parameter ditemukan</p>
+                  {details.queryAnalysis.suspicious.length > 0 && (
+                    <div className="space-y-1">
+                      {details.queryAnalysis.suspicious.map((p, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs">
+                          <AlertTriangle size={12} className="text-[#E55C30]" />
+                          <span className="font-mono text-[#E55C30]">{p.key}</span>
+                          <span className="text-[#555570]">= {p.value.slice(0, 30)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-[10px] text-[#666680]">{details.queryAnalysis.description}</p>
                 </div>
+              ) : (
+                <p className="text-xs text-[#2DCB85]">Tidak ada query parameters</p>
+              )}
+            </div>
 
-                {/* URL Parts */}
-                {result.details.urlParts && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Komponen URL</div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                        <div className="text-[10px] text-[#444460] mb-1">Protokol</div>
-                        <div className={`text-sm font-mono font-medium flex items-center gap-1 ${result.details.urlParts.protocol === "https" ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
-                          {result.details.urlParts.protocol === "https" ? <Lock size={12} /> : <Unlock size={12} />}
-                          {result.details.urlParts.protocol?.toUpperCase()}
-                        </div>
+            {/* Redirect Hints */}
+            {details?.redirectHints && (
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.03] sm:col-span-2">
+                <h3 className="text-xs font-semibold text-[#8888aa] mb-3 flex items-center gap-2">
+                  <ExternalLink size={14} /> Indikator Redirect
+                </h3>
+                {details.redirectHints.found.length > 0 ? (
+                  <div className="space-y-1">
+                    {details.redirectHints.found.map((r, i) => (
+                      <div key={i} className="flex items-center gap-2 text-xs">
+                        <AlertTriangle size={12} className="text-[#F5A623]" />
+                        <span className="text-[#F5A623]">{r}</span>
                       </div>
-                      <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                        <div className="text-[10px] text-[#444460] mb-1">Domain</div>
-                        <div className="text-sm font-mono text-[#c0c0d0] break-all">{result.domain}</div>
-                      </div>
-                      {result.details.urlParts.pathname && result.details.urlParts.pathname !== "/" && (
-                        <div className="col-span-2 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                          <div className="text-[10px] text-[#444460] mb-1">Path</div>
-                          <div className="text-sm font-mono text-[#c0c0d0] break-all">{result.details.urlParts.pathname}</div>
-                        </div>
-                      )}
-                      {result.details.urlParts.search && (
-                        <div className="col-span-2 p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                          <div className="text-[10px] text-[#444460] mb-1">Query Parameters</div>
-                          <div className="text-sm font-mono text-[#c0c0d0] break-all">{result.details.urlParts.search}</div>
-                        </div>
-                      )}
-                      {result.details.urlParts.port && (
-                        <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                          <div className="text-[10px] text-[#444460] mb-1">Port</div>
-                          <div className="text-sm font-mono text-[#F5A623]">{result.details.urlParts.port}</div>
-                        </div>
-                      )}
-                    </div>
+                    ))}
                   </div>
-                )}
-
-                {/* Entropy */}
-                {result.details.entropy && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Entropy Domain</div>
-                    <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm text-[#c0c0d0]">{result.details.entropy.description}</span>
-                        <span className={`text-sm font-mono font-bold ${
-                          result.details.entropy.level === "very_high" ? "text-[#E55C30]" :
-                          result.details.entropy.level === "high" ? "text-[#F5A623]" : "text-[#2DCB85]"
-                        }`}>{result.details.entropy.score}</span>
-                      </div>
-                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${
-                            result.details.entropy.level === "very_high" ? "bg-[#E55C30]" :
-                            result.details.entropy.level === "high" ? "bg-[#F5A623]" : "bg-[#2DCB85]"
-                          }`}
-                          style={{ width: `${Math.min((result.details.entropy.score / 5) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Homoglyph */}
-                {result.details.homoglyphs && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Deteksi Homoglyph</div>
-                    <div className={`p-3 rounded-lg border text-sm ${
-                      result.details.homoglyphs.found.length > 0
-                        ? "bg-[#E55C30]/5 border-[#E55C30]/20 text-[#E55C30]"
-                        : "bg-white/[0.02] border-white/[0.04] text-[#2DCB85]"
-                    }`}>
-                      {result.details.homoglyphs.description}
-                      {result.details.homoglyphs.hasPunycode && (
-                        <div className="mt-1 text-[#F5A623] text-xs">⚠ Domain menggunakan Punycode (xn--)</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Path analysis */}
-                {result.details.pathAnalysis && result.details.pathAnalysis.suspicious.length > 0 && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Analisis Path</div>
-                    <div className="p-3 rounded-lg bg-[#E55C30]/5 border border-[#E55C30]/20 text-sm text-[#E55C30]">
-                      {result.details.pathAnalysis.description}
-                    </div>
-                  </div>
-                )}
-
-                {/* Query param analysis */}
-                {result.details.queryAnalysis && result.details.queryAnalysis.suspicious.length > 0 && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Parameter Mencurigakan</div>
-                    <div className="space-y-1">
-                      {result.details.queryAnalysis.suspicious.map((q, i) => (
-                        <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-[#F5A623]/5 border border-[#F5A623]/20 text-xs">
-                          <span className="font-mono text-[#F5A623]">{q.key}</span>
-                          <span className="text-[#444460]">=</span>
-                          <span className="font-mono text-[#666680] truncate">{q.value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Score deductions */}
-                {result.details.deductions?.length > 0 && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Rincian Pengurangan Skor</div>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between text-[10px] font-mono text-[#444460] px-2 pb-1 border-b border-white/[0.04]">
-                        <span>Item</span>
-                        <div className="flex gap-8">
-                          <span>Poin</span>
-                          <span>Alasan</span>
-                        </div>
-                      </div>
-                      {result.details.deductions.map((d, i) => (
-                        <div key={i} className="flex items-center justify-between gap-2 text-xs p-2 rounded-lg bg-white/[0.015] hover:bg-white/[0.03] transition-colors">
-                          <span className="text-[#888890]">{d.item}</span>
-                          <div className="flex items-center gap-4 flex-shrink-0">
-                            <span className="text-[#E55C30] font-mono">{d.points}</span>
-                            <span className="text-[#444460] text-[10px] max-w-[120px] text-right">{d.reason}</span>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="flex items-center justify-between text-sm px-2 pt-2 border-t border-white/[0.04] font-semibold">
-                        <span className="text-[#888890]">Skor Akhir</span>
-                        <span className={statusPalette.text}>{result.score} / 100</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Redirect hints */}
-                {result.details.redirectHints?.found?.length > 0 && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Indikator Redirect</div>
-                    <div className="p-3 rounded-lg bg-[#F5A623]/5 border border-[#F5A623]/20 text-sm text-[#F5A623]">
-                      {result.details.redirectHints.description}
-                    </div>
-                  </div>
-                )}
-
-                {/* Domain age hints */}
-                {result.details.domainAgeHints?.indicators?.length > 0 && (
-                  <div>
-                    <div className="text-xs text-[#555570] mb-2 font-mono">Indikasi Usia Domain</div>
-                    <div className="space-y-1">
-                      {result.details.domainAgeHints.indicators.map((ind, i) => (
-                        <div key={i} className="flex gap-2 text-xs text-[#777790] p-2 rounded-lg bg-white/[0.02]">
-                          <span className="text-[#F5A623]">—</span>
-                          <span>{ind}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                ) : (
+                  <p className="text-xs text-[#2DCB85]">{details.redirectHints.description}</p>
                 )}
               </div>
             )}
+          </div>
+        </Section>
 
-            {/* Timestamp */}
-            <div className="text-[10px] font-mono text-[#333350] text-center">
-              Dianalisis {new Date(result.checkedAt).toLocaleString("id-ID", {
-                day: "numeric", month: "long", year: "numeric",
-                hour: "2-digit", minute: "2-digit", second: "2-digit",
-              })}
+        {/* ── 7. Kata Kunci Terdeteksi ─────────────────────────────── */}
+        {details?.keywords && (
+          <Section icon={FileText} title="Kata Kunci yang Terdeteksi" delay={7}>
+            <div className="space-y-4">
+              {details.keywords.high.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-[#E55C30] mb-2">🔴 Risiko Tinggi</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {details.keywords.high.map((k, i) => (
+                      <span key={i} className="text-xs font-mono px-3 py-1.5 rounded-full bg-[#E55C30]/10 text-[#E55C30] border border-[#E55C30]/20">
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {details.keywords.medium.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-[#F5A623] mb-2">🟡 Risiko Sedang</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {details.keywords.medium.map((k, i) => (
+                      <span key={i} className="text-xs font-mono px-3 py-1.5 rounded-full bg-[#F5A623]/10 text-[#F5A623] border border-[#F5A623]/20">
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {details.keywords.low.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-semibold text-[#666680] mb-2">⚪ Risiko Rendah</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {details.keywords.low.map((k, i) => (
+                      <span key={i} className="text-xs font-mono px-3 py-1.5 rounded-full bg-white/[0.03] text-[#8888aa] border border-white/[0.05]">
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {details.keywords.high.length === 0 && details.keywords.medium.length === 0 && details.keywords.low.length === 0 && (
+                <p className="text-xs text-[#2DCB85]">Tidak ada kata kunci phising terdeteksi</p>
+              )}
             </div>
-          </motion.div>
+          </Section>
         )}
 
-        {/* Empty state */}
-        {!result && !loading && !error && !urlParam && (
-          <motion.div
-            className="text-center py-20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div className="w-16 h-16 rounded-2xl bg-[#F5A623]/10 flex items-center justify-center mx-auto mb-4">
-              <Microscope size={28} className="text-[#F5A623]" />
-            </div>
-            <p className="text-[#555570] text-sm">Masukkan URL di atas untuk memulai analisis mendalam</p>
-            <p className="text-[#444460] text-xs mt-2 font-mono">
-              Atau cek link dari <a href="/" className="text-[#2DCB85] hover:underline">halaman utama</a> dan klik "Analisis Mendalam"
-            </p>
-          </motion.div>
+        {/* ── 8. Pola URL Mencurigakan ─────────────────────────────── */}
+        {details?.patterns && (
+          <Section icon={Zap} title="Pola URL Mencurigakan" delay={8}>
+            {details.patterns.length > 0 ? (
+              <div className="space-y-2">
+                {details.patterns.map((p, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-[#E55C30]/5 border border-[#E55C30]/10">
+                    <AlertTriangle size={16} className="text-[#E55C30] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-[#e0e0e0]">{p}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl bg-[#2DCB85]/5 border border-[#2DCB85]/20">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 size={20} className="text-[#2DCB85]" />
+                  <span className="text-sm text-[#2DCB85]">Tidak ada pola mencurigakan terdeteksi</span>
+                </div>
+              </div>
+            )}
+          </Section>
         )}
-      </main>
 
-      <Footer />
+        {/* ── 9. Detail Teknis ─────────────────────────────────────── */}
+        <Section icon={Eye} title="Detail Teknis" delay={9}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.03]">
+              <span className="text-[10px] text-[#555570] block mb-1">Protokol</span>
+              <div className={`font-mono text-sm flex items-center gap-1 ${details?.urlParts?.protocol === "https" ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                {details?.urlParts?.protocol === "https" ? <Lock size={14} /> : <Unlock size={14} />}
+                {details?.urlParts?.protocol?.toUpperCase() || "N/A"}
+              </div>
+            </div>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.03]">
+              <span className="text-[10px] text-[#555570] block mb-1">Domain</span>
+              <div className="font-mono text-sm text-[#e0e0e0] break-all">{domain}</div>
+            </div>
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.03]">
+              <span className="text-[10px] text-[#555570] block mb-1">TLD</span>
+              <div className="font-mono text-sm text-[#e0e0e0]">.{details?.technicalDetails?.tld || domain.split(".").pop()}</div>
+            </div>
+            {details?.urlParts?.port && (
+              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.03]">
+                <span className="text-[10px] text-[#555570] block mb-1">Port</span>
+                <div className="font-mono text-sm text-[#F5A623]">{details.urlParts.port}</div>
+              </div>
+            )}
+            <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.03]">
+              <span className="text-[10px] text-[#555570] block mb-1">URL Length</span>
+              <div className="font-mono text-sm text-[#e0e0e0]">{result.url.length} chars</div>
+            </div>
+            {details?.urlParts?.pathname && details.urlParts.pathname !== "/" && (
+              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.03] col-span-2 sm:col-span-1">
+                <span className="text-[10px] text-[#555570] block mb-1">Path</span>
+                <div className="font-mono text-sm text-[#e0e0e0] break-all">{details.urlParts.pathname}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Domain Age Hints */}
+          {details?.domainAgeHints?.indicators?.length > 0 && (
+            <div className="mt-4 p-4 rounded-xl bg-[#F5A623]/5 border border-[#F5A623]/10">
+              <h3 className="text-xs font-semibold text-[#F5A623] mb-2 flex items-center gap-2">
+                <Smartphone size={14} /> Indikasi Domain Baru
+              </h3>
+              <div className="space-y-1">
+                {details.domainAgeHints.indicators.map((ind, i) => (
+                  <p key={i} className="text-xs text-[#8888aa]">• {ind}</p>
+                ))}
+              </div>
+            </div>
+          )}
+        </Section>
+
+        {/* ── 10. Checklist Semua Pengecekan ────────────────────────── */}
+        <Section icon={CheckCircle2} title="Semua Pengecekan" delay={10}>
+          <div className="space-y-2">
+            {issues.map((issue, i) => (
+              <CheckItem key={i} label={issue.label} status={issue.status} detail={issue.detail} />
+            ))}
+          </div>
+        </Section>
+
+        {/* ── 11. Rekomendasi & Aksi ───────────────────────────────── */}
+        <Section icon={ShieldCheck} title="Rekomendasi & Langkah" delay={11}>
+          <div className="p-4 rounded-xl border border-[#2DCB85]/20 bg-[#2DCB85]/5 mb-6">
+            <h3 className="text-sm font-semibold text-[#2DCB85] mb-2">Rekomendasi</h3>
+            <ul className="space-y-1.5 text-xs text-[#8888aa]">
+              {status === "safe" ? (
+                <>
+                  <li>• Link ini terlihat aman, tetap waspada saat mengisi data</li>
+                  <li>• Pastikan selalu cek URL sebelum login</li>
+                  <li>• Gunakan 2FA untuk keamanan ekstra</li>
+                </>
+              ) : status === "warn" ? (
+                <>
+                  <li>• Jangan isi data pribadi di halaman ini</li>
+                  <li>• Verifikasi keaslian link ke sumber resmi</li>
+                  <li>• Laporkan link ini jika mencurigakan</li>
+                </>
+              ) : (
+                <>
+                  <li>• JANGAN KLIK atau buka link ini</li>
+                  <li>• Jangan isi data apapun di halaman ini</li>
+                  <li>• Laporkan link ini untuk melindungi orang lain</li>
+                  <li>• Jika sudah terlanjur klik, segera ganti password</li>
+                </>
+              )}
+            </ul>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <motion.button
+              onClick={handleCopy}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2e3348] text-[#666680] hover:text-[#2DCB85] hover:border-[#2DCB85]/30 transition-colors text-sm"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Copy size={16} />
+              {copied ? "Tersalin!" : "Salin Hasil"}
+            </motion.button>
+            <motion.button
+              onClick={() => {
+                const text = encodeURIComponent(`*Hasil Analisis Urlveil*\n\nLink: ${result.url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\n\nCek analisis: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`);
+                window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+              }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#2DCB85]/10 border border-[#2DCB85]/20 text-[#2DCB85] hover:bg-[#2DCB85]/20 transition-colors text-sm"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Share2 size={16} />
+              Share WA
+            </motion.button>
+            <motion.button
+              onClick={() => setShowReport(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#2e3348] text-[#666680] hover:text-[#E55C30] hover:border-[#E55C30]/30 transition-colors text-sm"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Flag size={16} />
+              Laporkan
+            </motion.button>
+          </div>
+
+          <div className="mt-4 text-xs text-[#555570] text-center">
+            Diperiksa pada: {new Date(result.checkedAt).toLocaleString("id-ID")}
+          </div>
+        </Section>
+      </div>
+
+      {/* Report Modal */}
+      <ReportModal
+        isOpen={showReport}
+        onClose={() => setShowReport(false)}
+        url={result.url}
+        domain={domain}
+      />
     </div>
   );
 }
 
 export default function AnalisisPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--color-paper)" }}>
-        <div className="w-8 h-8 border-2 border-[#2DCB85]/30 border-t-[#2DCB85] rounded-full animate-spin" />
-      </div>
-    }>
-      <AnalisisContent />
-    </Suspense>
+    <>
+      <FloatingHeader />
+      <main className="min-h-screen pt-24 pb-16 relative">
+        <MeshBackground variant="default" />
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 rounded-full border-4 border-[#2e3348]" />
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#F5A623] animate-spin" />
+              </div>
+              <p className="text-[#666680] text-sm">Memuat...</p>
+            </div>
+          </div>
+        }>
+          <AnalisisContent />
+        </Suspense>
+      </main>
+      <Footer />
+    </>
   );
 }
