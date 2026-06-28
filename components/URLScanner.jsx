@@ -94,6 +94,44 @@ export default function URLScanner() {
     try {
       const data = await scanURL(normalized);
       setResult(data);
+
+      // External check — non-blocking
+      fetch("/api/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: normalized }),
+      })
+        .then((r) => r.json())
+        .then((extData) => {
+          setResult((prev) => prev ? { ...prev, externalCheck: extData } : prev);
+          if (extData?.urlscan?.uuid) {
+            const uuid = extData.urlscan.uuid;
+            const interval = setInterval(() => {
+              fetch("/api/scan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uuid }),
+              })
+                .then((r) => r.json())
+                .then((pollData) => {
+                  if (pollData.ready) {
+                    setResult((prev) =>
+                      prev ? {
+                        ...prev,
+                        externalCheck: {
+                          ...prev.externalCheck,
+                          urlscan: { ...prev.externalCheck?.urlscan, ...pollData },
+                        },
+                      } : prev
+                    );
+                    clearInterval(interval);
+                  }
+                })
+                .catch(() => clearInterval(interval));
+            }, 5000);
+          }
+        })
+        .catch(() => {});
     } catch (err) {
       setError("Terjadi kesalahan saat memindai. Coba lagi.");
     } finally {

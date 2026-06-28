@@ -316,6 +316,52 @@ export default function ResultCard({ result, url }) {
         </motion.div>
       </div>
 
+      {/* External Check Panel */}
+      {result.externalCheck && (
+        <motion.div
+          variants={itemVariants}
+          className="mt-3 p-4 rounded-xl border border-[#2e3348] bg-white/[0.02]"
+        >
+          <p className="text-xs font-mono uppercase tracking-wider text-[#555570] mb-3">Verifikasi Eksternal</p>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Google Safe Browsing */}
+            <div className="p-3 rounded-lg bg-[#1a1e2e] border border-[#2e3348]">
+              <p className="text-[10px] font-mono text-[#555570] mb-1">Google Safe Browsing</p>
+              {result.externalCheck.googleSafeBrowsing?.available ? (
+                <p className={`text-xs font-semibold ${result.externalCheck.googleSafeBrowsing.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                  {result.externalCheck.googleSafeBrowsing.label}
+                </p>
+              ) : (
+                <p className="text-xs text-[#555570]">{result.externalCheck.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
+              )}
+            </div>
+            {/* URLScan.io */}
+            <div className="p-3 rounded-lg bg-[#1a1e2e] border border-[#2e3348]">
+              <p className="text-[10px] font-mono text-[#555570] mb-1">URLScan.io</p>
+              {result.externalCheck.urlscan?.available ? (
+                result.externalCheck.urlscan.ready ? (
+                  <div>
+                    <p className={`text-xs font-semibold ${result.externalCheck.urlscan.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                      {result.externalCheck.urlscan.label}
+                    </p>
+                    {result.externalCheck.urlscan.resultUrl && (
+                      <a href={result.externalCheck.urlscan.resultUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-[10px] text-[#F5A623] hover:underline mt-0.5 inline-block">
+                        Lihat laporan ↗
+                      </a>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#555570]">⏳ Menunggu hasil...</p>
+                )
+              ) : (
+                <p className="text-xs text-[#555570]">{result.externalCheck.urlscan?.reason || "Tidak tersedia"}</p>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Report Modal */}
       <ReportModal
         isOpen={showReport}
