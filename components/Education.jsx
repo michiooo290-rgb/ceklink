@@ -5,15 +5,10 @@ import { motion, AnimatePresence, useInView } from "framer-motion";
 import { GraduationCap, ArrowRight, TrendingUp, ChevronDown, ChevronRight } from "lucide-react";
 
 /* ── Quiz Data ─────────────────────────────────── */
-const QUESTIONS = [
+const QUESTION_BANK = [
   {
     q: 'Kamu dapat pesan WhatsApp berisi link: <code style="color:var(--color-accent);font-family:var(--font-mono)">https://bca-konfirmasi-akun.xyz/login</code> — apa yang paling tepat?',
-    opts: [
-      "Langsung buka, ada HTTPS jadi aman",
-      "Cek dulu di Urlveil sebelum membuka",
-      "Buka hanya jika pengirimnya kenal",
-      "Abaikan karena pasti spam",
-    ],
+    opts: ["Langsung buka, ada HTTPS jadi aman","Cek dulu di Urlveil sebelum membuka","Buka hanya jika pengirimnya kenal","Abaikan karena pasti spam"],
     correct: 1,
     feedback: {
       correct: "Tepat! HTTPS tidak menjamin keamanan. TLD .xyz dan nama domain seperti bca-konfirmasi-akun adalah tanda merah besar. Selalu scan dulu di Urlveil.",
@@ -22,12 +17,7 @@ const QUESTIONS = [
   },
   {
     q: "Mana dari link berikut yang paling AMAN?",
-    opts: [
-      "http://tokopedia-promo.com/flash-sale",
-      "https://tokopedia.com/promo",
-      "https://t0k0pedia.com/login",
-      "bit.ly/tokped-diskon90",
-    ],
+    opts: ["http://tokopedia-promo.com/flash-sale","https://tokopedia.com/promo","https://t0k0pedia.com/login","bit.ly/tokped-diskon90"],
     correct: 1,
     feedback: {
       correct: "Benar! Domain resmi tokopedia.com dengan HTTPS adalah yang paling aman. HTTP tanpa enkripsi, typosquatting, dan shortlink semua adalah tanda bahaya.",
@@ -36,19 +26,173 @@ const QUESTIONS = [
   },
   {
     q: "Kamu sudah terlanjur klik link phising dan mengisi username — tapi belum isi password. Apa yang harus dilakukan PERTAMA?",
-    opts: [
-      "Isi password, mungkin masih aman",
-      "Tutup halaman dan scan link-nya",
-      "Ganti password akun tersebut sekarang",
-      "Screenshot sebagai bukti dulu",
-    ],
+    opts: ["Isi password, mungkin masih aman","Tutup halaman dan scan link-nya","Ganti password akun tersebut sekarang","Screenshot sebagai bukti dulu"],
     correct: 2,
     feedback: {
       correct: "Tepat! Ganti password sesegera mungkin adalah prioritas utama. Username yang bocor bisa digunakan untuk brute force. Setelah itu aktifkan 2FA dan laporkan link-nya.",
       wrong: "Prioritas utama adalah ganti password sekarang. Phiser sudah punya username-mu dan akan mencoba kombinasi password umum. Jangan tunda.",
     },
   },
+  {
+    q: "Temanmu kirim link 'bit.ly/promo-shopee-gratis' di grup. Apa yang kamu lakukan?",
+    opts: ["Langsung klik karena dari teman","Scan link shortener dulu di Urlveil","Tanya ke teman apakah aman","Ignore saja"],
+    correct: 1,
+    feedback: {
+      correct: "Betul! Shortlink menyembunyikan URL asli — siapapun pengirimnya, selalu scan dulu. Akun teman bisa saja sudah dibajak.",
+      wrong: "Shortlink berbahaya karena menyembunyikan tujuan asli. Akun teman pun bisa dibajak dan dipakai menyebar phising. Scan dulu sebelum klik.",
+    },
+  },
+  {
+    q: "Kamu dapat email dari 'no-reply@bri-bank.support' soal verifikasi akun. Tanda bahaya pertama yang harus kamu perhatikan?",
+    opts: ["Subjek emailnya mencurigakan","Domain pengirim bukan bri.co.id","Email masuk ke folder spam","Tidak ada logo BRI di email"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! Domain resmi BRI adalah bri.co.id — bukan bri-bank.support. Penipu sering buat domain mirip untuk menipu. Selalu cek domain pengirim dengan teliti.",
+      wrong: "Tanda paling kuat adalah domain pengirim. BRI resmi hanya kirim email dari @bri.co.id. Domain seperti bri-bank.support adalah jelas phising.",
+    },
+  },
+  {
+    q: "Situs meminta kamu install 'update keamanan browser' dalam bentuk file .exe. Apa ini?",
+    opts: ["Update resmi yang perlu diinstall","Kemungkinan malware — jangan install","Hanya install jika antivirus aman","Tergantung nama filenya"],
+    correct: 1,
+    feedback: {
+      correct: "Benar! Browser tidak pernah meminta install file .exe dari situs web. Ini taktik klasik distribusi malware. Tutup tab tersebut segera.",
+      wrong: "Browser resmi (Chrome, Firefox) tidak pernah mendistribusikan update lewat file .exe dari situs. Ini hampir pasti malware.",
+    },
+  },
+  {
+    q: "Kamu mau login ke internet banking. Kamu mengetik alamat langsung di browser. URL yang benar untuk BCA adalah?",
+    opts: ["https://klikbca.com","https://bca-online.com/login","https://mybca.id","https://bca.login-secure.net"],
+    correct: 0,
+    feedback: {
+      correct: "Tepat! klikbca.com adalah domain resmi BCA. Selalu ketik langsung — jangan klik link dari chat atau email untuk akses internet banking.",
+      wrong: "Domain resmi BCA adalah klikbca.com. Yang lain adalah domain palsu yang dibuat mirip. Selalu ketik langsung di browser, jangan dari link.",
+    },
+  },
+  {
+    q: "Mana tanda yang paling kuat bahwa sebuah situs adalah phising?",
+    opts: ["Desain situs terlihat jelek","Domain berbeda dari brand asli","Tidak ada konten produk","Loading situs sangat lambat"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! Domain adalah identitas utama situs. Phising selalu pakai domain berbeda — desain bisa ditiru sempurna, tapi domain tidak bisa sama persis.",
+      wrong: "Domain adalah bukti paling kuat. Phiser bisa meniru desain sempurna, tapi tidak bisa pakai domain yang sama persis dengan brand asli.",
+    },
+  },
+  {
+    q: "Kamu dapat SMS: 'Selamat! Kamu menang iPhone 15. Klik link berikut dalam 10 menit atau hadiah hangus.' Ini adalah teknik apa?",
+    opts: ["Penawaran resmi dari operator","Social engineering — urgensi palsu","Iklan yang boleh diabaikan","Phising berbasis email"],
+    correct: 1,
+    feedback: {
+      correct: "Benar! Tenggat waktu palsu adalah teknik social engineering untuk memaksamu bertindak tanpa berpikir. Hadiah nyata tidak pernah hangus dalam 10 menit.",
+      wrong: "Ini teknik urgensi palsu — memaksamu klik sebelum sempat berpikir kritis. Tanda kuat penipuan: hadiah tiba-tiba, tenggat ketat, dan link mencurigakan.",
+    },
+  },
+  {
+    q: "Apa fungsi 2FA (Two-Factor Authentication) dalam keamanan akun?",
+    opts: ["Membuat password lebih panjang","Menambah lapisan verifikasi selain password","Mengenkripsi seluruh akun","Memblokir login dari negara asing"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! 2FA meminta verifikasi kedua (OTP, authenticator app) sehingga meski password bocor, akun tetap aman. Aktifkan di semua akun penting.",
+      wrong: "2FA menambah lapisan kedua — meski password bocor ke phiser, mereka tetap tidak bisa login tanpa kode OTP atau authenticator yang hanya kamu punya.",
+    },
+  },
+  {
+    q: 'Link mana yang merupakan typosquatting dari Shopee?',
+    opts: ["https://shopee.co.id","https://sh0pee.co.id","https://shopee-promo.com","https://shope.co.id"],
+    correct: 1,
+    feedback: {
+      correct: "Benar! sh0pee — huruf 'o' diganti angka '0'. Typosquatting memanfaatkan salah ketik kecil yang mudah terlewat saat terburu-buru.",
+      wrong: "sh0pee.co.id adalah typosquatting — huruf 'o' diganti angka '0'. Selain itu shopee-promo.com dan shope.co.id juga bukan domain resmi Shopee.",
+    },
+  },
+  {
+    q: "OTP dari bank kamu tiba-tiba masuk tanpa kamu minta. Apa yang harus dilakukan?",
+    opts: ["Masukkan OTP ke situs yang memintanya","Abaikan saja, mungkin salah kirim","Segera hubungi bank dan jangan bagikan OTP","Coba login ke akun untuk cek"],
+    correct: 2,
+    feedback: {
+      correct: "Tepat! OTP yang tidak kamu minta artinya seseorang sedang mencoba masuk ke akunmu. Hubungi bank segera dan jangan pernah bagikan OTP ke siapapun.",
+      wrong: "OTP tak terduga = ada yang coba bajak akunmu. Jangan masukkan ke situs manapun dan jangan bagikan ke siapapun — langsung hubungi bank.",
+    },
+  },
+  {
+    q: "Kamu klik link dan browser memperingatkan 'Situs ini tidak aman'. Apa yang paling tepat?",
+    opts: ["Lanjutkan jika situs terlihat resmi","Klik 'Lanjutkan ke situs (tidak aman)'","Tutup tab dan jangan lanjutkan","Refresh halaman"],
+    correct: 2,
+    feedback: {
+      correct: "Benar! Peringatan browser bukan hiasan — itu deteksi aktif bahwa situs berpotensi berbahaya. Tutup tab dan scan URL-nya dulu.",
+      wrong: "Peringatan keamanan browser adalah sistem proteksi aktif. Melanjutkan ke situs yang diperingatkan sangat berisiko — lebih baik tutup dan scan dulu.",
+    },
+  },
+  {
+    q: "Mana kebiasaan yang PALING melindungi akunmu dari phising?",
+    opts: ["Ganti password setiap hari","Pakai password manager + 2FA","Hanya login dari perangkat sendiri","Tidak pernah buka email asing"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! Password manager memastikan setiap akun punya password unik dan kuat, sementara 2FA memastikan password bocor pun tidak cukup untuk bajak akun.",
+      wrong: "Kombinasi password manager + 2FA adalah perlindungan terkuat. Password unik per situs + verifikasi dua faktor membuat akunmu sangat sulit dibajak.",
+    },
+  },
+  {
+    q: "Sebuah situs meminta izin notifikasi browser segera setelah dibuka. Apa risikonya jika kamu izinkan?",
+    opts: ["Tidak ada risiko, notifikasi bisa dimatikan","Situs bisa kirim spam dan phising lewat notifikasi","Hanya berlaku selama tab terbuka","Browser bisa diakses situs tersebut"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! Notifikasi browser yang diizinkan bisa dipakai untuk terus-menerus kirim pesan phising bahkan setelah kamu tutup situsnya. Tolak izin dari situs tak dikenal.",
+      wrong: "Izin notifikasi dari situs jahat memungkinkan mereka kirim pesan phising kapan saja — bahkan saat tab sudah ditutup. Selalu tolak notifikasi dari situs tak dikenal.",
+    },
+  },
+  {
+    q: "Kamu mau beli dari toko online baru. Mana yang paling penting dicek sebelum transfer?",
+    opts: ["Jumlah follower media sosialnya","Rekening tujuan transfer atas nama siapa","Domain toko dan ulasan dari sumber terpercaya","Apakah ada fitur chat"],
+    correct: 2,
+    feedback: {
+      correct: "Benar! Domain resmi + ulasan dari sumber terpercaya (bukan testimoni di situs sendiri) adalah indikator terkuat. Nama rekening pun bisa dimanipulasi.",
+      wrong: "Domain resmi dan ulasan dari sumber independen adalah verifikasi terkuat. Follower dan testimoni di situs sendiri mudah dipalsukan.",
+    },
+  },
+  {
+    q: "Apa yang dimaksud dengan 'phising spear'?",
+    opts: ["Phising massal lewat email blast","Phising tertarget menggunakan info pribadi korban","Phising lewat media sosial","Phising yang pakai domain HTTPS"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! Spear phising menarget individu spesifik dengan informasi personal (nama, jabatan, rekan kerja) agar pesan terasa lebih meyakinkan dan sulit dikenali.",
+      wrong: "Spear phising adalah serangan tertarget — menggunakan data pribadimu untuk membuat pesan yang sangat meyakinkan. Jauh lebih berbahaya dari phising massal.",
+    },
+  },
+  {
+    q: "Link yang aman untuk mengakses GoPay adalah?",
+    opts: ["https://gopay-topup.com","https://gojek.com/gopay","https://gopay.go.id.verify-now.com","https://g0pay.com"],
+    correct: 1,
+    feedback: {
+      correct: "Benar! GoPay diakses lewat aplikasi atau gojek.com. Domain lain seperti gopay-topup.com, gopay.go.id.verify-now.com, atau g0pay.com semuanya palsu.",
+      wrong: "GoPay hanya diakses resmi lewat aplikasi Gojek atau gojek.com. Semua domain lain yang menyebut GoPay adalah phising.",
+    },
+  },
+  {
+    q: "Temanmu bilang 'kalau sudah pakai antivirus, tidak perlu hati-hati soal link'. Itu benar atau salah?",
+    opts: ["Benar, antivirus proteksi penuh","Salah, antivirus tidak 100% mendeteksi phising baru","Benar jika antivirusnya premium","Tergantung merek antivirus"],
+    correct: 1,
+    feedback: {
+      correct: "Tepat! Antivirus bekerja berdasarkan database ancaman yang diketahui. Phising baru bisa lolos sebelum database diperbarui. Kewaspadaan tetap lini pertama terbaik.",
+      wrong: "Antivirus tidak bisa mendeteksi semua phising — terutama yang baru dibuat. Kewaspadaan manusia tetap pertahanan terpenting.",
+    },
+  },
+  {
+    q: "Kamu scan link di Urlveil dan hasilnya 'Tidak ditemukan ancaman'. Apakah link pasti 100% aman?",
+    opts: ["Ya, pasti aman","Tidak, scanner tidak bisa deteksi semua ancaman baru","Ya, jika skor keamanannya tinggi","Tidak, semua link selalu berbahaya"],
+    correct: 1,
+    feedback: {
+      correct: "Benar! Tidak ada scanner yang 100% sempurna. Phising sangat baru bisa belum masuk database manapun. Tetap waspada walau hasil scan bersih.",
+      wrong: "Tidak ada tool yang sempurna. Phising yang baru dibuat belum tentu masuk database manapun. Hasil scan bersih = tidak ada ancaman yang terdeteksi, bukan jaminan mutlak.",
+    },
+  },
 ];
+
+// Fungsi shuffle untuk ambil 5 soal acak per session
+function shuffleQuestions(arr, n) {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
 
 /* ── Threat Categories ─────────────────────────── */
 const THREATS = [
@@ -195,12 +339,13 @@ function ThreatCard({ threat, index }) {
 }
 
 function QuizBlock() {
+  const [questions, setQuestions] = useState(() => shuffleQuestions(QUESTION_BANK, 5));
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
-  const [picked, setPicked] = useState(null); // index picked
+  const [picked, setPicked] = useState(null);
   const [done, setDone] = useState(false);
 
-  const q = QUESTIONS[current];
+  const q = questions[current];
   const answered = picked !== null;
 
   function pick(idx) {
@@ -210,7 +355,7 @@ function QuizBlock() {
   }
 
   function next() {
-    if (current + 1 >= QUESTIONS.length) {
+    if (current + 1 >= questions.length) {
       setDone(true);
     } else {
       setCurrent((c) => c + 1);
@@ -219,13 +364,15 @@ function QuizBlock() {
   }
 
   function restart() {
+    // Ambil 5 soal acak baru setiap restart
+    setQuestions(shuffleQuestions(QUESTION_BANK, 5));
     setCurrent(0);
     setScore(0);
     setPicked(null);
     setDone(false);
   }
 
-  const pct = Math.round((score / QUESTIONS.length) * 100);
+  const pct = Math.round((score / questions.length) * 100);
 
   return (
     <div className="edu-quiz-wrap" aria-label="Quiz deteksi ancaman">
@@ -236,7 +383,7 @@ function QuizBlock() {
           Quiz Deteksi Ancaman
         </div>
         <span className="edu-quiz-prog">
-          {done ? "Selesai!" : `Soal ${current + 1} dari ${QUESTIONS.length}`}
+          {done ? "Selesai!" : `Soal ${current + 1} dari ${questions.length}`}
         </span>
       </div>
 
@@ -254,7 +401,7 @@ function QuizBlock() {
             <div className="edu-quiz-result-emoji" aria-hidden="true">
               {pct === 100 ? "🏆" : pct >= 66 ? "✅" : "⚠️"}
             </div>
-            <div className="edu-quiz-result-score">{score} / {QUESTIONS.length} benar</div>
+            <div className="edu-quiz-result-score">{score} / {questions.length} benar</div>
             <div className="edu-quiz-result-msg">
               {pct === 100
                 ? "Sempurna! Instingmu tajam soal ancaman digital."
@@ -336,7 +483,7 @@ function QuizBlock() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                {current + 1 < QUESTIONS.length ? "Soal Berikutnya →" : "Lihat Hasil"}
+                {current + 1 < questions.length ? "Soal Berikutnya →" : "Lihat Hasil"}
               </motion.button>
             )}
           </AnimatePresence>
