@@ -32,8 +32,11 @@ export default function PhishingDB() {
   const [isFallback, setIsFallback] = useState(false);
   const [fetchedAt, setFetchedAt] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [countdown, setCountdown] = useState(60);
 
-  const fetchData = async (isRefresh = false) => {
+  // Pakai ref agar setInterval selalu dapat versi fetchData terbaru (hindari stale closure)
+  const fetchData = useRef(null);
+  fetchData.current = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
 
@@ -59,14 +62,12 @@ export default function PhishingDB() {
     }
   };
 
-  const [countdown, setCountdown] = useState(60);
-
   useEffect(() => {
-    fetchData();
+    fetchData.current();
 
-    // Auto-refresh setiap 60 detik
+    // Auto-refresh setiap 60 detik — pakai ref agar tidak stale closure
     const interval = setInterval(() => {
-      fetchData(true);
+      fetchData.current(true);
       setCountdown(60);
     }, 60_000);
 
@@ -104,7 +105,7 @@ export default function PhishingDB() {
 
           {/* Refresh button */}
           <button
-            onClick={() => { fetchData(true); setCountdown(60); }}
+            onClick={() => { fetchData.current(true); setCountdown(60); }}
             disabled={refreshing || loading}
             className="pdb-refresh"
             aria-label="Refresh data"
