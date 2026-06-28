@@ -2,17 +2,11 @@
 
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, FileText, ShieldCheck, UserCheck,
-  AlertTriangle, Check, X, RefreshCw, Mail, Scale
+  ArrowLeft, ShieldCheck, Check, X,
+  AlertTriangle, RefreshCw, Mail, Scale, FileText
 } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
-
-const STATS = [
-  { value: "Gratis", label: "Layanan Urlveil", note: "tanpa biaya tersembunyi" },
-  { value: "Open", label: "Source code", note: "bisa diaudit siapapun" },
-  { value: "48 jam", label: "Respons tim", note: "untuk pertanyaan hukum" },
-];
 
 const SECTIONS = [
   {
@@ -93,104 +87,102 @@ export default function SyaratPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+
             {/* Back */}
             <a href="/" className="inline-flex items-center gap-1.5 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-10">
               <ArrowLeft size={14} /> Kembali ke Beranda
             </a>
 
-            {/* Hero — same 2-col grid as tentang & privasi */}
-            <div className="grid lg:grid-cols-2 gap-12 mb-16 items-center">
-              <div>
-                <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Syarat & Ketentuan</span>
-                <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
-                  Transparan<br />dari awal.
-                </h1>
-                <p className="text-[#8888aa] text-base leading-relaxed">
-                  Syarat penggunaan Urlveil dibuat sesederhana mungkin.
-                  Tidak ada bahasa hukum yang rumit — kami percaya transparansi
-                  adalah dasar dari kepercayaan.
+            {/* Hero — full width, lebih editorial */}
+            <div className="mb-16">
+              <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Syarat & Ketentuan</span>
+              <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
+                Aturan main<br />yang jelas.
+              </h1>
+              <div className="flex flex-col sm:flex-row sm:items-end gap-6">
+                <p className="text-[#8888aa] text-base leading-relaxed max-w-xl">
+                  Tidak ada bahasa hukum yang rumit. Syarat penggunaan Urlveil
+                  ditulis agar mudah dipahami siapapun — karena transparansi
+                  adalah bagian dari produk kami.
                 </p>
-              </div>
-
-              {/* Stats — same card style */}
-              <div className="space-y-4">
-                {STATS.map((s, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-[#2e3348] bg-[#1f2438]"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.08 }}
-                  >
-                    <div className="font-heading font-bold text-2xl text-[#F5A623] w-20 flex-shrink-0">{s.value}</div>
-                    <div>
-                      <div className="text-sm font-medium text-white">{s.label}</div>
-                      <div className="text-xs font-mono text-[#555570]">{s.note}</div>
-                    </div>
-                  </motion.div>
-                ))}
-                <p className="text-[10px] text-[#555570] font-mono px-1">Terakhir diperbarui: 26 Juni 2026</p>
+                <div className="flex-shrink-0 text-right">
+                  <div className="text-xs font-mono text-[#555570]">Terakhir diperbarui</div>
+                  <div className="text-sm font-mono text-[#a0a5b8]">26 Juni 2026</div>
+                </div>
               </div>
             </div>
 
-            {/* Ringkasan — same as misi di tentang */}
-            <div className="border-t border-[#2e3348] pt-12 mb-12">
-              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-3 block">Intinya</span>
-              <div className="flex items-start gap-3">
-                <ShieldCheck size={20} className="text-[#2DCB85] mt-1 flex-shrink-0" />
-                <p className="text-lg text-[#a0a5b8] leading-relaxed">
-                  Gunakan Urlveil untuk hal-hal yang baik, jangan disalahgunakan,
-                  dan pahami bahwa hasil analisis adalah referensi — bukan keputusan mutlak.
+            {/* Quote besar — beda dari tentang yg pakai misi */}
+            <div className="border-t border-[#2e3348] pt-12 mb-16">
+              <div className="pl-6 border-l-2 border-[#F5A623]">
+                <p className="text-xl text-[#a0a5b8] leading-relaxed italic">
+                  "Gunakan Urlveil untuk hal-hal yang baik, jangan disalahgunakan,
+                  dan pahami bahwa setiap hasil analisis adalah referensi — bukan keputusan mutlak."
                 </p>
+                <span className="text-xs font-mono text-[#555570] mt-3 block">Tim Urlveil</span>
               </div>
             </div>
 
-            {/* Sections — same row style as FEATURES di tentang */}
+            {/* Pasal-pasal — numbered index besar di kiri */}
             <div className="border-t border-[#2e3348] pt-12 mb-12">
-              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-6 block">Isi lengkap</span>
-              <div className="space-y-0 border-t border-[#2e3348]">
+              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-8 block">Isi lengkap</span>
+
+              <div className="space-y-0">
                 {SECTIONS.map((section, i) => {
-                  const Icon = section.icon;
-                  const accentColor = section.type === "denied" ? "#E55C30" : section.type === "allowed" ? "#2DCB85" : "#F5A623";
-                  const checkColor = section.type === "denied" ? "#E55C30" : "#2DCB85";
+                  const isAllowed = section.type === "allowed";
+                  const isDenied  = section.type === "denied";
+                  const accentColor = isDenied ? "#E55C30" : isAllowed ? "#2DCB85" : "#F5A623";
 
                   return (
                     <motion.div
                       key={i}
-                      className="py-8 border-b border-[#2e3348]"
+                      className="flex gap-8 py-8 border-b border-[#2e3348]"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + i * 0.07 }}
+                      transition={{ delay: 0.15 + i * 0.07 }}
                     >
-                      <div className="grid sm:grid-cols-[200px_1fr] gap-6">
-                        {/* Left */}
-                        <div className="flex items-start gap-3">
-                          <Icon size={18} style={{ color: accentColor }} className="mt-0.5 flex-shrink-0" />
-                          <div>
-                            <div className="text-xs font-mono text-[#555570] uppercase tracking-widest mb-1">{section.tag}</div>
-                            <h3 className="font-heading font-semibold text-white text-sm leading-snug">{section.title}</h3>
-                          </div>
-                        </div>
+                      {/* Nomor besar — beda dari tentang yang pakai icon */}
+                      <div className="flex-shrink-0 w-12 pt-0.5">
+                        <span
+                          className="font-heading font-bold text-3xl leading-none"
+                          style={{ color: accentColor, opacity: 0.25 }}
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                      </div>
 
-                        {/* Right */}
-                        <div>
-                          {section.type === "text" && (
-                            <p className="text-sm text-[#666680] leading-relaxed">{section.content}</p>
-                          )}
-                          {(section.type === "allowed" || section.type === "denied") && (
-                            <div className="space-y-3">
-                              {section.items.map((item, j) => (
-                                <div key={j} className="flex items-start gap-3">
-                                  {section.type === "allowed"
-                                    ? <Check size={14} style={{ color: checkColor }} className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
-                                    : <X size={14} style={{ color: checkColor }} className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
-                                  }
-                                  <p className="text-sm text-[#666680] leading-relaxed">{item}</p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                      {/* Konten */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-mono text-[#555570] uppercase tracking-widest">{section.tag}</span>
                         </div>
+                        <h3 className="font-heading font-semibold text-white text-base mb-4">{section.title}</h3>
+
+                        {section.type === "text" && (
+                          <p className="text-sm text-[#666680] leading-relaxed">{section.content}</p>
+                        )}
+
+                        {(isAllowed || isDenied) && (
+                          <div
+                            className="rounded-xl p-4 space-y-3"
+                            style={{
+                              background: isAllowed
+                                ? "rgba(45,203,133,0.04)"
+                                : "rgba(229,92,48,0.04)",
+                              border: `1px solid ${isAllowed ? "rgba(45,203,133,0.12)" : "rgba(229,92,48,0.12)"}`,
+                            }}
+                          >
+                            {section.items.map((item, j) => (
+                              <div key={j} className="flex items-start gap-3">
+                                {isAllowed
+                                  ? <Check size={13} color="#2DCB85" className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
+                                  : <X     size={13} color="#E55C30" className="mt-0.5 flex-shrink-0" strokeWidth={2.5} />
+                                }
+                                <p className="text-sm text-[#666680] leading-relaxed">{item}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   );
@@ -198,7 +190,7 @@ export default function SyaratPage() {
               </div>
             </div>
 
-            {/* Contact — same as Open Source di tentang */}
+            {/* Contact bottom */}
             <div className="border-t border-[#2e3348] pt-12">
               <div className="flex items-start gap-4">
                 <Mail size={20} className="text-[#a0a5b8] mt-1 flex-shrink-0" />
