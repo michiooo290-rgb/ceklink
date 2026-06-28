@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-/* ── Target Brand Detection ───────────────────── */
 function extractTarget(url) {
   try {
     const hostname = new URL(url).hostname.replace("www.", "").toLowerCase();
@@ -49,44 +48,69 @@ function relativeTime(dateStr) {
   } catch { return "-"; }
 }
 
-/* ── Parse CSV text ───────────────────────────── */
 function parseCSV(text) {
-  const lines = text.split("\n").filter(l => l && !l.startsWith("#"));
+  const lines = text.split("\n").filter(l => l.trim() && !l.startsWith("#"));
+  
+  // Log baris pertama buat debug
+  console.log("[URLhaus] First non-comment line:", lines[0]);
+  console.log("[URLhaus] Total lines:", lines.length);
+
   const results = [];
   for (const line of lines) {
-    const cols = line.split(",");
-    if (cols.length < 7) continue;
-    const [dateadded, , url, url_status, , threat] = cols;
-    if (!url || url_status?.trim() !== "online") continue;
-    results.push({ dateadded: dateadded?.trim(), url: url?.trim(), threat: threat?.trim() });
+    // Handle quoted CSV fields
+    const cols = line.split('","').map(c => c.replace(/^"|"$/g, '').trim());
+    
+    if (cols.length < 4) continue;
+
+    // Format URLhaus CSV: id, dateadded, url, url_status, last_online, threat, tags, urlhaus_link, reporter
+    const dateadded = cols[0];
+    const url = cols[2];
+    const url_status = cols[3];
+    const threat = cols[5] || "";
+
+    if (!url || !url.startsWith("http")) continue;
+
+    // Ambil semua — tidak filter status dulu
+    results.push({ 
+      dateadded: dateadded?.trim(), 
+      url: url?.trim(), 
+      threat: threat?.trim(),
+      url_status: url_status?.trim(),
+    });
   }
+  
+  console.log("[URLhaus] Parsed entries:", results.length);
+  if (results.length > 0) console.log("[URLhaus] Sample:", results[0]);
+  
   return results;
 }
 
-/* ── GET Handler ──────────────────────────────── */
 export async function GET() {
   try {
-    // Pakai CSV endpoint yang jauh lebih ringan (~500KB vs 15MB JSON)
     const res = await fetch(
       "https://urlhaus.abuse.ch/downloads/csv_recent/",
       {
         cache: "no-store",
         headers: { "User-Agent": "Urlveil/1.0" },
-        signal: AbortSignal.timeout(8000), // timeout 8 detik
+        signal: AbortSignal.timeout(10000),
       }
     );
 
     if (!res.ok) throw new Error(`URLhaus responded ${res.status}`);
 
     const text = await res.text();
-    const entries = parseCSV(text);
+    console.log("[URLhaus] Response length:", text.length);
+    console.log("[URLhaus] First 500 chars:", text.slice(0, 500));
 
+    const entries = parseCSV(text);
     const top = entries.slice(0, 8);
 
     const urls = top.map((entry) => ({
       link: (() => {
-        try { return new URL(entry.url).hostname + new URL(entry.url).pathname; }
-        catch { return entry.url.slice(0, 60); }
+        try {
+          const u = new URL(entry.url);
+          return u.hostname + u.pathname;
+        } catch { return entry.url.slice(0, 60); }
       })(),
       target: extractTarget(entry.url),
       status: threatToStatus(entry.threat),
@@ -95,22 +119,17 @@ export async function GET() {
       urlhaus_link: `https://urlhaus.abuse.ch/browse.php?search=${encodeURIComponent(entry.url)}`,
     }));
 
-    return NextResponse.json(
-      {
-        urls,
-        count: entries.length,
-        source: "URLhaus",
-        fetchedAt: new Date().toISOString(),
-        fallback: false,
-      },
-      {
-        headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
-        },
-      }
-    );
+    return NextResponse.json({
+      urls,
+      count: entries.length,
+      source: "URLhaus",
+      fetchedAt: new Date().toISOString(),
+      fallback: false,
+    }, {
+      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+    });
   } catch (err) {
-    console.error("Phishing API error:", err.message);
+    console.error("[URLhaus] Error:", err.message);
     return NextResponse.json(
       { error: err.message, fallback: true },
       { status: 503 }
