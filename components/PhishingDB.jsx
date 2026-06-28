@@ -123,7 +123,7 @@ export default function PhishingDB() {
           transition={{ duration: 0.5, delay: 0.15 }}
         >
           {/* Header row */}
-          <div className="hidden sm:grid grid-cols-4 gap-4 px-6 py-3 border-b border-[#2e3348] text-[#666680] text-xs font-mono uppercase tracking-wider">
+          <div className="hidden sm:grid gap-4 px-6 py-3 border-b border-[#2e3348] text-[#666680] text-xs font-mono uppercase tracking-wider" style={{gridTemplateColumns: "2.5fr 1fr 1fr 1fr"}}>
             <span>Link</span>
             <span>Target</span>
             <span>Dilaporkan</span>
@@ -146,9 +146,9 @@ export default function PhishingDB() {
               variants={rowVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
-              className="table-row grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 px-6 py-4 border-b border-[#2e3348]/30 items-center"
+              className="table-row grid grid-cols-1 sm:gap-4 px-6 py-4 border-b border-[#2e3348]/30 items-center" style={{gridTemplateColumns: "minmax(0,2.5fr) 1fr 1fr 1fr"}}
             >
-              <div className="font-mono text-sm text-[#e0e0e0] break-all flex items-center gap-1.5">
+              <div className="font-mono text-sm text-[#e0e0e0] break-all flex items-center gap-1.5 min-w-0">
                 {item.link}
                 {item.urlhaus_link && (
                   <a
