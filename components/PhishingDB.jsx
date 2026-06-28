@@ -59,8 +59,26 @@ export default function PhishingDB() {
     }
   };
 
+  const [countdown, setCountdown] = useState(60);
+
   useEffect(() => {
     fetchData();
+
+    // Auto-refresh setiap 60 detik
+    const interval = setInterval(() => {
+      fetchData(true);
+      setCountdown(60);
+    }, 60_000);
+
+    // Countdown timer tiap detik
+    const tick = setInterval(() => {
+      setCountdown(prev => (prev <= 1 ? 60 : prev - 1));
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(tick);
+    };
   }, []);
 
   return (
@@ -86,13 +104,13 @@ export default function PhishingDB() {
 
           {/* Refresh button */}
           <button
-            onClick={() => fetchData(true)}
+            onClick={() => { fetchData(true); setCountdown(60); }}
             disabled={refreshing || loading}
             className="pdb-refresh"
             aria-label="Refresh data"
           >
             <RefreshCw size={14} className={refreshing ? "pdb-spin" : ""} />
-            {refreshing ? "Loading..." : "Refresh"}
+            {refreshing ? "Memperbarui..." : `Refresh ${countdown}s`}
           </button>
         </motion.div>
 
