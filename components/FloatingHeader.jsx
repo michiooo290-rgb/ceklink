@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "../lib/supabase/client";
 
 const NAV_ITEMS = [
@@ -18,29 +19,62 @@ const SCROLL_HIDE_LIMIT = 80;
 const SCROLL_DELTA = 5;
 const ACTIVE_OFFSET = 120;
 
+/* ── Toast ─────────────────────────────────────── */
+function Toast({ show }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.95 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 px-4 py-3 rounded-xl border"
+          style={{
+            background: "rgba(26,30,46,0.95)",
+            backdropFilter: "blur(12px)",
+            borderColor: "rgba(45,203,133,0.3)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(45,203,133,0.1) inset",
+          }}
+        >
+          <CheckCircle2 size={16} style={{ color: "#2DCB85", flexShrink: 0 }} />
+          <span style={{ fontSize: "0.85rem", color: "#e0e0e0", fontWeight: 500 }}>
+            Berhasil keluar dari Urlveil
+          </span>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function FloatingHeader() {
   const [visible, setVisible] = useState(true);
   const [atTop, setAtTop] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("#beranda");
   const [user, setUser] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   const supabase = useRef(createClient()).current;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
     return () => listener.subscription.unsubscribe();
   }, [supabase]);
 
   const handleLogout = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
-    window.location.href = "/";
+
+    // Tampilkan toast, redirect setelah 1.5 detik
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+      window.location.href = "/";
+    }, 1500);
   }, [supabase]);
 
   const lastY = useRef(0);
@@ -83,7 +117,6 @@ export default function FloatingHeader() {
       }
     }
     setActiveSection(y < 100 ? "/#beranda" : found || activeSection);
-
     rafId.current = null;
   }, [activeSection]);
 
@@ -98,145 +131,149 @@ export default function FloatingHeader() {
   }, [onScroll]);
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
-        visible ? "translate-y-0" : "-translate-y-full"
-      }`}
-      style={{ willChange: "transform" }}
-    >
-      <div className={`mx-auto max-w-5xl px-4 pt-3 sm:pt-4 ${atTop ? "sm:pt-6" : ""} transition-all duration-500`}>
-        <nav
-          className={`relative rounded-2xl border transition-all duration-500 ${
-            atTop
-              ? "bg-transparent border-transparent shadow-none"
-              : "bg-[rgba(26,30,46,0.8)] backdrop-blur-xl border-[rgba(245,166,35,0.08)] shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.02)_inset]"
-          }`}
-        >
-          <div className="px-4 sm:px-6">
-            <div className="flex items-center justify-between h-14">
-              <a href="#beranda" className="flex items-center gap-2.5 font-bold text-lg text-white">
-                <Image src="/logo.png" alt="Urlveil" width={120} height={40} className="object-contain" priority />
-              </a>
+    <>
+      <Toast show={showToast} />
 
-              <div className="hidden md:flex items-center gap-0.5">
-                {NAV_ITEMS.map((item) => {
-                  const active = activeSection === item.href;
-                  return (
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
+          visible ? "translate-y-0" : "-translate-y-full"
+        }`}
+        style={{ willChange: "transform" }}
+      >
+        <div className={`mx-auto max-w-5xl px-4 pt-3 sm:pt-4 ${atTop ? "sm:pt-6" : ""} transition-all duration-500`}>
+          <nav
+            className={`relative rounded-2xl border transition-all duration-500 ${
+              atTop
+                ? "bg-transparent border-transparent shadow-none"
+                : "bg-[rgba(26,30,46,0.8)] backdrop-blur-xl border-[rgba(245,166,35,0.08)] shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.02)_inset]"
+            }`}
+          >
+            <div className="px-4 sm:px-6">
+              <div className="flex items-center justify-between h-14">
+                <a href="#beranda" className="flex items-center gap-2.5 font-bold text-lg text-white">
+                  <Image src="/logo.png" alt="Urlveil" width={120} height={40} className="object-contain" priority />
+                </a>
+
+                <div className="hidden md:flex items-center gap-0.5">
+                  {NAV_ITEMS.map((item) => {
+                    const active = activeSection === item.href;
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        className={`relative px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${
+                          active
+                            ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
+                            : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
+                        }`}
+                      >
+                        {item.label}
+                        {active && (
+                          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#F5A623] rounded-full shadow-[0_0_8px_rgba(245,166,35,0.5)]" />
+                        )}
+                      </a>
+                    );
+                  })}
+                </div>
+
+                <div className="hidden md:flex items-center gap-2">
+                  {user ? (
+                    <>
+                      <span className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#8888aa]">
+                        <UserIcon size={16} />
+                        {user.user_metadata?.full_name || user.email}
+                      </span>
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
+                      >
+                        <LogOut size={16} />
+                        Keluar
+                      </button>
+                    </>
+                  ) : (
                     <a
-                      key={item.href}
-                      href={item.href}
-                      className={`relative px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${
-                        active
-                          ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
-                          : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
-                      }`}
-                    >
-                      {item.label}
-                      {active && (
-                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-[#F5A623] rounded-full shadow-[0_0_8px_rgba(245,166,35,0.5)]" />
-                      )}
-                    </a>
-                  );
-                })}
-              </div>
-
-              <div className="hidden md:flex items-center gap-2">
-                {user ? (
-                  <>
-                    <span className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#8888aa]">
-                      <UserIcon size={16} />
-                      {user.user_metadata?.full_name || user.email}
-                    </span>
-                    <button
-                      onClick={handleLogout}
+                      href="/login"
                       className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
                     >
-                      <LogOut size={16} />
-                      Keluar
-                    </button>
-                  </>
-                ) : (
-                  <a
-                    href="/login"
-                    className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
-                  >
-                    <LogIn size={16} />
-                    Masuk
-                  </a>
-                )}
-                <a
-                  href="#cek-link"
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e] hover:shadow-[0_0_24px_rgba(245,166,35,0.4)] transition-all duration-300 hover:-translate-y-0.5"
-                >
-                  Mulai Scan
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </a>
-              </div>
-
-              <button
-                className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
-                onClick={() => setMobileOpen((v) => !v)}
-                aria-label="Menu"
-              >
-                <div className="flex flex-col gap-1.5 w-5">
-                  <span className={`block h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-[4px]" : ""}`} />
-                  <span className={`block h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "opacity-0 scale-x-0" : ""}`} />
-                  <span className={`block h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-[4px]" : ""}`} />
-                </div>
-              </button>
-            </div>
-
-            <div className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${mobileOpen ? "max-h-80 pb-4" : "max-h-0"}`}>
-              <div className="border-t border-[rgba(255,255,255,0.05)] pt-3 mt-1 space-y-1">
-                {NAV_ITEMS.map((item) => {
-                  const active = activeSection === item.href;
-                  return (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`block px-4 py-3 text-sm font-medium rounded-xl transition-all ${
-                        active
-                          ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
-                          : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
-                      }`}
-                    >
-                      {item.label}
+                      <LogIn size={16} />
+                      Masuk
                     </a>
-                  );
-                })}
-                {user ? (
-                  <button
-                    onClick={() => { setMobileOpen(false); handleLogout(); }}
-                    className="w-full flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
-                  >
-                    <LogOut size={16} />
-                    Keluar ({user.user_metadata?.full_name || user.email})
-                  </button>
-                ) : (
+                  )}
                   <a
-                    href="/login"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                    href="#cek-link"
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e] hover:shadow-[0_0_24px_rgba(245,166,35,0.4)] transition-all duration-300 hover:-translate-y-0.5"
                   >
-                    <LogIn size={16} />
-                    Masuk
+                    Mulai Scan
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
                   </a>
-                )}
-                <a
-                  href="#cek-link"
-                  onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-3 mt-1 text-sm font-semibold text-center rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e]"
+                </div>
+
+                <button
+                  className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                  onClick={() => setMobileOpen((v) => !v)}
+                  aria-label="Menu"
                 >
-                  Mulai Scan →
-                </a>
+                  <div className="flex flex-col gap-1.5 w-5">
+                    <span className={`block h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-[4px]" : ""}`} />
+                    <span className={`block h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "opacity-0 scale-x-0" : ""}`} />
+                    <span className={`block h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-[4px]" : ""}`} />
+                  </div>
+                </button>
+              </div>
+
+              <div className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${mobileOpen ? "max-h-80 pb-4" : "max-h-0"}`}>
+                <div className="border-t border-[rgba(255,255,255,0.05)] pt-3 mt-1 space-y-1">
+                  {NAV_ITEMS.map((item) => {
+                    const active = activeSection === item.href;
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`block px-4 py-3 text-sm font-medium rounded-xl transition-all ${
+                          active
+                            ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
+                            : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
+                        }`}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
+                  {user ? (
+                    <button
+                      onClick={() => { setMobileOpen(false); handleLogout(); }}
+                      className="w-full flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                    >
+                      <LogOut size={16} />
+                      Keluar ({user.user_metadata?.full_name || user.email})
+                    </button>
+                  ) : (
+                    <a
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                    >
+                      <LogIn size={16} />
+                      Masuk
+                    </a>
+                  )}
+                  <a
+                    href="#cek-link"
+                    onClick={() => setMobileOpen(false)}
+                    className="block px-4 py-3 mt-1 text-sm font-semibold text-center rounded-xl bg-gradient-to-r from-[#F5A623] to-[#2DCB85] text-[#1a1e2e]"
+                  >
+                    Mulai Scan →
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
-      </div>
-    </header>
+          </nav>
+        </div>
+      </header>
+    </>
   );
 }
