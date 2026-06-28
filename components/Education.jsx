@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { GraduationCap, ArrowRight, TrendingUp, ChevronDown, ChevronRight } from "lucide-react";
 
@@ -339,11 +339,20 @@ function ThreatCard({ threat, index }) {
 }
 
 function QuizBlock() {
-  const [questions, setQuestions] = useState(() => shuffleQuestions(QUESTION_BANK, 5));
+  // Inisialisasi dengan 5 soal pertama (deterministik) agar server & client match
+  // Shuffle dilakukan di useEffect setelah hydration selesai
+  const [questions, setQuestions] = useState(QUESTION_BANK.slice(0, 5));
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [picked, setPicked] = useState(null);
   const [done, setDone] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  // Shuffle hanya di client setelah hydration — hindari mismatch server/client
+  useEffect(() => {
+    setQuestions(shuffleQuestions(QUESTION_BANK, 5));
+    setReady(true);
+  }, []);
 
   const q = questions[current];
   const answered = picked !== null;
@@ -364,7 +373,6 @@ function QuizBlock() {
   }
 
   function restart() {
-    // Ambil 5 soal acak baru setiap restart
     setQuestions(shuffleQuestions(QUESTION_BANK, 5));
     setCurrent(0);
     setScore(0);
