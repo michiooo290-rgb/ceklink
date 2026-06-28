@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Github, Heart, Zap, Globe, Lock } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Heart, Zap, Globe, Lock } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
 
@@ -107,7 +107,7 @@ export default function TentangPage() {
             {/* Open Source */}
             <div className="border-t border-[#2e3348] pt-12">
               <div className="flex items-start gap-4">
-                <Github size={20} className="text-[#a0a5b8] mt-1 flex-shrink-0" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a0a5b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 flex-shrink-0" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
                 <div>
                   <h2 className="font-heading font-semibold text-white text-lg mb-2">Open Source</h2>
                   <p className="text-sm text-[#666680] leading-relaxed mb-4">
@@ -120,7 +120,7 @@ export default function TentangPage() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2e3348] text-sm text-[#a0a5b8] hover:text-white hover:border-[#F5A623]/30 transition-colors"
                   >
-                    <Github size={15} />
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
                     Lihat di GitHub
                   </a>
                 </div>

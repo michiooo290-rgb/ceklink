@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, Mail, MessageSquare, Github, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Mail, MessageSquare, ShieldCheck } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
 
@@ -70,7 +70,7 @@ export default function KontakPage() {
                   color: "#F5A623",
                 },
                 {
-                  icon: Github,
+                  icon: null,
                   label: "GitHub",
                   value: "michiooo290-rgb/ceklink",
                   href: "https://github.com/michiooo290-rgb/ceklink",
@@ -91,7 +91,11 @@ export default function KontakPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 + i * 0.08 }}
                   >
-                    <Icon size={18} style={{ color: c.color }} className="mb-3" />
+                    {Icon ? (
+                      <Icon size={18} style={{ color: c.color }} className="mb-3" />
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={c.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-3" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                    )}
                     <p className="text-xs font-mono text-[#555570] mb-1">{c.label}</p>
                     <p className="text-sm font-medium text-white mb-1 group-hover:text-[#F5A623] transition-colors">{c.value}</p>
                     <p className="text-xs text-[#666680]">{c.desc}</p>
