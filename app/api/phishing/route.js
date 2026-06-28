@@ -97,16 +97,22 @@ export async function GET() {
     const text = await res.text();
     const entries = parseCSV(text);
 
-    // Prioritaskan yang bukan IP address murni
-    const sorted = [...entries].sort((a, b) => {
-      const aIsIP = /^\d+\.\d+\.\d+\.\d+/.test(new URL(a.url).hostname);
-      const bIsIP = /^\d+\.\d+\.\d+\.\d+/.test(new URL(b.url).hostname);
-      if (aIsIP && !bIsIP) return 1;
-      if (!aIsIP && bIsIP) return -1;
-      return 0;
+    // Filter: buang IP address murni, ambil yang statusnya online dulu
+    const nonIP = entries.filter(e => {
+      try {
+        const host = new URL(e.url).hostname;
+        return !/^\d+\.\d+\.\d+\.\d+$/.test(host);
+      } catch { return false; }
     });
 
-    const top = sorted.slice(0, 8);
+    const online = nonIP.filter(e => e.url_status === "online");
+    const others = nonIP.filter(e => e.url_status !== "online");
+
+    // Acak urutan supaya tiap refresh tampil URL berbeda
+    const shuffle = arr => arr.sort(() => Math.random() - 0.5);
+    const pool = [...shuffle(online), ...shuffle(others)];
+
+    const top = pool.slice(0, 8);
 
     const urls = top.map((entry) => ({
       link: (() => {
