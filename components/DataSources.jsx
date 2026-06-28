@@ -9,8 +9,13 @@ export default function DataSources() {
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const [urlhausData, setUrlhausData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchLiveData = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -35,7 +40,9 @@ export default function DataSources() {
     }
   };
 
-  useEffect(() => { fetchLiveData(); }, []);
+  useEffect(() => {
+    if (mounted) fetchLiveData();
+  }, [mounted]);
 
   const SOURCES = [
     {
@@ -80,7 +87,6 @@ export default function DataSources() {
     <section className="datasrc-section" aria-label="Sumber data analisis" ref={ref}>
       <div className="datasrc-inner">
 
-        {/* Label kiri */}
         <motion.div
           className="datasrc-header"
           initial={{ opacity: 0, y: 12 }}
@@ -94,7 +100,6 @@ export default function DataSources() {
           </p>
         </motion.div>
 
-        {/* Source cards */}
         <div className="datasrc-grid">
           {SOURCES.map((s, i) => {
             const Icon = s.icon;
@@ -123,22 +128,15 @@ export default function DataSources() {
                 <div className="datasrc-name-row">
                   <span className="datasrc-name">{s.name}</span>
                   {s.url && (
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="datasrc-ext"
-                      aria-label={`Buka ${s.name}`}
-                    >
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="datasrc-ext" aria-label={`Buka ${s.name}`}>
                       <ExternalLink size={11} />
                     </a>
                   )}
                 </div>
 
-                {/* URLhaus: tampilkan data live */}
                 {isLive ? (
                   <div className="datasrc-live">
-                    {loading ? (
+                    {!mounted || loading ? (
                       <div className="datasrc-live-loading">
                         <div className="datasrc-live-bar" />
                       </div>
@@ -146,31 +144,22 @@ export default function DataSources() {
                       <>
                         <div className="datasrc-live-stat">
                           <span className="datasrc-live-number">
-                            {urlhausData.count.toLocaleString("id-ID")}
+                            {urlhausData.count?.toLocaleString("id-ID") ?? "—"}
                           </span>
                           <span className="datasrc-live-label">URL berbahaya dilacak</span>
                         </div>
                         <div className="datasrc-live-meta">
                           <span className="datasrc-live-dot" />
-                          <span>
-                            {urlhausData.onlineCount.toLocaleString("id-ID")} aktif sekarang
-                          </span>
+                          <span>{urlhausData.onlineCount?.toLocaleString("id-ID") ?? "—"} aktif sekarang</span>
                           <span className="datasrc-live-sep">·</span>
-                          <span>
-                            diperbarui {new Date(urlhausData.fetchedAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
-                          </span>
-                          <button
-                            onClick={() => fetchLiveData(true)}
-                            className="datasrc-refresh"
-                            aria-label="Refresh data URLhaus"
-                            disabled={refreshing}
-                          >
+                          <span>diperbarui {new Date(urlhausData.fetchedAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</span>
+                          <button onClick={() => fetchLiveData(true)} className="datasrc-refresh" aria-label="Refresh" disabled={refreshing}>
                             <RefreshCw size={10} className={refreshing ? "datasrc-spin" : ""} />
                           </button>
                         </div>
                       </>
                     ) : (
-                      <p className="datasrc-desc datasrc-fallback">
+                      <p className="datasrc-desc">
                         Database phishing & malware real-time dari komunitas keamanan global.
                         <span className="datasrc-offline"> · Data tidak tersedia saat ini</span>
                       </p>
