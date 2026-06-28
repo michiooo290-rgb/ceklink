@@ -169,21 +169,7 @@ export default function Hero() {
             </a>
           </div>
 
-          {/* Inline stats — editorial, not 3 big numbers */}
-          <div className="hero-stats">
-            <span className="hero-stat-item">
-              <strong>12K+</strong> link diperiksa
-            </span>
-            <span className="hero-stat-divider" aria-hidden="true">·</span>
-            <span className="hero-stat-item">
-              <strong>8K+</strong> phising terdeteksi
-            </span>
-            <span className="hero-stat-divider" aria-hidden="true">·</span>
-            <span className="hero-stat-item">
-              <strong>4.5K+</strong> pengguna aktif
-            </span>
-          </div>
-          <p className="hero-disclaimer">* Data ilustrasi, bukan real-time</p>
+
         </motion.div>
 
         {/* Right: live demo widget */}
