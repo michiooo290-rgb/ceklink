@@ -6,12 +6,6 @@ import { ArrowLeft, Lock, Eye, ShieldCheck, Database, Globe, Mail, ChevronDown }
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
 
-const COMMITMENTS = [
-  { value: "0", label: "Data dijual ke pihak ketiga", note: "selamanya" },
-  { value: "0", label: "Iklan & tracker", note: "tidak ada" },
-  { value: "100%", label: "Analisis berjalan di browser", note: "bukan di server" },
-];
-
 const SECTIONS = [
   {
     icon: Eye,
@@ -77,39 +71,17 @@ export default function PrivasiPage() {
               <ArrowLeft size={14} /> Kembali ke Beranda
             </a>
 
-            {/* Hero — sekilas mirip Tentang, tapi accent cyan & stat berbentuk pita progress, bukan kartu angka */}
-            <div className="grid lg:grid-cols-2 gap-12 mb-16 items-center">
-              <div>
-                <span className="font-mono text-xs text-[#06b6d4] uppercase tracking-widest mb-4 block">Kebijakan Privasi</span>
-                <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
-                  Privasi bukan<br />pilihan opsional.
-                </h1>
-                <p className="text-[#8888aa] text-base leading-relaxed">
-                  Urlveil dibangun dengan prinsip privacy-first sejak hari pertama. Berikut penjelasan
-                  transparan soal data apa yang kami kumpulkan, dan hak kamu sebagai pengguna.
-                </p>
-              </div>
-
-              {/* Commitments — diagonal accent bar di kiri, beda dari stat-card Tentang */}
-              <div className="space-y-3">
-                {COMMITMENTS.map((c, i) => (
-                  <motion.div
-                    key={i}
-                    className="relative flex items-center gap-4 p-4 pl-5 rounded-xl border border-[#2e3348] bg-[#1f2438] overflow-hidden"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + i * 0.08 }}
-                  >
-                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#06b6d4]" />
-                    <div className="font-heading font-bold text-2xl text-[#06b6d4] w-16 flex-shrink-0">{c.value}</div>
-                    <div>
-                      <div className="text-sm font-medium text-white">{c.label}</div>
-                      <div className="text-xs font-mono text-[#555570]">{c.note}</div>
-                    </div>
-                  </motion.div>
-                ))}
-                <p className="text-[10px] text-[#555570] font-mono px-1">Terakhir diperbarui: 26 Juni 2026</p>
-              </div>
+            {/* Hero — single column, tanpa stat card kanan */}
+            <div className="max-w-2xl mb-16">
+              <span className="font-mono text-xs text-[#06b6d4] uppercase tracking-widest mb-4 block">Kebijakan Privasi</span>
+              <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
+                Privasi bukan<br />pilihan opsional.
+              </h1>
+              <p className="text-[#8888aa] text-base leading-relaxed mb-4">
+                Urlveil dibangun dengan prinsip privacy-first sejak hari pertama. Berikut penjelasan
+                transparan soal data apa yang kami kumpulkan, dan hak kamu sebagai pengguna.
+              </p>
+              <p className="text-[10px] text-[#555570] font-mono">Terakhir diperbarui: 26 Juni 2026</p>
             </div>
 
             {/* Komitmen singkat — sama posisi/typografi seperti Misi di Tentang */}
