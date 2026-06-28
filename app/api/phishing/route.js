@@ -122,14 +122,17 @@ export async function GET() {
       urlhaus_link: `https://urlhaus.abuse.ch/browse.php?search=${encodeURIComponent(entry.url)}`,
     }));
 
+    const onlineCount = entries.filter(e => e.url_status === "online").length;
+
     return NextResponse.json({
       urls,
       count: entries.length,
+      onlineCount,
       source: "URLhaus",
       fetchedAt: new Date().toISOString(),
       fallback: false,
     }, {
-      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+      headers: { "Cache-Control": "no-store" },
     });
   } catch (err) {
     console.error("[URLhaus] Error:", err.message);
