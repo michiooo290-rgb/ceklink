@@ -129,6 +129,9 @@ function AnalisisContent() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [externalCheck, setExternalCheck] = useState(null);
+  const [externalLoading, setExternalLoading] = useState(false);
+  const [urlscanUUID, setUrlscanUUID] = useState(null);
 
   useEffect(() => {
     if (!urlParam) {
@@ -139,13 +142,31 @@ function AnalisisContent() {
 
     const runScan = async () => {
       try {
-        // Normalize URL — tambah https:// kalau tidak ada protokol
         let normalizedUrl = urlParam.trim();
         if (!/^https?:\/\//i.test(normalizedUrl)) {
           normalizedUrl = "https://" + normalizedUrl;
         }
         const data = await scanURL(normalizedUrl);
         setResult(data);
+
+        // External API check (non-blocking)
+        setExternalLoading(true);
+        try {
+          const extRes = await fetch("/api/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: normalizedUrl }),
+          });
+          const extData = await extRes.json();
+          setExternalCheck(extData);
+          if (extData.urlscan?.uuid) {
+            setUrlscanUUID(extData.urlscan.uuid);
+          }
+        } catch {
+          // External check gagal — client-side tetap tampil
+        } finally {
+          setExternalLoading(false);
+        }
       } catch (err) {
         console.error("Scan error:", err);
         setError("Terjadi kesalahan saat menganalisis URL. Pastikan URL valid.");
@@ -155,6 +176,27 @@ function AnalisisContent() {
     };
     runScan();
   }, [urlParam]);
+
+  // Poll URLScan result setiap 5 detik sampai siap
+  useEffect(() => {
+    if (!urlscanUUID) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uuid: urlscanUUID }),
+        });
+        const data = await res.json();
+        if (data.ready) {
+          setExternalCheck((prev) => ({ ...prev, urlscan: { ...prev?.urlscan, ...data } }));
+          clearInterval(interval);
+          setUrlscanUUID(null);
+        }
+      } catch {}
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [urlscanUUID]);
 
   const handleCopy = async () => {
     if (!result) return;
@@ -224,6 +266,65 @@ function AnalisisContent() {
       </motion.div>
 
       <div className="space-y-6">
+
+        {/* ── 0. External Check (GSB + URLScan) ───────────────────── */}
+        {(externalLoading || externalCheck) && (
+          <motion.div variants={fadeUp} custom={0} initial="hidden" animate="visible"
+            className="glass-card p-5 border border-[#2e3348]">
+            <h2 className="font-heading font-semibold text-sm text-[#8888aa] mb-3 flex items-center gap-2">
+              <Zap size={16} className="text-[#F5A623]" />
+              Verifikasi Eksternal
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Google Safe Browsing */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm bg-white/10 flex items-center justify-center text-[10px]">G</div>
+                  <span className="text-xs font-medium text-[#e0e0e0]">Google Safe Browsing</span>
+                </div>
+                {externalLoading && !externalCheck?.googleSafeBrowsing ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : externalCheck?.googleSafeBrowsing?.available ? (
+                  <p className={`text-xs font-medium ${externalCheck.googleSafeBrowsing.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                    {externalCheck.googleSafeBrowsing.label}
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#555570]">{externalCheck?.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+              {/* URLScan.io */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm bg-white/10 flex items-center justify-center text-[10px]">U</div>
+                  <span className="text-xs font-medium text-[#e0e0e0]">URLScan.io</span>
+                </div>
+                {externalLoading && !externalCheck?.urlscan ? (
+                  <p className="text-xs text-[#555570]">Mengirim scan...</p>
+                ) : externalCheck?.urlscan?.available ? (
+                  externalCheck.urlscan.ready ? (
+                    <div>
+                      <p className={`text-xs font-medium ${externalCheck.urlscan.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
+                        {externalCheck.urlscan.label}
+                      </p>
+                      {externalCheck.urlscan.resultUrl && (
+                        <a href={externalCheck.urlscan.resultUrl} target="_blank" rel="noopener noreferrer"
+                          className="text-[10px] text-[#F5A623] hover:underline mt-0.5 inline-block">
+                          Lihat laporan lengkap ↗
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-[#555570]">
+                      {urlscanUUID ? "⏳ Menunggu hasil scan..." : externalCheck.urlscan.label}
+                    </p>
+                  )
+                ) : (
+                  <p className="text-xs text-[#555570]">{externalCheck?.urlscan?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* ── 1. Ringkasan Skor ────────────────────────────────────── */}
         <Section icon={Shield} title="Ringkasan Skor" delay={1}>

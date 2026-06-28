@@ -1,122 +1,202 @@
-import { NextResponse } from "next/server";
+/**
+ * /api/scan — Real-time URL security check
+ * Menggunakan Google Safe Browsing + URLScan.io
+ */
 
-export const dynamic = "force-dynamic";
+const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
+const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
 
-/* ── Target Brand Detection ───────────────────── */
-function extractTarget(url) {
+// ── Google Safe Browsing ──────────────────────────────────────────────
+async function checkGoogleSafeBrowsing(url) {
+  if (!GSB_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
+
   try {
-    const hostname = new URL(url).hostname.replace("www.", "").toLowerCase();
-    const parts = hostname.split(".");
-
-    const known = {
-      bca: "BCA", bni: "BNI", bri: "BRI", mandiri: "Mandiri",
-      tokopedia: "Tokopedia", shopee: "Shopee", lazada: "Lazada",
-      grab: "Grab", gojek: "Gojek", dana: "DANA", ovo: "OVO",
-      gopay: "GoPay", bukalapak: "Bukalapak", indodax: "Indodax",
-      pln: "PLN", telkomsel: "Telkomsel", xl: "XL", indosat: "Indosat",
-      paypal: "PayPal", apple: "Apple", microsoft: "Microsoft",
-      google: "Google", facebook: "Facebook", instagram: "Instagram",
-      whatsapp: "WhatsApp", netflix: "Netflix", amazon: "Amazon",
-      roblox: "Roblox", discord: "Discord", tiktok: "TikTok",
-      spotify: "Spotify", steam: "Steam", bank: "Bank",
-    };
-
-    for (const part of parts) {
-      if (known[part]) return known[part];
-    }
-
-    const main = parts.length >= 2 ? parts[parts.length - 2] : parts[0];
-    return main.charAt(0).toUpperCase() + main.slice(1);
-  } catch {
-    return "Unknown";
-  }
-}
-
-/* ── Threat → Status Mapping ──────────────────── */
-function threatToStatus(threat) {
-  if (threat === "malware_download") return "danger";
-  if (threat === "phishing") return "danger";
-  if (threat === "malware") return "danger";
-  return "warn";
-}
-
-/* ── Relative Time ────────────────────────────── */
-function relativeTime(dateStr) {
-  try {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMin = Math.floor(diffMs / 60000);
-    const diffHour = Math.floor(diffMin / 60);
-    const diffDay = Math.floor(diffHour / 24);
-
-    if (diffMin < 1) return "Baru saja";
-    if (diffMin < 60) return `${diffMin} menit lalu`;
-    if (diffHour < 24) return `${diffHour} jam lalu`;
-    if (diffDay < 7) return `${diffDay} hari lalu`;
-    return date.toLocaleDateString("id-ID");
-  } catch {
-    return "-";
-  }
-}
-
-/* ── GET Handler ──────────────────────────────── */
-export async function GET() {
-  try {
-    // Fetch dari URLhaus (sumber data phising real-time)
     const res = await fetch(
-      "https://urlhaus.abuse.ch/downloads/json_recent/",
-      { cache: "no-store" } // real-time, data terlalu besar untuk Next.js cache (15MB)
+      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GSB_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client: { clientId: "urlveil", clientVersion: "1.0.0" },
+          threatInfo: {
+            threatTypes: [
+              "MALWARE",
+              "SOCIAL_ENGINEERING",
+              "UNWANTED_SOFTWARE",
+              "POTENTIALLY_HARMFUL_APPLICATION",
+            ],
+            platformTypes: ["ANY_PLATFORM"],
+            threatEntryTypes: ["URL"],
+            threatEntries: [{ url }],
+          },
+        }),
+      }
     );
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch URLhaus", fallback: true },
-        { status: 502 }
-      );
+      const err = await res.json();
+      return { available: false, reason: err.error?.message || "GSB error" };
     }
 
     const data = await res.json();
+    const matches = data.matches || [];
 
-    // Parse semua entries
-    const entries = Object.values(data).flat();
+    if (matches.length > 0) {
+      const types = matches.map((m) => m.threatType);
+      return {
+        available: true,
+        safe: false,
+        threatTypes: types,
+        label: types.includes("SOCIAL_ENGINEERING")
+          ? "Phising terdeteksi oleh Google"
+          : types.includes("MALWARE")
+          ? "Malware terdeteksi oleh Google"
+          : "Ancaman terdeteksi oleh Google",
+      };
+    }
 
-    // Filter hanya yang online, ambil 8 terbaru
-    const onlineEntries = entries
-      .filter((e) => e.url_status === "online")
-      .sort((a, b) => new Date(b.dateadded) - new Date(a.dateadded))
-      .slice(0, 8);
-
-    const urls = onlineEntries.map((entry) => ({
-      link: entry.url,
-      target: extractTarget(entry.url),
-      status: threatToStatus(entry.threat),
-      threat: entry.threat,
-      date: relativeTime(entry.dateadded),
-      urlhaus_link: entry.urlhaus_link,
-      reporter: entry.reporter,
-      tags: entry.tags || [],
-    }));
-
-    return NextResponse.json(
-      {
-        urls,
-        count: entries.length,
-        onlineCount: onlineEntries.length,
-        source: "URLhaus",
-        fetchedAt: new Date().toISOString(),
-      },
-      {
-        headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
-        },
-      }
-    );
+    return { available: true, safe: true, threatTypes: [], label: "Aman menurut Google Safe Browsing" };
   } catch (err) {
-    console.error("Phishing API error:", err);
-    return NextResponse.json(
-      { error: "Service unavailable", fallback: true },
-      { status: 503 }
-    );
+    return { available: false, reason: err.message };
+  }
+}
+
+// ── URLScan.io ────────────────────────────────────────────────────────
+async function checkURLScan(url) {
+  if (!URLSCAN_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
+
+  try {
+    // Submit scan
+    const submitRes = await fetch("https://urlscan.io/api/v1/scan/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "API-Key": URLSCAN_API_KEY,
+      },
+      body: JSON.stringify({
+        url,
+        visibility: "public",
+        tags: ["urlveil"],
+      }),
+    });
+
+    if (!submitRes.ok) {
+      const err = await submitRes.json();
+      // 400 bisa berarti URL sudah di-scan sebelumnya — coba ambil hasil lama
+      if (submitRes.status === 400 && err.message?.includes("already been submitted")) {
+        return { available: true, pending: true, label: "URL sedang dalam antrian scan" };
+      }
+      return { available: false, reason: err.message || "URLScan submit error" };
+    }
+
+    const submitData = await submitRes.json();
+    const uuid = submitData.uuid;
+    const resultUrl = `https://urlscan.io/result/${uuid}/`;
+
+    // Tunggu hasil (URLScan butuh ~10 detik)
+    // Di sini kita return pending, frontend bisa polling
+    return {
+      available: true,
+      pending: true,
+      uuid,
+      resultUrl,
+      label: "Scan dikirim ke URLScan.io — hasil dalam ~10 detik",
+    };
+  } catch (err) {
+    return { available: false, reason: err.message };
+  }
+}
+
+// ── Poll URLScan result ───────────────────────────────────────────────
+async function pollURLScanResult(uuid) {
+  try {
+    const res = await fetch(`https://urlscan.io/api/v1/result/${uuid}/`, {
+      headers: { "API-Key": URLSCAN_API_KEY },
+    });
+
+    if (res.status === 404) return { ready: false };
+    if (!res.ok) return { ready: false };
+
+    const data = await res.json();
+    const verdicts = data.verdicts?.overall;
+
+    return {
+      ready: true,
+      safe: !verdicts?.malicious,
+      score: verdicts?.score ?? 0,
+      malicious: verdicts?.malicious ?? false,
+      categories: verdicts?.categories ?? [],
+      brands: verdicts?.brands ?? [],
+      screenshot: data.task?.screenshotURL ?? null,
+      resultUrl: `https://urlscan.io/result/${uuid}/`,
+      label: verdicts?.malicious
+        ? `Berbahaya menurut URLScan (score: ${verdicts.score})`
+        : "Aman menurut URLScan.io",
+    };
+  } catch {
+    return { ready: false };
+  }
+}
+
+// ── Combine results ───────────────────────────────────────────────────
+function combineResults(gsb, urlscan) {
+  // Kalau GSB bilang berbahaya → langsung danger
+  if (gsb.available && !gsb.safe) {
+    return { status: "danger", confidence: "high" };
+  }
+  // Kalau URLScan bilang berbahaya
+  if (urlscan.available && urlscan.ready && urlscan.malicious) {
+    return { status: "danger", confidence: "medium" };
+  }
+  // Keduanya aman
+  if (gsb.available && gsb.safe && urlscan.available && urlscan.ready && !urlscan.malicious) {
+    return { status: "safe", confidence: "high" };
+  }
+  // GSB aman tapi URLScan pending/tidak available
+  if (gsb.available && gsb.safe) {
+    return { status: "safe", confidence: "medium" };
+  }
+  return { status: "unknown", confidence: "low" };
+}
+
+// ── Route Handler ─────────────────────────────────────────────────────
+export async function POST(req) {
+  try {
+    const body = await req.json();
+    const { url, uuid } = body;
+
+    // Poll mode — frontend nanya hasil URLScan
+    if (uuid) {
+      const result = await pollURLScanResult(uuid);
+      return Response.json(result);
+    }
+
+    if (!url || typeof url !== "string") {
+      return Response.json({ error: "URL tidak valid" }, { status: 400 });
+    }
+
+    // Normalize URL
+    let normalizedUrl = url.trim();
+    if (!/^https?:\/\//i.test(normalizedUrl)) {
+      normalizedUrl = "https://" + normalizedUrl;
+    }
+
+    // Run checks secara parallel
+    const [gsb, urlscan] = await Promise.all([
+      checkGoogleSafeBrowsing(normalizedUrl),
+      checkURLScan(normalizedUrl),
+    ]);
+
+    const combined = combineResults(gsb, urlscan);
+
+    return Response.json({
+      url: normalizedUrl,
+      checkedAt: new Date().toISOString(),
+      googleSafeBrowsing: gsb,
+      urlscan,
+      combined,
+    });
+  } catch (err) {
+    return Response.json({ error: err.message }, { status: 500 });
   }
 }
