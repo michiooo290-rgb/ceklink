@@ -1,44 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, Mail, MessageSquare, ShieldCheck, ExternalLink } from "lucide-react";
+import { ArrowLeft, Mail, MessageSquare, Github, ShieldCheck } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
-import MeshBackground from "../../components/MeshBackground";
-
-const CONTACTS = [
-  {
-    icon: Mail,
-    label: "Email Keamanan",
-    value: "security@urlveil.id",
-    href: "mailto:security@urlveil.id",
-    desc: "Untuk laporan kerentanan keamanan dan pertanyaan privasi",
-  },
-  {
-    icon: MessageSquare,
-    label: "Email Umum",
-    value: "hello@urlveil.id",
-    href: "mailto:hello@urlveil.id",
-    desc: "Untuk pertanyaan umum, kerjasama, dan masukan",
-  },
-];
 
 const FAQ = [
   {
     q: "Bagaimana cara melaporkan link phising?",
-    a: "Gunakan fitur 'Laporkan' yang muncul setelah kamu mengecek link di Urlveil. Isi alasan dan deskripsi, lalu kirim.",
+    a: "Gunakan fitur 'Laporkan' yang muncul setelah kamu mengecek link. Isi alasan dan deskripsi, lalu kirim.",
   },
   {
     q: "Apakah Urlveil gratis?",
-    a: "Ya, Urlveil 100% gratis untuk penggunaan pribadi. API publik juga gratis dengan batas 100 request per hari.",
+    a: "Ya, 100% gratis untuk penggunaan pribadi. API publik juga gratis dengan batas 100 request per hari.",
   },
   {
     q: "Bagaimana cara berkontribusi?",
-    a: "Urlveil adalah proyek open source. Kunjungi repository GitHub kami untuk mulai berkontribusi.",
+    a: "Urlveil open source. Kunjungi repository GitHub untuk mulai berkontribusi — pull request selalu disambut.",
   },
   {
-    q: "Saya menemukan bug, ke mana saya lapor?",
-    a: "Kirim email ke security@urlveil.id dengan detail bug yang kamu temukan. Kami merespons dalam 48 jam.",
+    q: "Saya menemukan bug, ke mana lapor?",
+    a: "Email ke security@urlveil.id dengan detail bug. Kami merespons dalam 48 jam.",
   },
 ];
 
@@ -46,88 +28,106 @@ export default function KontakPage() {
   return (
     <>
       <FloatingHeader />
-      <main className="min-h-screen pt-24 pb-16 relative">
-        <MeshBackground variant="warm" />
-        <section className="max-w-3xl mx-auto px-4 sm:px-6">
+      <main className="min-h-screen pt-28 pb-20" style={{ background: "var(--color-paper)" }}>
+        <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <a
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-8"
-            >
-              <ArrowLeft size={16} />
-              Kembali ke Beranda
+            <a href="/" className="inline-flex items-center gap-1.5 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-10">
+              <ArrowLeft size={14} /> Kembali ke Beranda
             </a>
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-[#F5A623]/10 flex items-center justify-center">
-                <Mail size={24} className="text-[#F5A623]" />
-              </div>
-              <h1 className="font-heading font-bold text-3xl sm:text-4xl">
-                Kontak Kami
+            {/* Header */}
+            <div className="mb-12">
+              <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Hubungi kami</span>
+              <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-4">
+                Ada yang bisa<br />kami bantu?
               </h1>
+              <p className="text-[#8888aa] text-base max-w-lg">
+                Punya pertanyaan, masukan, atau menemukan masalah keamanan? Kami siap merespons.
+              </p>
             </div>
 
-            <p className="text-[#8888aa] text-lg leading-relaxed mb-10">
-              Punya pertanyaan, masukan, atau menemukan masalah? Kami siap membantu.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-              {CONTACTS.map((contact, i) => {
-                const Icon = contact.icon;
+            {/* Contact channels */}
+            <div className="grid lg:grid-cols-3 gap-4 mb-16">
+              {[
+                {
+                  icon: ShieldCheck,
+                  label: "Keamanan",
+                  value: "security@urlveil.id",
+                  href: "mailto:security@urlveil.id",
+                  desc: "Laporan kerentanan & privasi",
+                  color: "#E55C30",
+                },
+                {
+                  icon: Mail,
+                  label: "Umum",
+                  value: "hello@urlveil.id",
+                  href: "mailto:hello@urlveil.id",
+                  desc: "Pertanyaan & kerjasama",
+                  color: "#F5A623",
+                },
+                {
+                  icon: Github,
+                  label: "GitHub",
+                  value: "michiooo290-rgb/ceklink",
+                  href: "https://github.com/michiooo290-rgb/ceklink",
+                  desc: "Issue & pull request",
+                  color: "#a0a5b8",
+                  external: true,
+                },
+              ].map((c, i) => {
+                const Icon = c.icon;
                 return (
                   <motion.a
                     key={i}
-                    href={contact.href}
-                    className="glass-card hover:border-[#2DCB85]/20 transition-colors p-6 block"
-                    initial={{ opacity: 0, y: 20 }}
+                    href={c.href}
+                    target={c.external ? "_blank" : undefined}
+                    rel={c.external ? "noopener noreferrer" : undefined}
+                    className="group p-5 rounded-xl border border-[#2e3348] bg-[#1f2438] hover:border-[#3e4358] transition-colors block"
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
+                    transition={{ delay: 0.1 + i * 0.08 }}
                   >
-                    <Icon size={24} className="text-[#F5A623] mb-3" />
-                    <h3 className="font-heading font-semibold text-[#e0e0e0] mb-1">{contact.label}</h3>
-                    <p className="text-[#F5A623] text-sm font-mono mb-2">{contact.value}</p>
-                    <p className="text-[#666680] text-xs">{contact.desc}</p>
+                    <Icon size={18} style={{ color: c.color }} className="mb-3" />
+                    <p className="text-xs font-mono text-[#555570] mb-1">{c.label}</p>
+                    <p className="text-sm font-medium text-white mb-1 group-hover:text-[#F5A623] transition-colors">{c.value}</p>
+                    <p className="text-xs text-[#666680]">{c.desc}</p>
                   </motion.a>
                 );
               })}
             </div>
 
-            <h2 className="font-heading font-semibold text-xl text-[#e0e0e0] mb-6">
-              Pertanyaan Umum
-            </h2>
-            <div className="space-y-4 mb-10">
-              {FAQ.map((item, i) => (
-                <motion.div
-                  key={i}
-                  className="glass-card p-5"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.08 }}
-                >
-                  <h3 className="font-heading font-medium text-[#e0e0e0] mb-2 text-sm">{item.q}</h3>
-                  <p className="text-[#8888aa] text-sm leading-relaxed">{item.a}</p>
-                </motion.div>
-              ))}
-            </div>
+            {/* FAQ */}
+            <div className="border-t border-[#2e3348] pt-12">
+              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-6 block">Pertanyaan umum</span>
+              <div className="border-t border-[#2e3348]">
+                {FAQ.map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="grid sm:grid-cols-2 gap-4 py-5 border-b border-[#2e3348]"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + i * 0.07 }}
+                  >
+                    <h3 className="text-sm font-medium text-white">{item.q}</h3>
+                    <p className="text-sm text-[#666680] leading-relaxed">{item.a}</p>
+                  </motion.div>
+                ))}
+              </div>
 
-            <motion.div
-              className="glass-card p-6 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              <ShieldCheck size={28} className="text-[#2DCB85] mx-auto mb-3" />
-              <p className="text-[#8888aa] text-sm">
-                Respons dalam <span className="text-[#2DCB85] font-medium">48 jam</span> untuk laporan keamanan.
-                Kami sangat menghargai kontribusi komunitas untuk keamanan bersama.
-              </p>
-            </motion.div>
+              {/* Response time note */}
+              <div className="mt-8 flex items-center gap-3 p-4 rounded-xl border border-[#2DCB85]/20 bg-[#2DCB85]/5">
+                <ShieldCheck size={16} className="text-[#2DCB85] flex-shrink-0" />
+                <p className="text-sm text-[#8888aa]">
+                  Respons dalam <span className="text-[#2DCB85] font-medium">48 jam</span> untuk laporan keamanan.
+                </p>
+              </div>
+            </div>
           </motion.div>
-        </section>
+        </div>
       </main>
       <Footer />
     </>

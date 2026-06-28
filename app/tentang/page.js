@@ -1,117 +1,133 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Users, Target, Heart } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Github, Heart, Zap, Globe, Lock } from "lucide-react";
 import FloatingHeader from "../../components/FloatingHeader";
 import Footer from "../../components/Footer";
-import MeshBackground from "../../components/MeshBackground";
 
 const STATS = [
-  { value: "12K+", label: "Link Discan", icon: ShieldCheck },
-  { value: "8K+", label: "Phising Ditemukan", icon: Target },
-  { value: "4.5K+", label: "User Aktif", icon: Users },
+  { value: "12K+", label: "Link diperiksa", note: "sejak diluncurkan" },
+  { value: "8K+", label: "Phising terdeteksi", note: "dari total scan" },
+  { value: "4.5K+", label: "Pengguna aktif", note: "bulan ini" },
+];
+
+const FEATURES = [
+  { icon: Zap, title: "URL Scanner", desc: "Analisis SSL, domain, redirect, dan blacklist dalam detik — tanpa install apapun." },
+  { icon: Globe, title: "Database Phising", desc: "Data real-time dari URLhaus dan laporan komunitas Indonesia." },
+  { icon: Lock, title: "Privasi Utama", desc: "URL yang kamu scan tidak disimpan di server. Proses terjadi di browser." },
 ];
 
 export default function TentangPage() {
   return (
     <>
       <FloatingHeader />
-      <main className="min-h-screen pt-24 pb-16 relative">
-        <MeshBackground variant="warm" />
-        <section className="max-w-3xl mx-auto px-4 sm:px-6">
+      <main className="min-h-screen pt-28 pb-20" style={{ background: "var(--color-paper)" }}>
+        <div className="max-w-4xl mx-auto px-6">
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <a
-              href="/"
-              className="inline-flex items-center gap-2 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-8"
-            >
-              <ArrowLeft size={16} />
-              Kembali ke Beranda
+            <a href="/" className="inline-flex items-center gap-1.5 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-10">
+              <ArrowLeft size={14} /> Kembali ke Beranda
             </a>
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-[#F5A623]/10 flex items-center justify-center">
-                <ShieldCheck size={24} className="text-[#F5A623]" />
+            {/* Hero */}
+            <div className="grid lg:grid-cols-2 gap-12 mb-16 items-center">
+              <div>
+                <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Tentang Urlveil</span>
+                <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
+                  Keamanan digital<br />untuk semua orang.
+                </h1>
+                <p className="text-[#8888aa] text-base leading-relaxed">
+                  Urlveil dibuat untuk melindungi masyarakat Indonesia dari phising dan penipuan online.
+                  Kami percaya keamanan digital bukan hak eksklusif — siapapun bisa dan harus bisa mengecek link mencurigakan.
+                </p>
               </div>
-              <h1 className="font-heading font-bold text-3xl sm:text-4xl">
-                Tentang Urlveil
-              </h1>
-            </div>
 
-            <p className="text-[#8888aa] text-lg leading-relaxed mb-8">
-              Urlveil adalah alat pengecek keamanan link yang dibuat untuk melindungi masyarakat Indonesia
-              dari serangan phising dan penipuan online. Kami percaya bahwa keamanan digital adalah hak
-              semua orang.
-            </p>
-
-            <div className="glass-card p-6 mb-8">
-              <h2 className="font-heading font-semibold text-xl text-[#e0e0e0] mb-4 flex items-center gap-2">
-                <Heart size={20} className="text-[#E55C30]" />
-                Misi Kami
-              </h2>
-              <p className="text-[#8888aa] leading-relaxed">
-                Membuat internet yang lebih aman untuk semua orang Indonesia. Kami ingin setiap orang
-                bisa dengan mudah mengecek apakah sebuah link aman atau berbahaya — tanpa perlu
-                pengetahuan teknis yang rumit.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-              {STATS.map((stat, i) => {
-                const Icon = stat.icon;
-                return (
+              {/* Stats */}
+              <div className="space-y-4">
+                {STATS.map((s, i) => (
                   <motion.div
                     key={i}
-                    className="glass-card p-5 text-center"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
+                    className="flex items-center gap-4 p-4 rounded-xl border border-[#2e3348] bg-[#1f2438]"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + i * 0.08 }}
                   >
-                    <Icon size={24} className="text-[#F5A623] mx-auto mb-2" />
-                    <div className="font-heading font-bold text-2xl text-[#F5A623]">{stat.value}</div>
-                    <div className="text-sm text-[#666680]">{stat.label}</div>
+                    <div className="font-heading font-bold text-2xl text-[#F5A623] w-20 flex-shrink-0">{s.value}</div>
+                    <div>
+                      <div className="text-sm font-medium text-white">{s.label}</div>
+                      <div className="text-xs font-mono text-[#555570]">{s.note}</div>
+                    </div>
                   </motion.div>
-                );
-              })}
-            </div>
-            <p className="text-center text-[10px] text-[#555570] -mt-4 mb-8">
-              * Data ilustrasi — bukan data real-time
-            </p>
-
-            <div className="glass-card p-6 mb-8">
-              <h2 className="font-heading font-semibold text-xl text-[#e0e0e0] mb-4">
-                Fitur Utama
-              </h2>
-              <ul className="space-y-3 text-[#8888aa]">
-                <li className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-[#2DCB85] mt-2 flex-shrink-0" />
-                  <span><strong className="text-[#e0e0e0]">URL Scanner</strong> — Analisis keamanan link secara instan dengan pengecekan SSL, domain, dan pattern matching.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-[#2DCB85] mt-2 flex-shrink-0" />
-                  <span><strong className="text-[#e0e0e0]">Database Phising</strong> — Kumpulan link phising terbaru yang dilaporkan oleh komunitas.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="w-2 h-2 rounded-full bg-[#2DCB85] mt-2 flex-shrink-0" />
-                  <span><strong className="text-[#e0e0e0]">Pusat Edukasi</strong> — Artikel dan panduan lengkap tentang keamanan digital.</span>
-                </li>
-              </ul>
+                ))}
+                <p className="text-[10px] text-[#555570] font-mono px-1">* Data ilustrasi, bukan real-time</p>
+              </div>
             </div>
 
-            <div className="glass-card p-6">
-              <h2 className="font-heading font-semibold text-xl text-[#e0e0e0] mb-4">
-                Open Source
-              </h2>
-              <p className="text-[#8888aa] leading-relaxed">
-                Urlveil adalah proyek open source. Kami percaya transparansi adalah kunci keamanan.
-                Kontribusi dari komunitas sangat kami hargai.
-              </p>
+            {/* Misi */}
+            <div className="border-t border-[#2e3348] pt-12 mb-12">
+              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-3 block">Misi</span>
+              <div className="flex items-start gap-3">
+                <Heart size={20} className="text-[#E55C30] mt-1 flex-shrink-0" />
+                <p className="text-lg text-[#a0a5b8] leading-relaxed">
+                  Membuat internet lebih aman untuk semua orang Indonesia — tanpa perlu pengetahuan teknis,
+                  tanpa biaya, tanpa install apapun.
+                </p>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="border-t border-[#2e3348] pt-12 mb-12">
+              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-6 block">Fitur utama</span>
+              <div className="space-y-0 border-t border-[#2e3348]">
+                {FEATURES.map((f, i) => {
+                  const Icon = f.icon;
+                  return (
+                    <motion.div
+                      key={i}
+                      className="flex items-start gap-4 py-5 border-b border-[#2e3348]"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + i * 0.08 }}
+                    >
+                      <Icon size={18} className="text-[#F5A623] mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-heading font-semibold text-white text-sm mb-1">{f.title}</h3>
+                        <p className="text-sm text-[#666680] leading-relaxed">{f.desc}</p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Open Source */}
+            <div className="border-t border-[#2e3348] pt-12">
+              <div className="flex items-start gap-4">
+                <Github size={20} className="text-[#a0a5b8] mt-1 flex-shrink-0" />
+                <div>
+                  <h2 className="font-heading font-semibold text-white text-lg mb-2">Open Source</h2>
+                  <p className="text-sm text-[#666680] leading-relaxed mb-4">
+                    Urlveil adalah proyek open source. Transparansi adalah kunci kepercayaan — kamu bisa lihat,
+                    audit, dan berkontribusi ke kode kami kapanpun.
+                  </p>
+                  <a
+                    href="https://github.com/michiooo290-rgb/ceklink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2e3348] text-sm text-[#a0a5b8] hover:text-white hover:border-[#F5A623]/30 transition-colors"
+                  >
+                    <Github size={15} />
+                    Lihat di GitHub
+                  </a>
+                </div>
+              </div>
             </div>
           </motion.div>
-        </section>
+        </div>
       </main>
       <Footer />
     </>
