@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import "./globals.css";
 import ErrorBoundary from "../components/ErrorBoundary";
 
@@ -25,7 +26,9 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const nonce = (await headers()).get("x-nonce");
+
   return (
     <html lang="id" className="dark">
       <head>
@@ -50,6 +53,7 @@ export default function RootLayout({ children }) {
         <link rel="canonical" href="https://urlveil.id" />
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
