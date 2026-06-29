@@ -159,16 +159,15 @@ export default function Hero() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="hero-eyebrow">Keamanan URL · Indonesia</p>
+          <p className="hero-eyebrow">Cek keamanan link sebelum diklik</p>
 
           <h1 className="hero-headline">
-            Sebelum klik,<br />
-            <span className="hero-accent">periksa dulu.</span>
+            Jangan asal klik link yang <span className="hero-accent">mencurigakan.</span>
           </h1>
 
           <p className="hero-sub">
-            Tempel link mencurigakan — Urlveil menganalisis SSL, domain,
-            redirect, dan blacklist dalam hitungan detik. Gratis, tanpa daftar.
+            Tempel link apa pun, Urlveil cek SSL, domain, redirect, sampai
+            blacklist dalam hitungan detik. Gratis dan tanpa perlu daftar.
           </p>
 
           <div className="hero-actions">
