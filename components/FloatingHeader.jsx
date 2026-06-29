@@ -47,6 +47,61 @@ function Toast({ show }) {
   );
 }
 
+/* ── Logout Confirm Modal ──────────────────────── */
+function LogoutConfirmModal({ show, onConfirm, onCancel, loading }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          style={{ background: "rgba(10,12,20,0.7)", backdropFilter: "blur(4px)" }}
+          onClick={onCancel}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border p-6"
+            style={{
+              background: "rgba(26,30,46,0.98)",
+              backdropFilter: "blur(16px)",
+              borderColor: "rgba(255,255,255,0.08)",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02) inset",
+            }}
+          >
+            <h3 className="text-base font-semibold text-white mb-1.5">Keluar dari akun?</h3>
+            <p className="text-sm text-[#8888aa] mb-5">
+              Kamu perlu login lagi buat akses riwayat scan dan laporan AI.
+            </p>
+            <div className="flex gap-2.5">
+              <button
+                onClick={onCancel}
+                disabled={loading}
+                className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] transition-all disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={onConfirm}
+                disabled={loading}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl text-white transition-all disabled:opacity-60"
+                style={{ background: "linear-gradient(135deg, #E55C30, #c4441f)" }}
+              >
+                {loading ? "Memproses..." : "Ya, Keluar"}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function FloatingHeader() {
   const [visible, setVisible] = useState(true);
   const [atTop, setAtTop] = useState(true);
@@ -54,6 +109,8 @@ export default function FloatingHeader() {
   const [activeSection, setActiveSection] = useState("#beranda");
   const [user, setUser] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const supabase = useRef(createClient()).current;
 
@@ -66,8 +123,11 @@ export default function FloatingHeader() {
   }, [supabase]);
 
   const handleLogout = useCallback(async () => {
+    setLoggingOut(true);
     await supabase.auth.signOut();
     setUser(null);
+    setLoggingOut(false);
+    setShowLogoutConfirm(false);
 
     // Tampilkan toast, redirect setelah 1.5 detik
     setShowToast(true);
@@ -133,6 +193,12 @@ export default function FloatingHeader() {
   return (
     <>
       <Toast show={showToast} />
+      <LogoutConfirmModal
+        show={showLogoutConfirm}
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+        loading={loggingOut}
+      />
 
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
@@ -184,7 +250,7 @@ export default function FloatingHeader() {
                         {user.user_metadata?.full_name || user.email}
                       </span>
                       <button
-                        onClick={handleLogout}
+                        onClick={() => setShowLogoutConfirm(true)}
                         className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
                       >
                         <LogOut size={16} />
@@ -245,7 +311,7 @@ export default function FloatingHeader() {
                   })}
                   {user ? (
                     <button
-                      onClick={() => { setMobileOpen(false); handleLogout(); }}
+                      onClick={() => { setMobileOpen(false); setShowLogoutConfirm(true); }}
                       className="w-full flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
                     >
                       <LogOut size={16} />
