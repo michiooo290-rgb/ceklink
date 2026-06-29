@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { ShieldCheck, AlertTriangle, XCircle } from "lucide-react";
 import ShapeGrid from "./ShapeGrid";
 
-// Scan line animation — specific to URL security, not generic swirl
+// Animasi scan line untuk demo URL
 function URLDemoScan() {
   const [phase, setPhase] = useState(0);
   // 0 = idle, 1 = scanning, 2 = result

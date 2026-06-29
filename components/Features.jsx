@@ -63,7 +63,7 @@ export default function Features() {
           </h2>
         </motion.div>
 
-        {/* Feature list — horizontal rows, not icon cards */}
+        {/* Daftar fitur */}
         <div className="features-list">
           {FEATURES.map((f, i) => {
             const Icon = f.icon;
