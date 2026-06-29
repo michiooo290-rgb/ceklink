@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { LogIn, LogOut, User as UserIcon, CheckCircle2 } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon, CheckCircle2, History } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "../lib/supabase/client";
@@ -245,6 +245,13 @@ export default function FloatingHeader() {
                 <div className="hidden md:flex items-center gap-2">
                   {user ? (
                     <>
+                      <a
+                        href="/riwayat"
+                        className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                      >
+                        <History size={16} />
+                        Riwayat
+                      </a>
                       <span className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#8888aa]">
                         <UserIcon size={16} />
                         {user.user_metadata?.full_name || user.email}
@@ -309,10 +316,20 @@ export default function FloatingHeader() {
                       </a>
                     );
                   })}
+                  {user && (
+                    <a
+                      href="/riwayat"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                    >
+                      <History size={16} />
+                      Riwayat Scan
+                    </a>
+                  )}
                   {user ? (
                     <button
                       onClick={() => { setMobileOpen(false); setShowLogoutConfirm(true); }}
-                      className="w-full flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                      className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
                     >
                       <LogOut size={16} />
                       Keluar ({user.user_metadata?.full_name || user.email})

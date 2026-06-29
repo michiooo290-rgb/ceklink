@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Search, Link } from "lucide-react";
 import { scanURL } from "../lib/scanner";
+import { createClient } from "../lib/supabase/client";
 import ResultCard from "./ResultCard";
 
 export default function URLScanner() {
@@ -15,6 +16,36 @@ export default function URLScanner() {
   const scanCountRef = useRef({ count: 0, resetTime: Date.now() + 60000 });
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+
+  const supabase = useRef(createClient()).current;
+  const userRef = useRef(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => { userRef.current = data.user; });
+    const { data: listener } = supabase.auth.onAuthStateChange((_e, session) => {
+      userRef.current = session?.user ?? null;
+    });
+    return () => listener.subscription.unsubscribe();
+  }, [supabase]);
+
+  // Simpan hasil scan ke riwayat — diam-diam, nggak ganggu UX kalau gagal/belum login
+  const saveToHistory = useCallback(async (data) => {
+    if (!userRef.current) return; // cuma simpan kalau user login
+    try {
+      await supabase.from("scan_history").insert({
+        user_id: userRef.current.id,
+        url: data.url,
+        domain: data.domain,
+        status: data.status,
+        status_label: data.statusLabel,
+        score: data.score,
+        risk_level: data.riskLevel,
+        summary: data.summary,
+      });
+    } catch {
+      // Diamkan — riwayat itu fitur tambahan, jangan sampai bikin scan utama gagal
+    }
+  }, [supabase]);
 
   const handleScan = async (e) => {
     e.preventDefault();
@@ -94,6 +125,7 @@ export default function URLScanner() {
     try {
       const data = await scanURL(normalized);
       setResult(data);
+      saveToHistory(data);
 
       // External check — non-blocking
       fetch("/api/scan", {
