@@ -19,6 +19,7 @@ export default async function RiwayatPage() {
   const { data: history } = await supabase
     .from("scan_history")
     .select("*")
+    .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -89,7 +90,7 @@ export default async function RiwayatPage() {
           )}
 
           {/* List */}
-          <HistoryList initialHistory={items} />
+          <HistoryList initialHistory={items} userId={user.id} />
 
         </div>
       </main>

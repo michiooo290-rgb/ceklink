@@ -41,62 +41,11 @@ function EmptyState() {
         <Search size={16} />
         Cek link pertamamu
       </a>
-    {/* Confirm delete modal */}
-    {confirmId && (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center px-4"
-        style={{ background: "rgba(10,12,20,0.7)", backdropFilter: "blur(4px)" }}
-        onClick={() => setConfirmId(null)}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 12, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 12, scale: 0.96 }}
-          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-sm rounded-2xl border p-6"
-          style={{
-            background: "rgba(26,30,46,0.98)",
-            backdropFilter: "blur(16px)",
-            borderColor: "rgba(255,255,255,0.08)",
-            boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
-          }}
-        >
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(229,92,48,0.1)" }}>
-              <AlertTriangle size={18} style={{ color: "#E55C30" }} />
-            </div>
-            <h3 className="text-base font-semibold text-white">Hapus riwayat ini?</h3>
-          </div>
-          <p className="text-sm text-[#8888aa] mb-5 ml-12">
-            Riwayat scan ini akan dihapus permanen dan tidak bisa dikembalikan.
-          </p>
-          <div className="flex gap-2.5">
-            <button
-              onClick={() => setConfirmId(null)}
-              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] transition-all"
-            >
-              Batal
-            </button>
-            <button
-              onClick={() => handleDelete(confirmId)}
-              className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl text-white transition-all"
-              style={{ background: "linear-gradient(135deg, #E55C30, #c4441f)" }}
-            >
-              Ya, Hapus
-            </button>
-          </div>
-        </motion.div>
-      </motion.div>
-    )}
     </div>
   );
 }
 
-export default function HistoryList({ initialHistory }) {
+export default function HistoryList({ initialHistory, userId }) {
   const [history, setHistory] = useState(initialHistory);
   const [deletingId, setDeletingId] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
@@ -105,7 +54,7 @@ export default function HistoryList({ initialHistory }) {
   const handleDelete = async (id) => {
     setDeletingId(id);
     setConfirmId(null);
-    const { error } = await supabase.from("scan_history").delete().eq("id", id);
+    const { error } = await supabase.from("scan_history").delete().eq("id", id).eq("user_id", userId);
     if (!error) {
       setHistory((prev) => prev.filter((item) => item.id !== id));
     }
