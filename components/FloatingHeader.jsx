@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { LogIn, LogOut, User as UserIcon, CheckCircle2, History } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon, CheckCircle2, History, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "../lib/supabase/client";
@@ -111,6 +111,18 @@ export default function FloatingHeader() {
   const [showToast, setShowToast] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const supabase = useRef(createClient()).current;
 
@@ -244,26 +256,53 @@ export default function FloatingHeader() {
 
                 <div className="hidden md:flex items-center gap-2">
                   {user ? (
-                    <>
-                      <a
-                        href="/riwayat"
+                    <div className="relative" ref={userMenuRef}>
+                      <button
+                        onClick={() => setUserMenuOpen((v) => !v)}
                         className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
                       >
-                        <History size={16} />
-                        Riwayat
-                      </a>
-                      <span className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#8888aa]">
                         <UserIcon size={16} />
                         {user.user_metadata?.full_name || user.email}
-                      </span>
-                      <button
-                        onClick={() => setShowLogoutConfirm(true)}
-                        className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all duration-300"
-                      >
-                        <LogOut size={16} />
-                        Keluar
+                        <ChevronDown
+                          size={14}
+                          className={`transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`}
+                        />
                       </button>
-                    </>
+
+                      <AnimatePresence>
+                        {userMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 top-full mt-2 w-44 rounded-xl border p-1.5 overflow-hidden"
+                            style={{
+                              background: "rgba(26,30,46,0.98)",
+                              backdropFilter: "blur(16px)",
+                              borderColor: "rgba(255,255,255,0.08)",
+                              boxShadow: "0 12px 32px rgba(0,0,0,0.4)",
+                            }}
+                          >
+                            <a
+                              href="/riwayat"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+                            >
+                              <History size={15} />
+                              Riwayat Scan
+                            </a>
+                            <button
+                              onClick={() => { setUserMenuOpen(false); setShowLogoutConfirm(true); }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+                            >
+                              <LogOut size={15} />
+                              Keluar
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ) : (
                     <a
                       href="/login"
