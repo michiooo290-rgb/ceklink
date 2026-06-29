@@ -9,6 +9,8 @@ import HowItWorks from "../components/HowItWorks";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
 import DataSources from "../components/DataSources";
+import Limitations from "../components/Limitations";
+import FAQ from "../components/FAQ";
 
 export default function Home() {
   return (
@@ -28,6 +30,10 @@ export default function Home() {
         <PhishingCases />
         <div className="section-divider" />
         <Education />
+        <div className="section-divider" />
+        <Limitations />
+        <div className="section-divider" />
+        <FAQ />
         <CTA />
       </main>
       <Footer />
