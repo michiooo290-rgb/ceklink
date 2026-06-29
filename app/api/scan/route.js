@@ -4,6 +4,7 @@
  */
 
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
+import { validateScanUrl } from "../../../lib/validate-url";
 
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
@@ -187,15 +188,11 @@ export async function POST(req) {
       return Response.json(result);
     }
 
-    if (!url || typeof url !== "string") {
-      return Response.json({ error: "URL tidak valid" }, { status: 400 });
+    const validation = validateScanUrl(url);
+    if (!validation.ok) {
+      return Response.json({ error: validation.error }, { status: 400 });
     }
-
-    // Normalize URL
-    let normalizedUrl = url.trim();
-    if (!/^https?:\/\//i.test(normalizedUrl)) {
-      normalizedUrl = "https://" + normalizedUrl;
-    }
+    const normalizedUrl = validation.url;
 
     // Run checks secara parallel
     const [gsb, urlscan] = await Promise.all([

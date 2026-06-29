@@ -11,6 +11,7 @@
  */
 
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
+import { validateScanUrl } from "../../../lib/validate-url";
 
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLHAUS_AUTH_KEY = process.env.URLHAUS_AUTH_KEY; // opsional, daftar gratis di auth.abuse.ch
@@ -101,13 +102,15 @@ export async function POST(req) {
     }
 
     const { url } = await req.json();
-    if (!url || typeof url !== "string") {
-      return Response.json({ error: "URL tidak valid" }, { status: 400 });
+    const validation = validateScanUrl(url);
+    if (!validation.ok) {
+      return Response.json({ error: validation.error }, { status: 400 });
     }
+    const safeUrl = validation.url;
 
     const [urlhaus, gsb] = await Promise.all([
-      checkURLhaus(url),
-      checkGoogleSafeBrowsing(url),
+      checkURLhaus(safeUrl),
+      checkGoogleSafeBrowsing(safeUrl),
     ]);
 
     const listedAnywhere = urlhaus.listed || gsb.listed;
