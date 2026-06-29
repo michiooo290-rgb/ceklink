@@ -175,7 +175,7 @@ export default function Hero() {
               Cek Link Sekarang
             </a>
             <a href="#cara-kerja" className="btn-ghost">
-              Cara kerja →
+              Lihat cara kerjanya
             </a>
           </div>
 

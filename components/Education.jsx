@@ -615,7 +615,7 @@ export default function Education() {
             Buka Panduan Lengkap
             <ArrowRight size={14} aria-hidden="true" />
           </a>
-          <p className="edu-cta-note">8 modul · Quiz interaktif · Tips dari pakar keamanan siber</p>
+          <p className="edu-cta-note">8 modul belajar, quiz interaktif, dan tips keamanan praktis.</p>
         </motion.div>
 
       </div>
