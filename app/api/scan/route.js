@@ -1,215 +1,178 @@
-/**
- * /api/scan — Real-time URL security check
- * Menggunakan Google Safe Browsing + URLScan.io
- */
+"use client";
 
-import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Lock, Eye, ShieldCheck, Database, Globe, Mail, ChevronDown } from "lucide-react";
+import FloatingHeader from "../../components/FloatingHeader";
+import Footer from "../../components/Footer";
 
-const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
-const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
+const SECTIONS = [
+  {
+    icon: Eye,
+    title: "Informasi yang Kami Kumpulkan",
+    items: [
+      "Kalau kamu belum login: URL yang kamu cek hanya diproses di browser, tidak disimpan di mana pun.",
+      "Kalau kamu login: hasil cek (URL, skor, status) disimpan sebagai riwayat scan ke akun kamu — bisa kamu hapus kapanpun di halaman Riwayat.",
+      "Laporan link phising yang kamu kirimkan: URL, alasan pelaporan, dan deskripsi tambahan.",
+      "Email & nama (lewat Google/login) saat kamu mendaftar akun, untuk keperluan login dan menyimpan riwayat scan kamu.",
+    ],
+  },
+  {
+    icon: Database,
+    title: "Bagaimana Kami Menggunakan Data",
+    items: [
+      "URL dianalisis secara real-time di browser untuk memberikan hasil keamanan instan.",
+      "Fitur \"Analisis Mendalam\" mengirim URL ke layanan keamanan pihak ketiga — Google Safe Browsing dan URLScan.io — untuk verifikasi tambahan. Ini di luar pengecekan dasar yang sepenuhnya lokal.",
+      "Laporan phising komunitas digunakan untuk memperbarui database ancaman kami.",
+      "Email digunakan untuk autentikasi akun dan mengirim notifikasi yang kamu minta.",
+    ],
+  },
+  {
+    icon: ShieldCheck,
+    title: "Keamanan Data",
+    items: [
+      "Semua komunikasi antara browser dan server dienkripsi menggunakan HTTPS/TLS.",
+      "Kami tidak menjual atau menyewakan data pribadi kamu untuk tujuan komersial/marketing apapun.",
+      "URL yang kamu analisis mendalam dikirim ke Google Safe Browsing & URLScan.io (lihat bagian di atas) — submisi ke URLScan.io diatur sebagai \"unlisted\", bukan publik.",
+      "Data laporan disimpan secara anonim untuk keperluan analisis ancaman keamanan.",
+    ],
+  },
+  {
+    icon: Globe,
+    title: "Cookie & Pelacakan",
+    items: [
+      "Urlveil tidak menggunakan cookie tracking, iklan, atau pixel tracking apapun.",
+      "Kami tidak menggunakan Google Analytics atau layanan analitik pihak ketiga.",
+      "Tidak ada fingerprinting browser atau pelacakan aktivitas lintas situs.",
+    ],
+  },
+  {
+    icon: Lock,
+    title: "Hak Kamu",
+    items: [
+      "Kamu bisa meminta penghapusan semua data yang terkait dengan email kamu kapanpun.",
+      "Urlveil sepenuhnya bisa digunakan tanpa memberikan data pribadi apapun.",
+      "Hubungi kami di security@urlveil.id untuk pertanyaan atau permintaan terkait privasi.",
+    ],
+  },
+];
 
-const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
+export default function PrivasiPage() {
+  const [openIndex, setOpenIndex] = useState(null);
 
-// ── Google Safe Browsing ──────────────────────────────────────────────
-async function checkGoogleSafeBrowsing(url) {
-  if (!GSB_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
+  return (
+    <>
+      <FloatingHeader />
+      <main className="min-h-screen pt-28 pb-20" style={{ background: "var(--color-paper)" }}>
+        <div className="max-w-4xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <a href="/" className="inline-flex items-center gap-1.5 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-10">
+              <ArrowLeft size={14} /> Kembali ke Beranda
+            </a>
 
-  try {
-    const res = await fetch(
-      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GSB_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client: { clientId: "urlveil", clientVersion: "1.0.0" },
-          threatInfo: {
-            threatTypes: [
-              "MALWARE",
-              "SOCIAL_ENGINEERING",
-              "UNWANTED_SOFTWARE",
-              "POTENTIALLY_HARMFUL_APPLICATION",
-            ],
-            platformTypes: ["ANY_PLATFORM"],
-            threatEntryTypes: ["URL"],
-            threatEntries: [{ url }],
-          },
-        }),
-      }
-    );
+            {/* Hero — single column, tanpa stat card kanan */}
+            <div className="max-w-2xl mb-16">
+              <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Kebijakan Privasi</span>
+              <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
+                Privasi bukan<br />pilihan opsional.
+              </h1>
+              <p className="text-[#8888aa] text-base leading-relaxed mb-4">
+                Urlveil dibangun dengan prinsip privacy-first sejak hari pertama. Berikut penjelasan
+                transparan soal data apa yang kami kumpulkan, dan hak kamu sebagai pengguna.
+              </p>
+              <p className="text-[10px] text-[#555570] font-mono">Terakhir diperbarui: 26 Juni 2026</p>
+            </div>
 
-    if (!res.ok) {
-      const err = await res.json();
-      return { available: false, reason: err.error?.message || "GSB error" };
-    }
+            {/* Komitmen singkat — sama posisi/typografi seperti Misi di Tentang */}
+            <div className="border-t border-[#2e3348] pt-12 mb-12">
+              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-3 block">Komitmen kami</span>
+              <div className="flex items-start gap-3">
+                <ShieldCheck size={20} className="text-[#F5A623] mt-1 flex-shrink-0" />
+                <p className="text-lg text-[#a0a5b8] leading-relaxed">
+                  Data kamu tidak dijual dan tidak dimonetisasi untuk iklan. Pengecekan dasar terjadi
+                  sepenuhnya di browser kamu; fitur Analisis Mendalam & Riwayat menyimpan/mengirim data
+                  secukupnya yang dijelaskan rinci di bawah.
+                </p>
+              </div>
+            </div>
 
-    const data = await res.json();
-    const matches = data.matches || [];
+            {/* Detail kebijakan — kerangka mirip Fitur Utama di Tentang, tapi tiap baris bisa diklik buat expand detail */}
+            <div className="border-t border-[#2e3348] pt-12 mb-12">
+              <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-6 block">Detail kebijakan</span>
+              <div className="space-y-0 border-t border-[#2e3348]">
+                {SECTIONS.map((section, i) => {
+                  const Icon = section.icon;
+                  const isOpen = openIndex === i;
+                  return (
+                    <motion.div
+                      key={i}
+                      className="border-b border-[#2e3348]"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + i * 0.08 }}
+                    >
+                      <button
+                        onClick={() => setOpenIndex(isOpen ? null : i)}
+                        className="w-full flex items-start gap-4 py-5 text-left hover:opacity-80 transition-opacity"
+                      >
+                        <Icon size={18} className="text-[#F5A623] mt-0.5 flex-shrink-0" />
+                        <h3 className="flex-1 font-heading font-semibold text-white text-sm">{section.title}</h3>
+                        <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0 mt-0.5">
+                          <ChevronDown size={15} className="text-[#555570]" />
+                        </motion.span>
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pl-9 pb-5 space-y-2">
+                              {section.items.map((item, j) => (
+                                <p key={j} className="text-sm text-[#666680] leading-relaxed">{item}</p>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
 
-    if (matches.length > 0) {
-      const types = matches.map((m) => m.threatType);
-      return {
-        available: true,
-        safe: false,
-        threatTypes: types,
-        label: types.includes("SOCIAL_ENGINEERING")
-          ? "Phising terdeteksi oleh Google"
-          : types.includes("MALWARE")
-          ? "Malware terdeteksi oleh Google"
-          : "Ancaman terdeteksi oleh Google",
-      };
-    }
+            {/* Contact — posisi sama seperti Open Source di Tentang, isi beda */}
+            <div className="border-t border-[#2e3348] pt-12">
+              <div className="flex items-start gap-4">
+                <Mail size={20} className="text-[#a0a5b8] mt-1 flex-shrink-0" />
+                <div>
+                  <h2 className="font-heading font-semibold text-white text-lg mb-2">Ada pertanyaan tentang privasi?</h2>
+                  <p className="text-sm text-[#666680] leading-relaxed mb-4">
+                    Kami berkomitmen untuk transparan dan responsif terhadap semua pertanyaan privasi.
+                    Hubungi tim kami dan kami akan merespons dalam 48 jam kerja.
+                  </p>
+                  <a
+                    href="mailto:security@urlveil.id"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2e3348] text-sm text-[#a0a5b8] hover:text-white hover:border-[#F5A623]/30 transition-colors"
+                  >
+                    <Mail size={15} />
+                    security@urlveil.id
+                  </a>
+                </div>
+              </div>
+            </div>
 
-    return { available: true, safe: true, threatTypes: [], label: "Aman menurut Google Safe Browsing" };
-  } catch (err) {
-    return { available: false, reason: err.message };
-  }
-}
-
-// ── URLScan.io ────────────────────────────────────────────────────────
-async function checkURLScan(url) {
-  if (!URLSCAN_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
-
-  try {
-    // Submit scan
-    const submitRes = await fetch("https://urlscan.io/api/v1/scan/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "API-Key": URLSCAN_API_KEY,
-      },
-      body: JSON.stringify({
-        url,
-        visibility: "public",
-        tags: ["urlveil"],
-      }),
-    });
-
-    if (!submitRes.ok) {
-      const err = await submitRes.json();
-      // 400 bisa berarti URL sudah di-scan sebelumnya — coba ambil hasil lama
-      if (submitRes.status === 400 && err.message?.includes("already been submitted")) {
-        return { available: true, pending: true, label: "URL sedang dalam antrian scan" };
-      }
-      return { available: false, reason: err.message || "URLScan submit error" };
-    }
-
-    const submitData = await submitRes.json();
-    const uuid = submitData.uuid;
-    const resultUrl = `https://urlscan.io/result/${uuid}/`;
-
-    // Tunggu hasil (URLScan butuh ~10 detik)
-    // Di sini kita return pending, frontend bisa polling
-    return {
-      available: true,
-      pending: true,
-      uuid,
-      resultUrl,
-      label: "Scan dikirim ke URLScan.io — hasil dalam ~10 detik",
-    };
-  } catch (err) {
-    return { available: false, reason: err.message };
-  }
-}
-
-// ── Poll URLScan result ───────────────────────────────────────────────
-async function pollURLScanResult(uuid) {
-  try {
-    const res = await fetch(`https://urlscan.io/api/v1/result/${uuid}/`, {
-      headers: { "API-Key": URLSCAN_API_KEY },
-    });
-
-    if (res.status === 404) return { ready: false };
-    if (!res.ok) return { ready: false };
-
-    const data = await res.json();
-    const verdicts = data.verdicts?.overall;
-
-    return {
-      ready: true,
-      safe: !verdicts?.malicious,
-      score: verdicts?.score ?? 0,
-      malicious: verdicts?.malicious ?? false,
-      categories: verdicts?.categories ?? [],
-      brands: verdicts?.brands ?? [],
-      screenshot: data.task?.screenshotURL ?? null,
-      resultUrl: `https://urlscan.io/result/${uuid}/`,
-      label: verdicts?.malicious
-        ? `Berbahaya menurut URLScan (score: ${verdicts.score})`
-        : "Aman menurut URLScan.io",
-    };
-  } catch {
-    return { ready: false };
-  }
-}
-
-// ── Combine results ───────────────────────────────────────────────────
-function combineResults(gsb, urlscan) {
-  // Kalau GSB bilang berbahaya → langsung danger
-  if (gsb.available && !gsb.safe) {
-    return { status: "danger", confidence: "high" };
-  }
-  // Kalau URLScan bilang berbahaya
-  if (urlscan.available && urlscan.ready && urlscan.malicious) {
-    return { status: "danger", confidence: "medium" };
-  }
-  // Keduanya aman
-  if (gsb.available && gsb.safe && urlscan.available && urlscan.ready && !urlscan.malicious) {
-    return { status: "safe", confidence: "high" };
-  }
-  // GSB aman tapi URLScan pending/tidak available
-  if (gsb.available && gsb.safe) {
-    return { status: "safe", confidence: "medium" };
-  }
-  return { status: "unknown", confidence: "low" };
-}
-
-// ── Route Handler ─────────────────────────────────────────────────────
-export async function POST(req) {
-  try {
-    const ip = getClientIp(req);
-    const rateCheck = checkRateLimit(ip);
-    if (!rateCheck.allowed) {
-      return Response.json(
-        { error: `Terlalu banyak permintaan. Coba lagi dalam ${rateCheck.retryAfter} detik.` },
-        { status: 429, headers: { "Retry-After": String(rateCheck.retryAfter) } }
-      );
-    }
-
-    const body = await req.json();
-    const { url, uuid } = body;
-
-    // Poll mode — frontend nanya hasil URLScan
-    if (uuid) {
-      const result = await pollURLScanResult(uuid);
-      return Response.json(result);
-    }
-
-    if (!url || typeof url !== "string") {
-      return Response.json({ error: "URL tidak valid" }, { status: 400 });
-    }
-
-    // Normalize URL
-    let normalizedUrl = url.trim();
-    if (!/^https?:\/\//i.test(normalizedUrl)) {
-      normalizedUrl = "https://" + normalizedUrl;
-    }
-
-    // Run checks secara parallel
-    const [gsb, urlscan] = await Promise.all([
-      checkGoogleSafeBrowsing(normalizedUrl),
-      checkURLScan(normalizedUrl),
-    ]);
-
-    const combined = combineResults(gsb, urlscan);
-
-    return Response.json({
-      url: normalizedUrl,
-      checkedAt: new Date().toISOString(),
-      googleSafeBrowsing: gsb,
-      urlscan,
-      combined,
-    });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+          </motion.div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
 }
