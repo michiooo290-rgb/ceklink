@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Flag, AlertTriangle, CheckCircle2, Send } from "lucide-react";
+import { createClient } from "../lib/supabase/client";
 
 const REPORT_REASONS = [
   { id: "phishing", label: "Phishing / Penipuan", icon: AlertTriangle },
@@ -38,29 +39,18 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
 
     setSubmitting(true);
 
-    // NOTE: This is a demo simulation — in production, replace with a real API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const report = {
+    const { error } = await createClient().from("reports").insert({
       url,
       domain,
       reason: selectedReason,
       description: trimmedDesc,
       email: trimmedEmail || null,
-      timestamp: new Date().toISOString(),
-    };
+    });
 
-    // Store locally as a temporary measure (production: send to backend)
-    try {
-      const reports = JSON.parse(localStorage.getItem("urlveil_reports") || "[]");
-      // Limit to 100 reports to prevent localStorage abuse
-      if (reports.length >= 100) {
-        reports.shift(); // Remove oldest
-      }
-      reports.push(report);
-      localStorage.setItem("urlveil_reports", JSON.stringify(reports));
-    } catch {
-      // localStorage may be unavailable; fail silently
+    if (error) {
+      setSubmitting(false);
+      alert("Gagal mengirim laporan. Coba lagi.");
+      return;
     }
 
     setSubmitting(false);

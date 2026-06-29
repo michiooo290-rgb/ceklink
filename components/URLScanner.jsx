@@ -126,6 +126,8 @@ export default function URLScanner() {
       const data = await scanURL(normalized);
       setResult(data);
       saveToHistory(data);
+      // Counter global — jalan buat semua orang, termasuk yang belum login
+      supabase.rpc("increment_site_counters", { is_phishing: data.status === "danger" });
 
       // External check — non-blocking
       fetch("/api/scan", {
