@@ -20,6 +20,7 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const sanitize = (str) => str.replace(/[<>&"'/]/g, "").trim();
 
@@ -33,9 +34,10 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
     const trimmedEmail = email.trim().toLowerCase().slice(0, 254);
 
     if (trimmedEmail && !isValidEmail(trimmedEmail)) {
-      alert("Format email tidak valid.");
+      setFormError("Format email tidak valid.");
       return;
     }
+    setFormError("");
 
     setSubmitting(true);
 
@@ -49,7 +51,7 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
 
     if (error) {
       setSubmitting(false);
-      alert("Gagal mengirim laporan. Coba lagi.");
+      setFormError("Gagal mengirim laporan. Coba lagi.");
       return;
     }
 
@@ -68,6 +70,7 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
     setEmail("");
     setSubmitted(false);
     setSubmitting(false);
+    setFormError("");
     onClose();
   };
 
@@ -216,6 +219,19 @@ export default function ReportModal({ isOpen, onClose, url, domain }) {
                       </span>
                     </p>
                   </div>
+
+                  {/* Inline error */}
+                  {formError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs"
+                      style={{ background: "rgba(229,92,48,0.08)", border: "1px solid rgba(229,92,48,0.2)", color: "#E55C30" }}
+                    >
+                      <AlertTriangle size={13} className="flex-shrink-0" />
+                      {formError}
+                    </motion.div>
+                  )}
 
                   {/* Actions */}
                   <div className="flex gap-3 pt-2">
