@@ -59,7 +59,7 @@ export default function Features() {
         >
           <span className="section-label">Apa yang bisa dilakukan</span>
           <h2 className="features-title">
-            Satu alat,<br />semua yang kamu butuhkan.
+            Satu alat untuk semua yang kamu butuhkan.
           </h2>
         </motion.div>
 
