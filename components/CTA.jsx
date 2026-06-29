@@ -35,8 +35,7 @@ export default function CTA() {
           >
             <span className="cta-eyebrow">Segera hadir</span>
             <h2 className="cta-title">
-              Extension browser<br />
-              <span className="cta-accent">Urlveil.</span>
+              Extension browser <span className="cta-accent">Urlveil.</span>
             </h2>
             <p className="cta-desc">
               Perlindungan otomatis saat browsing — tanpa harus buka aplikasi dulu.

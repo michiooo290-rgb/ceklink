@@ -518,12 +518,10 @@ export default function Education() {
           transition={{ duration: 0.55 }}
         >
           <span className="edu-eyebrow">
-            <span className="edu-eyebrow-dot" aria-hidden="true" />
-            Pusat Edukasi AI
+            Belajar keamanan digital
           </span>
           <h2 className="edu-title">
-            Kenali ancaman,<br />
-            <span className="edu-title-accent">sebelum terlambat.</span>
+            Kenali ancaman <span className="edu-title-accent">sebelum terlambat.</span>
           </h2>
           <p className="edu-sub">
             Latih instingmu dengan quiz interaktif — AI Urlveil menjelaskan kenapa sebuah link berbahaya.
@@ -539,14 +537,14 @@ export default function Education() {
         >
           <div className="edu-ai-avatar" aria-hidden="true">UV</div>
           <div className="edu-ai-content">
-            <div className="edu-ai-label">
-              <TrendingUp size={11} aria-hidden="true" />
-              Analisis AI · Tren Minggu Ini
-            </div>
-            <p className="edu-ai-text">
-              AI Urlveil mendeteksi{" "}
-              <strong>lonjakan 34% phising bertemakan perbankan</strong>{" "}
-              dalam 7 hari terakhir. Modus terbaru: domain mirip BCA/BRI dengan TLD{" "}
+          <div className="edu-ai-label">
+            <TrendingUp size={11} aria-hidden="true" />
+            Tren minggu ini
+          </div>
+          <p className="edu-ai-text">
+            Belakangan ini{" "}
+            <strong>phising bertemakan perbankan sedang marak</strong>.{" "}
+            Modus terbaru: domain mirip BCA/BRI dengan TLD{" "}
               <code className="edu-ai-code">.xyz</code> dan{" "}
               <code className="edu-ai-code">.top</code>, disertai halaman login palsu
               yang sangat meyakinkan.
