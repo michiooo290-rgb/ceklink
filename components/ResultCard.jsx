@@ -8,6 +8,7 @@ import {
   Globe, Lock, Unlock, Link, Search, Info, ExternalLink, Microscope,
 } from "lucide-react";
 import ReportModal from "./ReportModal";
+import Tooltip from "./Tooltip";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
@@ -100,9 +101,11 @@ export default function ResultCard({ result, url }) {
               </motion.div>
               <div className="font-mono text-sm text-[#666680] break-all mt-1">{domain}</div>
               <div className="flex items-center gap-2 mt-2">
-                <span className={`text-xs px-2 py-1 rounded-full ${statusBg} ${statusColor} font-medium`}>
-                  Risiko: {riskLevel}
-                </span>
+                <Tooltip text="Risiko diperkirakan dari kombinasi reputasi domain, umur domain, dan apakah link ini pernah dilaporkan sebagai phising/malware di database ancaman.">
+                  <span className={`text-xs px-2 py-1 rounded-full ${statusBg} ${statusColor} font-medium`}>
+                    Risiko: {riskLevel}
+                  </span>
+                </Tooltip>
               </div>
             </div>
           </div>
@@ -122,8 +125,12 @@ export default function ResultCard({ result, url }) {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <motion.span className="font-heading font-bold text-xl text-white">{score}</motion.span>
-                <span className="text-[10px] text-[#666680]">/100</span>
+                <Tooltip text="Skor 0-100 dihitung dari beberapa faktor: reputasi domain, ada/tidaknya HTTPS, umur domain, dan riwayat di database ancaman. Semakin tinggi, semakin aman.">
+                  <div className="flex flex-col items-center">
+                    <motion.span className="font-heading font-bold text-xl text-white">{score}</motion.span>
+                    <span className="text-[10px] text-[#666680]">/100</span>
+                  </div>
+                </Tooltip>
               </div>
             </div>
           </motion.div>
