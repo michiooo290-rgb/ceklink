@@ -71,7 +71,7 @@ export default function PhishingCases() {
           viewport={cardViewport}
           transition={headerTransition}
         >
-          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#F5A623] mb-3">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#666680] mb-3">
             <ShieldAlert size={15} aria-hidden="true" />
             Waspada
           </span>

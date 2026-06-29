@@ -91,9 +91,9 @@ export default function FAQ() {
           viewport={headerViewport}
           transition={headerTransition}
         >
-          <span className="inline-flex items-center gap-2 text-sm font-medium text-[#2DCB85] mb-3">
-            <ShieldQuestion size={15} aria-hidden="true" />
-            Tanya jawab
+        <span className="inline-flex items-center gap-2 text-sm font-medium text-[#666680] mb-3">
+          <ShieldQuestion size={15} aria-hidden="true" />
+          Tanya jawab
           </span>
           <h2 className="font-heading font-bold text-2xl sm:text-3xl mb-3 text-[#e0e0e0]">
             Pertanyaan yang sering muncul

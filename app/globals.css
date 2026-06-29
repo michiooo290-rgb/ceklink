@@ -634,7 +634,7 @@ a[href^="#"] {
 }
 
 .feature-icon-wrap {
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
   padding-top: 0.15rem;
 }
 
