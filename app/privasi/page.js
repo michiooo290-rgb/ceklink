@@ -67,13 +67,13 @@ export default function PrivasiPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <a href="/" className="inline-flex items-center gap-1.5 text-sm text-[#666680] hover:text-[#06b6d4] transition-colors mb-10">
+            <a href="/" className="inline-flex items-center gap-1.5 text-sm text-[#666680] hover:text-[#F5A623] transition-colors mb-10">
               <ArrowLeft size={14} /> Kembali ke Beranda
             </a>
 
             {/* Hero — single column, tanpa stat card kanan */}
             <div className="max-w-2xl mb-16">
-              <span className="font-mono text-xs text-[#06b6d4] uppercase tracking-widest mb-4 block">Kebijakan Privasi</span>
+              <span className="font-mono text-xs text-[#F5A623] uppercase tracking-widest mb-4 block">Kebijakan Privasi</span>
               <h1 className="font-heading font-bold text-4xl sm:text-5xl text-white leading-tight mb-6">
                 Privasi bukan<br />pilihan opsional.
               </h1>
@@ -88,7 +88,7 @@ export default function PrivasiPage() {
             <div className="border-t border-[#2e3348] pt-12 mb-12">
               <span className="font-mono text-xs text-[#666680] uppercase tracking-widest mb-3 block">Komitmen kami</span>
               <div className="flex items-start gap-3">
-                <ShieldCheck size={20} className="text-[#06b6d4] mt-1 flex-shrink-0" />
+                <ShieldCheck size={20} className="text-[#F5A623] mt-1 flex-shrink-0" />
                 <p className="text-lg text-[#a0a5b8] leading-relaxed">
                   Data kamu tidak dijual, tidak dimonetisasi, tidak dibagikan ke pihak ketiga.
                   Analisis URL terjadi sepenuhnya di browser kamu — bukan di server kami.
@@ -115,7 +115,7 @@ export default function PrivasiPage() {
                         onClick={() => setOpenIndex(isOpen ? null : i)}
                         className="w-full flex items-start gap-4 py-5 text-left hover:opacity-80 transition-opacity"
                       >
-                        <Icon size={18} className="text-[#06b6d4] mt-0.5 flex-shrink-0" />
+                        <Icon size={18} className="text-[#F5A623] mt-0.5 flex-shrink-0" />
                         <h3 className="flex-1 font-heading font-semibold text-white text-sm">{section.title}</h3>
                         <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0 mt-0.5">
                           <ChevronDown size={15} className="text-[#555570]" />
@@ -156,7 +156,7 @@ export default function PrivasiPage() {
                   </p>
                   <a
                     href="mailto:security@urlveil.id"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2e3348] text-sm text-[#a0a5b8] hover:text-white hover:border-[#06b6d4]/30 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#2e3348] text-sm text-[#a0a5b8] hover:text-white hover:border-[#F5A623]/30 transition-colors"
                   >
                     <Mail size={15} />
                     security@urlveil.id
