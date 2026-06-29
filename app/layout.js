@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import "./globals.css";
 import ErrorBoundary from "../components/ErrorBoundary";
+import { ToastProvider } from "../components/Toast";
 
 export const metadata = {
   title: "Urlveil — Cek Keamanan Link",
@@ -71,9 +72,11 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body className="antialiased">
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+        <ToastProvider>
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+        </ToastProvider>
       </body>
     </html>
   );

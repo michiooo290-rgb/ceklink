@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { ShieldCheck, Globe, ScanLine, Link2, GitBranch, ExternalLink, RefreshCw } from "lucide-react";
+import AnimatedCounter from "./AnimatedCounter";
 
 export default function DataSources() {
   const ref = useRef(null);
@@ -143,9 +144,13 @@ export default function DataSources() {
                     ) : urlhausData ? (
                       <>
                         <div className="datasrc-live-stat">
-                          <span className="datasrc-live-number">
-                            {urlhausData.count?.toLocaleString("id-ID") ?? "—"}
-                          </span>
+                        <span className="datasrc-live-number">
+                          {urlhausData.count != null ? (
+                            <AnimatedCounter value={urlhausData.count} />
+                          ) : (
+                            "—"
+                          )}
+                        </span>
                           <span className="datasrc-live-label">URL berbahaya dilacak</span>
                         </div>
                         <div className="datasrc-live-meta">

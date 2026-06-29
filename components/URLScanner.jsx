@@ -6,6 +6,8 @@ import { Search, Link } from "lucide-react";
 import { scanURL } from "../lib/scanner";
 import { createClient } from "../lib/supabase/client";
 import ResultCard from "./ResultCard";
+import AnimatedScanLoader from "./AnimatedScanLoader";
+import { useToast } from "./Toast";
 
 export default function URLScanner() {
   const [url, setUrl] = useState("");
@@ -16,6 +18,7 @@ export default function URLScanner() {
   const scanCountRef = useRef({ count: 0, resetTime: Date.now() + 60000 });
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
+  const { toast } = useToast();
 
   const supabase = useRef(createClient()).current;
   const userRef = useRef(null);
@@ -126,6 +129,12 @@ export default function URLScanner() {
       const data = await scanURL(normalized);
       setResult(data);
       saveToHistory(data);
+      toast(
+        data.status === "danger"
+          ? "⚠️ Hati-hati — link ini terindikasi berbahaya."
+          : "Pemindaian selesai. Hasil sudah siap di bawah.",
+        { type: data.status === "danger" ? "danger" : "success" }
+      );
       // Counter global — jalan buat semua orang, termasuk yang belum login
       supabase.rpc("increment_site_counters", { is_phishing: data.status === "danger" });
 
@@ -310,6 +319,9 @@ export default function URLScanner() {
             </motion.button>
           ))}
         </motion.div>
+
+        {/* Scan Loader */}
+        {loading && <AnimatedScanLoader />}
 
         {/* Result */}
         <AnimatePresence mode="wait">
