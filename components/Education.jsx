@@ -524,7 +524,7 @@ export default function Education() {
             Kenali ancaman <span className="edu-title-accent">sebelum terlambat.</span>
           </h2>
           <p className="edu-sub">
-            Latih instingmu dengan quiz interaktif — AI Urlveil menjelaskan kenapa sebuah link berbahaya.
+            Latih instingmu dengan quiz interaktif — pahami kenapa sebuah link berbahaya, satu per satu.
           </p>
         </motion.div>
 
@@ -535,7 +535,6 @@ export default function Education() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <div className="edu-ai-avatar" aria-hidden="true">UV</div>
           <div className="edu-ai-content">
           <div className="edu-ai-label">
             <TrendingUp size={11} aria-hidden="true" />
