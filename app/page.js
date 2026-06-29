@@ -18,13 +18,13 @@ export default function Home() {
         <URLScanner />
         <DataSources />
         <div className="section-divider" />
+        <HowItWorks />
+        <div className="section-divider" />
         <Features />
         <div className="section-divider" />
         <PhishingDB />
         <div className="section-divider" />
         <Education />
-        <div className="section-divider" />
-        <HowItWorks />
         <CTA />
       </main>
       <Footer />
