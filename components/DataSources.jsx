@@ -90,7 +90,7 @@ export default function DataSources() {
 
         <motion.div
           className="datasrc-header"
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 0 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
         >
