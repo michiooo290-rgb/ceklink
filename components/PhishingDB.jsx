@@ -148,8 +148,8 @@ export default function PhishingDB() {
               animate={isInView ? "visible" : "hidden"}
               className="table-row grid grid-cols-1 sm:gap-4 px-6 py-4 border-b border-[#2e3348]/30 items-center" style={{gridTemplateColumns: "minmax(0,2.5fr) 1fr 1fr 1fr"}}
             >
-              <div className="font-mono text-sm text-[#e0e0e0] break-all flex items-center gap-1.5 min-w-0">
-                {item.link}
+              <div className="font-mono text-sm text-[#e0e0e0] flex items-center gap-1.5 min-w-0">
+                <span className="truncate">{item.link}</span>
                 {item.urlhaus_link && (
                   <a
                     href={item.urlhaus_link}
