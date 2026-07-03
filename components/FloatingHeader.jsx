@@ -11,8 +11,6 @@ const NAV_ITEMS = [
   { label: "Cek Link", href: "/#cek-link" },
   { label: "Database", href: "/#database" },
   { label: "Cara Kerja", href: "/#cara-kerja" },
-  { label: "Edukasi", href: "/edukasi" },
-  { label: "Fitur", href: "/fitur" },
 ];
 
 const SCROLL_TOP_LIMIT = 10;
