@@ -32,14 +32,18 @@
 /* Panggung tempat tumpukan kartu 3D */
 .datasrc-stage {
   position: relative;
-  min-height: 440px;
+  min-height: 500px;
 }
 
-/* Pusatkan tumpukan di dalam panggung (override default pojok) */
+/* Pusatkan massa tumpukan di panggung.
+   Kartu mengembang ke kanan-atas dari pusat container, jadi container
+   digeser kiri-bawah agar titik-tengah tumpukan jatuh di tengah panggung. */
 .datasrc-stage .card-swap-container {
-  right: 50%;
-  bottom: 50%;
-  transform: translate(50%, 50%);
+  left: 50%;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(calc(-50% - 110px), calc(-50% + 116px));
   transform-origin: center center;
 }
 
@@ -132,18 +136,18 @@
     gap: 1.5rem;
   }
   .datasrc-stage {
-    min-height: 380px;
+    min-height: 420px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(50%, 50%) scale(0.82);
+    transform: translate(calc(-50% - 90px), calc(-50% + 95px)) scale(0.82);
   }
 }
 
 @media (max-width: 480px) {
   .datasrc-stage {
-    min-height: 330px;
+    min-height: 340px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(50%, 50%) scale(0.62);
+    transform: translate(calc(-50% - 70px), calc(-50% + 75px)) scale(0.62);
   }
 }
