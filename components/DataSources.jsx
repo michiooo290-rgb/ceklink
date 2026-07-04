@@ -125,12 +125,12 @@ export default function DataSources() {
           aria-hidden="true"
         >
           <CardSwap
-            width={330}
-            height={230}
-            cardDistance={55}
-            verticalDistance={58}
-            delay={3500}
-            skewAmount={5}
+            width={500}
+            height={380}
+            cardDistance={60}
+            verticalDistance={70}
+            delay={4000}
+            skewAmount={6}
             pauseOnHover
             easing="elastic"
           >
@@ -144,7 +144,7 @@ export default function DataSources() {
                         className="ds-card-icon"
                         style={ { color: s.tagColor, borderColor: `${s.tagColor}33`, background: `${s.tagColor}12` } }
                       >
-                        <Icon size={18} />
+                        <Icon size={22} />
                       </div>
                       <span
                         className="ds-card-tag"
@@ -177,7 +177,7 @@ export default function DataSources() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Kunjungi sumber <ExternalLink size={12} />
+                        Kunjungi sumber <ExternalLink size={14} />
                       </a>
                     )}
                   </div>
