@@ -9,7 +9,7 @@ const FEATURES = [
     title: "4 Lapis Perlindungan",
     desc: "Setiap link diperiksa berlapis \u2014 dari database ancaman global sampai analisis pola cerdas. Kalau satu lapis lolos, lapis lain menangkap.",
     color: "#2DCB85",
-    span: "lg:col-span-2 lg:row-span-2",
+    span: "sm:col-span-2 lg:col-span-2",
     big: true,
   },
   {
@@ -45,7 +45,7 @@ const FEATURES = [
     title: "Privasi Utama",
     desc: "Tanpa daftar, tanpa install. File tidak diunggah \u2014 hanya sidik jari digitalnya yang dicek.",
     color: "#2DCB85",
-    span: "lg:col-span-2",
+    span: "sm:col-span-2 lg:col-span-3",
   },
 ];
 
