@@ -1,4 +1,5 @@
 import FloatingHeader from "../components/FloatingHeader";
+import MeshBackground from "../components/MeshBackground";
 import Hero from "../components/Hero";
 import URLScanner from "../components/URLScanner";
 import Features from "../components/Features";
@@ -15,6 +16,7 @@ import FAQ from "../components/FAQ";
 export default function Home() {
   return (
     <>
+      <MeshBackground intensity="medium" />
       <FloatingHeader />
       <main>
         <Hero />
