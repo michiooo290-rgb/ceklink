@@ -1,6 +1,16 @@
 /* Layout showcase Sumber Data — 2 kolom (teks kiri + CardSwap kanan).
    Menyasar class .datasrc-* baru + isi kartu .ds-card-*. */
 
+/* ScrollReveal menambahkan class .reveal (transform + will-change:transform)
+   ke SETIAP <section>. transform/will-change:transform pada induk MEMATAHKAN
+   position:sticky turunannya. Di section ini kita netralkan transform-nya
+   (efek fade-in via opacity tetap dipertahankan) agar sticky kolom kiri jalan. */
+.datasrc-section.reveal,
+.datasrc-section.reveal--visible {
+  transform: none;
+  will-change: opacity;
+}
+
 .datasrc-showcase {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
