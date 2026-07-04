@@ -1,6 +1,14 @@
 /* Layout showcase Sumber Data — 2 kolom (teks kiri + CardSwap kanan).
    Menyasar class .datasrc-* baru + isi kartu .ds-card-*. */
 
+/* PENYEBAB UTAMA sticky gagal: globals.css memasang `body { overflow-x: hidden }`,
+   yang membuat body menjadi scroll-container semu dan MEMATAHKAN position:sticky
+   pada semua turunan. `overflow-x: clip` mencegah scroll horizontal yang sama
+   TANPA merusak sticky. (Dimuat setelah globals.css sehingga menang.) */
+body {
+  overflow-x: clip;
+}
+
 /* ScrollReveal menambahkan class .reveal (transform + will-change:transform)
    ke SETIAP <section>. transform/will-change:transform pada induk MEMATAHKAN
    position:sticky turunannya. Di section ini kita netralkan transform-nya
