@@ -1,10 +1,11 @@
 import FloatingHeader from "../components/FloatingHeader";
 import MeshBackground from "../components/MeshBackground";
+import AuroraBackground from "../components/AuroraBackground";
 import DemoTilt from "../components/DemoTilt";
 import Hero from "../components/Hero";
 import ScrollShowcase from "../components/ScrollShowcase";
-import URLScanner from "../components/URLScanner";
-import FileScanner from "../components/FileScanner";
+import ScannerTabs from "../components/ScannerTabs";
+import BentoFeatures from "../components/BentoFeatures";
 import HowItWorks from "../components/HowItWorks";
 import DataSources from "../components/DataSources";
 import PhishingDB from "../components/PhishingDB";
@@ -16,15 +17,16 @@ import Footer from "../components/Footer";
 export default function Home() {
   return (
     <>
+      <AuroraBackground />
       <MeshBackground variant="cool" intensity="medium" />
       <DemoTilt />
       <FloatingHeader />
       <main>
         <Hero />
         <ScrollShowcase />
-        <URLScanner />
+        <ScannerTabs />
         <div className="section-divider" />
-        <FileScanner />
+        <BentoFeatures />
         <div className="section-divider" />
         <HowItWorks />
         <div className="section-divider" />
