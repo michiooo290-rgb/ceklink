@@ -43,6 +43,57 @@ export default function DataSources() {
     if (mounted) fetchLiveData();
   }, [mounted]);
 
+  /* ── Pin teks kiri via JavaScript (transform-counteract) ──
+     Alih-alih position:sticky (yang berkali-kali patah karena overflow/
+     transform pada induk), kita ukur posisi section tiap frame lalu geser
+     .datasrc-header dengan translateY agar tampak terkunci di ~22% layar.
+     Murni berbasis koordinat viewport → tak bisa "kalah" oleh CSS induk.
+     Di-clamp antara 0 dan (tinggi kolom − tinggi teks) supaya teks tidak
+     keluar dari batas section. Nonaktif di layar ≤900px (layout 1 kolom). */
+  const headerRef = useRef(null);
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const container = header.parentElement; // .datasrc-showcase
+    if (!container) return;
+
+    let ticking = false;
+
+    const update = () => {
+      ticking = false;
+      if (window.innerWidth <= 900) {
+        header.style.transform = "";
+        return;
+      }
+      const pinTop = window.innerHeight * 0.22;
+      const cRect = container.getBoundingClientRect();
+      const travel = cRect.height - header.offsetHeight;
+      if (travel <= 0) {
+        header.style.transform = "";
+        return;
+      }
+      let offset = pinTop - cRect.top;
+      if (offset < 0) offset = 0;
+      else if (offset > travel) offset = travel;
+      header.style.transform = `translateY(${offset}px)`;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   const SOURCES = [
     {
       icon: ShieldCheck,
@@ -87,10 +138,8 @@ export default function DataSources() {
     <section className="datasrc-section" aria-label="Sumber data analisis" ref={ref}>
       <div className="datasrc-inner datasrc-showcase">
 
-        {/* Kolom kiri: copy.
-            Pembungkus luar (.datasrc-header) TANPA transform agar position:sticky
-            bekerja; animasi masuk dipasang di elemen dalam (.datasrc-header-anim). */}
-        <div className="datasrc-header">
+        {/* Kolom kiri: copy. Di-pin lewat JS (lihat useEffect di atas). */}
+        <div className="datasrc-header" ref={headerRef}>
           <motion.div
             className="datasrc-header-anim"
             initial={ { opacity: 0, y: 20 } }
