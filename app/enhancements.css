@@ -181,6 +181,32 @@
   }
 }
 
+/* ═══════════════════════════════════════════
+   7. Padatkan How It Works & Data Sources (spacing lebih rapat)
+   ═══════════════════════════════════════════ */
+
+.hiw-section {
+  padding-block: 3.5rem;
+}
+
+.hiw-header {
+  margin-bottom: 2rem;
+}
+
+.hiw-note {
+  margin-top: 2rem;
+}
+
+.datasrc-section {
+  padding-block: 2.5rem;
+}
+
+@media (min-width: 641px) {
+  .datasrc-inner {
+    gap: 2rem;
+  }
+}
+
 /* ── Hormati preferensi kurangi gerak ── */
 @media (prefers-reduced-motion: reduce) {
   .hero-accent,
