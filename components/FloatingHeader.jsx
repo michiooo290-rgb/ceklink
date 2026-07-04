@@ -20,7 +20,6 @@ const SCROLL_HIDE_LIMIT = 80;
 const SCROLL_DELTA = 5;
 const ACTIVE_OFFSET = 120;
 
-/* ── Toast ─────────────────────────────────────── */
 function Toast({ show }) {
   return (
     <AnimatePresence>
@@ -31,12 +30,7 @@ function Toast({ show }) {
           exit= opacity: 0, y: 20, scale: 0.95 
           transition= duration: 0.25, ease: [0.16, 1, 0.3, 1] 
           className="fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 px-4 py-3 rounded-xl border"
-          style=
-            background: "rgba(26,30,46,0.95)",
-            backdropFilter: "blur(12px)",
-            borderColor: "rgba(45,203,133,0.3)",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(45,203,133,0.1) inset",
-          
+          style= background: "rgba(26,30,46,0.95)", backdropFilter: "blur(12px)", borderColor: "rgba(45,203,133,0.3)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(45,203,133,0.1) inset" 
         >
           <CheckCircle2 size={16} style= color: "#2DCB85", flexShrink: 0  />
           <span style= fontSize: "0.85rem", color: "#e0e0e0", fontWeight: 500 >
@@ -48,7 +42,6 @@ function Toast({ show }) {
   );
 }
 
-/* ── Logout Confirm Modal ──────────────────────── */
 function LogoutConfirmModal({ show, onConfirm, onCancel, loading }) {
   return (
     <AnimatePresence>
@@ -68,12 +61,7 @@ function LogoutConfirmModal({ show, onConfirm, onCancel, loading }) {
             transition= duration: 0.2, ease: [0.16, 1, 0.3, 1] 
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-sm rounded-2xl border p-6"
-            style=
-              background: "rgba(26,30,46,0.98)",
-              backdropFilter: "blur(16px)",
-              borderColor: "rgba(255,255,255,0.08)",
-              boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02) inset",
-            
+            style= background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02) inset" 
           >
             <h3 className="text-base font-semibold text-white mb-1.5">Keluar dari akun?</h3>
             <p className="text-sm text-[#8888aa] mb-5">
@@ -142,7 +130,6 @@ export default function FloatingHeader() {
     setLoggingOut(false);
     setShowLogoutConfirm(false);
 
-    // Tampilkan toast, redirect setelah 1.5 detik
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
@@ -278,12 +265,7 @@ export default function FloatingHeader() {
                             exit= opacity: 0, y: -6, scale: 0.97 
                             transition= duration: 0.15 
                             className="absolute right-0 top-full mt-2 w-44 rounded-xl border p-1.5 overflow-hidden"
-                            style=
-                              background: "rgba(26,30,46,0.98)",
-                              backdropFilter: "blur(16px)",
-                              borderColor: "rgba(255,255,255,0.08)",
-                              boxShadow: "0 12px 32px rgba(0,0,0,0.4)",
-                            
+                            style= background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 12px 32px rgba(0,0,0,0.4)" 
                           >
                             <a
                               href="/riwayat"
