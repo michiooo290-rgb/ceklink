@@ -30,22 +30,25 @@
 }
 
 /* Panggung tempat tumpukan kartu 3D besar.
-   overflow:hidden bikin kartu "terpotong" di tepi — khas demo React Bits. */
+   Catatan: JANGAN pakai overflow:hidden — kartu ber-transform 3D tidak
+   ikut terpotong di Chrome, malah bocor ke bawah halaman. Kita pusatkan
+   tumpukan agar tetap di dalam area section. */
 .datasrc-stage {
   position: relative;
-  min-height: 620px;
-  overflow: hidden;
-  border-radius: 20px;
+  min-height: 600px;
 }
 
-/* Anchor pojok kanan-bawah (gaya default React Bits, kartu meluber ke tepi) */
+/* Pusatkan massa tumpukan di panggung.
+   Kartu mengembang ke kanan-atas dari pusat container, jadi container
+   digeser kiri-bawah agar titik-tengah tumpukan jatuh di tengah panggung.
+   Offset ~ setengah dari (cardDistance*4, verticalDistance*4). */
 .datasrc-stage .card-swap-container {
-  left: auto;
-  top: auto;
-  right: 0;
-  bottom: 0;
-  transform: translate(5%, 18%);
-  transform-origin: bottom right;
+  left: 50%;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(calc(-50% - 120px), calc(-50% + 140px));
+  transform-origin: center center;
 }
 
 /* Isi tiap kartu */
@@ -141,15 +144,15 @@
     min-height: 480px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(5%, 18%) scale(0.8);
+    transform: translate(calc(-50% - 96px), calc(-50% + 112px)) scale(0.8);
   }
 }
 
 @media (max-width: 480px) {
   .datasrc-stage {
-    min-height: 400px;
+    min-height: 380px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(8%, 16%) scale(0.6);
+    transform: translate(calc(-50% - 72px), calc(-50% + 84px)) scale(0.6);
   }
 }
