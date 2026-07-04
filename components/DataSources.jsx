@@ -87,34 +87,38 @@ export default function DataSources() {
     <section className="datasrc-section" aria-label="Sumber data analisis" ref={ref}>
       <div className="datasrc-inner datasrc-showcase">
 
-        {/* Kolom kiri: copy */}
-        <motion.div
-          className="datasrc-header"
-          initial={ { opacity: 0, y: 20 } }
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={ { duration: 0.5 } }
-        >
-          <span className="statsbar-eyebrow">Transparansi data</span>
-          <p className="statsbar-title">Dari mana<br />datanya?</p>
-          <p className="datasrc-sub">
-            Setiap hasil scan didukung sumber yang bisa kamu verifikasi sendiri.
-          </p>
-          <div className="datasrc-live-badge">
-            <span className="datasrc-live-dot" aria-hidden="true" />
-            {mounted && urlhausData
-              ? `${urlhausData.count?.toLocaleString("id-ID")} URL berbahaya terlacak real-time`
-              : "5 sumber verifikasi aktif"}
-          </div>
+        {/* Kolom kiri: copy.
+            Pembungkus luar (.datasrc-header) TANPA transform agar position:sticky
+            bekerja; animasi masuk dipasang di elemen dalam (.datasrc-header-anim). */}
+        <div className="datasrc-header">
+          <motion.div
+            className="datasrc-header-anim"
+            initial={ { opacity: 0, y: 20 } }
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={ { duration: 0.5 } }
+          >
+            <span className="statsbar-eyebrow">Transparansi data</span>
+            <p className="statsbar-title">Dari mana<br />datanya?</p>
+            <p className="datasrc-sub">
+              Setiap hasil scan didukung sumber yang bisa kamu verifikasi sendiri.
+            </p>
+            <div className="datasrc-live-badge">
+              <span className="datasrc-live-dot" aria-hidden="true" />
+              {mounted && urlhausData
+                ? `${urlhausData.count?.toLocaleString("id-ID")} URL berbahaya terlacak real-time`
+                : "5 sumber verifikasi aktif"}
+            </div>
 
-          {/* Versi teks untuk pembaca layar (kartu berputar disembunyikan dari AT) */}
-          <ul className="sr-only">
-            {SOURCES.map((s) => (
-              <li key={s.name}>
-                {s.name} ({s.tag}) — {s.desc}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+            {/* Versi teks untuk pembaca layar (kartu berputar disembunyikan dari AT) */}
+            <ul className="sr-only">
+              {SOURCES.map((s) => (
+                <li key={s.name}>
+                  {s.name} ({s.tag}) — {s.desc}
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </div>
 
         {/* Kolom kanan: tumpukan kartu 3D berputar */}
         <motion.div
