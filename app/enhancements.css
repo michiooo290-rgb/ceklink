@@ -20,17 +20,7 @@
   to { background-position: 220% center; }
 }
 
-/* ── 2. Judul CTA accent ikut gradien ── */
-.cta-accent {
-  background: linear-gradient(110deg, var(--color-accent), #ffd27a 50%, var(--color-accent));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-/* ── 3. Kartu: terangkat halus + bayangan saat hover ── */
+/* ── 2. Kartu: terangkat halus + bayangan saat hover ── */
 .datasrc-card,
 .edu-threat-card,
 .edu-tip-pill {
@@ -49,7 +39,7 @@
   box-shadow: 0 12px 32px oklch(0% 0 0 / 45%);
 }
 
-/* ── 4. Tombol utama: kilau menyapu saat hover ── */
+/* ── 3. Tombol utama: kilau menyapu saat hover ── */
 .btn-primary,
 .cta-btn {
   position: relative;
@@ -65,7 +55,7 @@
   left: -80%;
   width: 55%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, oklch(100% 0 0 / 35%), transparent);
+  background: linear-gradient(120deg, transparent, oklch(100% 0 0 / 30%), transparent);
   transform: skewX(-20deg);
   transition: left 0.6s var(--ease-out);
   pointer-events: none;
@@ -77,13 +67,13 @@
   left: 140%;
 }
 
-/* ── 5. Divider: sorot amber bergerak sangat pelan ── */
+/* ── 4. Divider: sorot netral kebiruan (tanpa kuning) ── */
 .section-divider {
   background: linear-gradient(
     90deg,
     transparent,
     var(--color-border) 35%,
-    oklch(75% 0.17 75 / 22%) 50%,
+    oklch(70% 0.03 264 / 22%) 50%,
     var(--color-border) 65%,
     transparent
   );
@@ -96,13 +86,17 @@
   50% { background-position: -50% 0; }
 }
 
-/* ── 6. Badge status: sedikit glow biar cepat kebaca ── */
-.badge-safe { box-shadow: 0 0 16px oklch(62% 0.14 185 / 12%); }
-.badge-warn { box-shadow: 0 0 16px oklch(75% 0.17 75 / 12%); }
-.badge-danger { box-shadow: 0 0 16px oklch(58% 0.22 25 / 12%); }
+/* ── 5. Hero vignette: buang glow amber, sisakan teal lembut ── */
+.hero-vignette {
+  background: radial-gradient(
+    ellipse 75% 60% at 50% 22%,
+    oklch(62% 0.14 185 / 6%),
+    transparent 70%
+  );
+}
 
 /* ═══════════════════════════════════════════
-   7. Hero URL demo card — kedalaman 3D & floating
+   6. Hero URL demo card — kedalaman 3D & floating (tanpa kuning)
    ═══════════════════════════════════════════ */
 
 .hero-demo {
@@ -129,7 +123,6 @@
   animation-play-state: paused;
   box-shadow:
     0 44px 90px -20px oklch(0% 0 0 / 62%),
-    0 0 55px -12px oklch(75% 0.17 75 / 30%),
     inset 0 1px 0 oklch(100% 0 0 / 14%);
 }
 
@@ -138,14 +131,10 @@
   box-shadow: inset 0 1px 3px oklch(0% 0 0 / 40%);
 }
 
-/* Progress bar: track lebih halus + isian bercahaya */
+/* Progress bar: track lebih halus (tanpa glow warna) */
 .url-scan-bar {
   overflow: hidden;
   box-shadow: inset 0 1px 2px oklch(0% 0 0 / 35%);
-}
-
-.url-scan-fill {
-  box-shadow: 0 0 12px oklch(75% 0.17 75 / 55%);
 }
 
 /* Kartu hasil: sedikit terangkat dari panel */
