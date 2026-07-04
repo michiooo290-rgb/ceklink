@@ -2,6 +2,7 @@ import FloatingHeader from "../components/FloatingHeader";
 import MeshBackground from "../components/MeshBackground";
 import DemoTilt from "../components/DemoTilt";
 import Hero from "../components/Hero";
+import ScrollShowcase from "../components/ScrollShowcase";
 import URLScanner from "../components/URLScanner";
 import FileScanner from "../components/FileScanner";
 import HowItWorks from "../components/HowItWorks";
@@ -20,6 +21,7 @@ export default function Home() {
       <FloatingHeader />
       <main>
         <Hero />
+        <ScrollShowcase />
         <URLScanner />
         <div className="section-divider" />
         <FileScanner />
