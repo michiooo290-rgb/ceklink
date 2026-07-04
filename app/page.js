@@ -3,6 +3,7 @@ import MeshBackground from "../components/MeshBackground";
 import DemoTilt from "../components/DemoTilt";
 import Hero from "../components/Hero";
 import URLScanner from "../components/URLScanner";
+import FileScanner from "../components/FileScanner";
 import HowItWorks from "../components/HowItWorks";
 import DataSources from "../components/DataSources";
 import PhishingDB from "../components/PhishingDB";
@@ -20,6 +21,8 @@ export default function Home() {
       <main>
         <Hero />
         <URLScanner />
+        <div className="section-divider" />
+        <FileScanner />
         <div className="section-divider" />
         <HowItWorks />
         <div className="section-divider" />
