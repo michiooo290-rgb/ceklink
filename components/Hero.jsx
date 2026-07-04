@@ -62,9 +62,9 @@ function URLDemoScan() {
       {/* Browser chrome */}
       <div className="url-demo-chrome">
         <div className="url-demo-dots">
-          <span style= background: "#E55C30"  />
-          <span style= background: "#F5A623"  />
-          <span style= background: "#2DCB85"  />
+          <span style={ { background: "#E55C30" } } />
+          <span style={ { background: "#F5A623" } } />
+          <span style={ { background: "#2DCB85" } } />
         </div>
         <div className="url-demo-bar">
           {/* Protocol highlight */}
@@ -82,9 +82,9 @@ function URLDemoScan() {
         {phase === 0 && (
           <motion.p
             className="url-demo-hint"
-            initial= opacity: 0 
-            animate= opacity: 1 
-            transition= duration: 0.4 
+            initial={ { opacity: 0 } }
+            animate={ { opacity: 1 } }
+            transition={ { duration: 0.4 } }
           >
             Tempel URL untuk diperiksa...
           </motion.p>
@@ -95,9 +95,9 @@ function URLDemoScan() {
             <div className="url-scan-bar">
               <motion.div
                 className="url-scan-fill"
-                initial= width: "0%" 
-                animate= width: "100%" 
-                transition= duration: 1.6, ease: "linear" 
+                initial={ { width: "0%" } }
+                animate={ { width: "100%" } }
+                transition={ { duration: 1.6, ease: "linear" } }
               />
             </div>
             <p className="url-scan-label">Menganalisis...</p>
@@ -107,13 +107,13 @@ function URLDemoScan() {
         {phase === 2 && resultType && ResultIcon && (
           <motion.div
             className="url-result"
-            initial= opacity: 0, y: 8 
-            animate= opacity: 1, y: 0 
-            transition= duration: 0.35 
-            style= "--result-color": resultColor 
+            initial={ { opacity: 0, y: 8 } }
+            animate={ { opacity: 1, y: 0 } }
+            transition={ { duration: 0.35 } }
+            style={ { color: resultColor } }
           >
-            <ResultIcon size={20} style= color: resultColor  />
-            <span className="url-result-label" style= color: resultColor >
+            <ResultIcon size={20} style={ { color: resultColor } } />
+            <span className="url-result-label" style={ { color: resultColor } }>
               {resultLabel}
             </span>
             {resultType === "danger" && (
@@ -156,9 +156,9 @@ export default function Hero() {
         {/* Left: copy */}
         <motion.div
           className="hero-copy"
-          initial= opacity: 0, x: -24 
-          animate= opacity: 1, x: 0 
-          transition= duration: 0.6, ease: [0.16, 1, 0.3, 1] 
+          initial={ { opacity: 0, x: -24 } }
+          animate={ { opacity: 1, x: 0 } }
+          transition={ { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
         >
           <p className="hero-eyebrow">Cek keamanan link sebelum diklik</p>
 
@@ -202,9 +202,9 @@ export default function Hero() {
         {/* Right: live demo widget */}
         <motion.div
           className="hero-demo"
-          initial= opacity: 0, x: 24 
-          animate= opacity: 1, x: 0 
-          transition= duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] 
+          initial={ { opacity: 0, x: 24 } }
+          animate={ { opacity: 1, x: 0 } }
+          transition={ { duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] } }
           aria-hidden="true"
         >
           <URLDemoScan />
