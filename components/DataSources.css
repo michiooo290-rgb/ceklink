@@ -5,14 +5,19 @@
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
   gap: 2rem;
-  align-items: center;
+  align-items: start;
 }
 
-/* Teks kiri tetap di tengah vertikal, sejajar dengan tumpukan kartu. */
+/* Teks kiri: pembungkus luar TANPA transform → position:sticky bekerja.
+   Teks tetap menempel di sekitar tengah layar saat section di-scroll,
+   tidak ikut turun bersama tumpukan kartu. */
 .datasrc-showcase .datasrc-header {
   text-align: left;
   margin: 0;
   max-width: none;
+  align-self: start;
+  position: sticky;
+  top: 22vh;
 }
 
 /* Badge live real-time di kolom kiri */
@@ -140,6 +145,12 @@
   .datasrc-showcase {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    align-items: stretch;
+  }
+  /* 1 kolom: matikan sticky agar teks tidak menutupi kartu */
+  .datasrc-showcase .datasrc-header {
+    position: static;
+    top: auto;
   }
   .datasrc-stage {
     min-height: 540px;
