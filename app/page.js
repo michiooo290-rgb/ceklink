@@ -16,7 +16,7 @@ import FAQ from "../components/FAQ";
 export default function Home() {
   return (
     <>
-      <MeshBackground intensity="medium" />
+      <MeshBackground variant="cool" intensity="medium" />
       <FloatingHeader />
       <main>
         <Hero />
