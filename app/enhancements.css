@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════
+   Enhancements — premium visual polish
+   Dimuat SETELAH globals.css agar meng-override.
+   Menyasar class yang sudah ada (tanpa ubah komponen).
+   Semua animasi menghormati prefers-reduced-motion.
+   ═══════════════════════════════════════════ */
+
+/* ── 1. Hero accent: teks gradien beranimasi ── */
+.hero-accent {
+  background: linear-gradient(110deg, var(--color-accent), #ffd27a 45%, var(--color-secondary));
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: enh-sheen 7s linear infinite;
+}
+
+@keyframes enh-sheen {
+  to { background-position: 220% center; }
+}
+
+/* ── 2. Judul CTA accent ikut gradien ── */
+.cta-accent {
+  background: linear-gradient(110deg, var(--color-accent), #ffd27a 50%, var(--color-accent));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ── 3. Kartu: terangkat halus + bayangan saat hover ── */
+.datasrc-card,
+.edu-threat-card,
+.edu-tip-pill {
+  transition:
+    transform var(--dur-normal) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-normal) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+  will-change: transform;
+}
+
+.datasrc-card:hover,
+.edu-threat-card:hover,
+.edu-tip-pill:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px oklch(0% 0 0 / 45%);
+}
+
+/* ── 4. Tombol utama: kilau menyapu saat hover ── */
+.btn-primary,
+.cta-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-primary::after,
+.cta-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, oklch(100% 0 0 / 35%), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s var(--ease-out);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.btn-primary:hover::after,
+.cta-btn:hover::after {
+  left: 140%;
+}
+
+/* ── 5. Divider: sorot amber bergerak sangat pelan ── */
+.section-divider {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-border) 35%,
+    oklch(75% 0.17 75 / 22%) 50%,
+    var(--color-border) 65%,
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: enh-divider 9s ease-in-out infinite;
+}
+
+@keyframes enh-divider {
+  0%, 100% { background-position: 150% 0; }
+  50% { background-position: -50% 0; }
+}
+
+/* ── 6. Badge status: sedikit glow biar cepat kebaca ── */
+.badge-safe { box-shadow: 0 0 16px oklch(62% 0.14 185 / 12%); }
+.badge-warn { box-shadow: 0 0 16px oklch(75% 0.17 75 / 12%); }
+.badge-danger { box-shadow: 0 0 16px oklch(58% 0.22 25 / 12%); }
+
+/* ── Hormati preferensi kurangi gerak ── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-accent,
+  .section-divider {
+    animation: none !important;
+  }
+  .datasrc-card:hover,
+  .edu-threat-card:hover,
+  .edu-tip-pill:hover {
+    transform: none;
+  }
+  .btn-primary::after,
+  .cta-btn::after {
+    transition: none;
+  }
+}
