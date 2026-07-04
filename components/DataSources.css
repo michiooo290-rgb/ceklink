@@ -30,24 +30,24 @@
 }
 
 /* Panggung tempat tumpukan kartu 3D besar.
-   Catatan: JANGAN pakai overflow:hidden — kartu ber-transform 3D tidak
-   ikut terpotong di Chrome, malah bocor ke bawah halaman. Kita pusatkan
-   tumpukan agar tetap di dalam area section. */
+   clip-path memotong HANYA sisi bawah (sisi atas/kiri/kanan sengaja
+   dilebarkan ke -100%/200% agar kartu besar tidak ikut terpotong).
+   Ini menahan kartu yang "jatuh" saat animasi agar tidak bocor ke
+   section di bawahnya — overflow:hidden tidak mempan untuk elemen 3D. */
 .datasrc-stage {
   position: relative;
-  min-height: 600px;
+  min-height: 680px;
+  clip-path: polygon(-100% -100%, 200% -100%, 200% 100%, -100% 100%);
 }
 
-/* Pusatkan massa tumpukan di panggung.
-   Kartu mengembang ke kanan-atas dari pusat container, jadi container
-   digeser kiri-bawah agar titik-tengah tumpukan jatuh di tengah panggung.
-   Offset ~ setengah dari (cardDistance*4, verticalDistance*4). */
+/* Pusatkan massa tumpukan di panggung; digeser kiri-bawah agar titik
+   tengah tumpukan jatuh di tengah, dengan margin aman di sisi bawah. */
 .datasrc-stage .card-swap-container {
   left: 50%;
   top: 50%;
   right: auto;
   bottom: auto;
-  transform: translate(calc(-50% - 120px), calc(-50% + 140px));
+  transform: translate(calc(-50% - 120px), calc(-50% + 120px));
   transform-origin: center center;
 }
 
@@ -141,18 +141,18 @@
     gap: 1.5rem;
   }
   .datasrc-stage {
-    min-height: 480px;
+    min-height: 540px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(calc(-50% - 96px), calc(-50% + 112px)) scale(0.8);
+    transform: translate(calc(-50% - 96px), calc(-50% + 100px)) scale(0.8);
   }
 }
 
 @media (max-width: 480px) {
   .datasrc-stage {
-    min-height: 380px;
+    min-height: 440px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(calc(-50% - 72px), calc(-50% + 84px)) scale(0.6);
+    transform: translate(calc(-50% - 72px), calc(-50% + 78px)) scale(0.6);
   }
 }
