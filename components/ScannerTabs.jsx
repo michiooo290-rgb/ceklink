@@ -31,7 +31,7 @@ export default function ScannerTabs() {
   }, []);
 
   return (
-    <section id="scanner" className="relative pt-16 sm:pt-20 scroll-mt-24">
+    <section id="scanner" className="relative pt-8 sm:pt-10 scroll-mt-24">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="flex justify-center">
           <div
@@ -72,10 +72,10 @@ export default function ScannerTabs() {
         </div>
       </div>
 
-      <div className={active === "link" ? "block" : "hidden"}>
+      <div className={(active === "link" ? "block" : "hidden") + " [&>section]:pt-6 sm:[&>section]:pt-8"}>
         <URLScanner />
       </div>
-      <div className={active === "file" ? "block" : "hidden"}>
+      <div className={(active === "file" ? "block" : "hidden") + " [&>section]:pt-6 sm:[&>section]:pt-8"}>
         <FileScanner />
       </div>
     </section>
