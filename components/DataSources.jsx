@@ -2,8 +2,9 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { ShieldCheck, Globe, ScanLine, Link2, GitBranch, ExternalLink, RefreshCw } from "lucide-react";
-import AnimatedCounter from "./AnimatedCounter";
+import { ShieldCheck, Globe, ScanLine, Link2, GitBranch, ExternalLink } from "lucide-react";
+import CardSwap, { Card } from "./CardSwap";
+import "./DataSources.css";
 
 export default function DataSources() {
   const ref = useRef(null);
@@ -11,16 +12,14 @@ export default function DataSources() {
 
   const [urlhausData, setUrlhausData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const fetchLiveData = async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+  const fetchLiveData = async () => {
+    setLoading(true);
     try {
       const res = await fetch("/api/phishing", { cache: "no-store" });
       const data = await res.json();
@@ -37,7 +36,6 @@ export default function DataSources() {
       setUrlhausData(null);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
@@ -49,6 +47,7 @@ export default function DataSources() {
     {
       icon: ShieldCheck,
       name: "URLhaus",
+      desc: "Database phishing & malware real-time dari komunitas keamanan global.",
       tag: "Real-time",
       tagColor: "#2DCB85",
       url: "https://urlhaus.abuse.ch",
@@ -86,97 +85,108 @@ export default function DataSources() {
 
   return (
     <section className="datasrc-section" aria-label="Sumber data analisis" ref={ref}>
-      <div className="datasrc-inner">
+      <div className="datasrc-inner datasrc-showcase">
 
+        {/* Kolom kiri: copy */}
         <motion.div
           className="datasrc-header"
-          initial={{ opacity: 0, y: 0 }}
+          initial={ { opacity: 0, y: 20 } }
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
+          transition={ { duration: 0.5 } }
         >
           <span className="statsbar-eyebrow">Transparansi data</span>
           <p className="statsbar-title">Dari mana<br />datanya?</p>
           <p className="datasrc-sub">
             Setiap hasil scan didukung sumber yang bisa kamu verifikasi sendiri.
           </p>
+          <div className="datasrc-live-badge">
+            <span className="datasrc-live-dot" aria-hidden="true" />
+            {mounted && urlhausData
+              ? `${urlhausData.count?.toLocaleString("id-ID")} URL berbahaya terlacak real-time`
+              : "5 sumber verifikasi aktif"}
+          </div>
+
+          {/* Versi teks untuk pembaca layar (kartu berputar disembunyikan dari AT) */}
+          <ul className="sr-only">
+            {SOURCES.map((s) => (
+              <li key={s.name}>
+                {s.name} ({s.tag}) — {s.desc}
+              </li>
+            ))}
+          </ul>
         </motion.div>
 
-        <div className="datasrc-grid">
-          {SOURCES.map((s, i) => {
-            const Icon = s.icon;
-            const isLive = s.live;
-
-            return (
-              <motion.div
-                key={s.name}
-                className={`datasrc-card${isLive ? " datasrc-card--live" : ""}`}
-                initial={{ opacity: 0, y: 16 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.4, delay: i * 0.07, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <div className="datasrc-card-top">
-                  <div className="datasrc-icon-wrap" style={isLive ? { color: "#2DCB85", borderColor: "#2DCB8533", background: "#2DCB8510" } : {}}>
-                    <Icon size={16} />
-                  </div>
-                  <span
-                    className="datasrc-tag"
-                    style={{ color: s.tagColor, borderColor: s.tagColor + "33", background: s.tagColor + "10" }}
-                  >
-                    {s.tag}
-                  </span>
-                </div>
-
-                <div className="datasrc-name-row">
-                  <span className="datasrc-name">{s.name}</span>
-                  {s.url && (
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="datasrc-ext" aria-label={`Buka ${s.name}`}>
-                      <ExternalLink size={11} />
-                    </a>
-                  )}
-                </div>
-
-                {isLive ? (
-                  <div className="datasrc-live">
-                    {!mounted || loading ? (
-                      <div className="datasrc-live-loading">
-                        <div className="datasrc-live-bar" />
+        {/* Kolom kanan: tumpukan kartu 3D berputar */}
+        <motion.div
+          className="datasrc-stage"
+          initial={ { opacity: 0, scale: 0.94 } }
+          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+          transition={ { duration: 0.6, delay: 0.15 } }
+          aria-hidden="true"
+        >
+          <CardSwap
+            width={330}
+            height={230}
+            cardDistance={55}
+            verticalDistance={58}
+            delay={3500}
+            skewAmount={5}
+            pauseOnHover
+            easing="elastic"
+          >
+            {SOURCES.map((s) => {
+              const Icon = s.icon;
+              return (
+                <Card key={s.name}>
+                  <div className="ds-card-inner">
+                    <div className="ds-card-top">
+                      <div
+                        className="ds-card-icon"
+                        style={ { color: s.tagColor, borderColor: `${s.tagColor}33`, background: `${s.tagColor}12` } }
+                      >
+                        <Icon size={18} />
                       </div>
-                    ) : urlhausData ? (
-                      <>
-                        <div className="datasrc-live-stat">
-                        <span className="datasrc-live-number">
-                          {urlhausData.count != null ? (
-                            <AnimatedCounter value={urlhausData.count} />
-                          ) : (
-                            "—"
-                          )}
+                      <span
+                        className="ds-card-tag"
+                        style={ { color: s.tagColor, borderColor: `${s.tagColor}40`, background: `${s.tagColor}14` } }
+                      >
+                        {s.tag}
+                      </span>
+                    </div>
+
+                    <div className="ds-card-name">{s.name}</div>
+
+                    {s.live && mounted && !loading && urlhausData ? (
+                      <div className="ds-card-live">
+                        <span className="ds-card-live-number">
+                          {urlhausData.count?.toLocaleString("id-ID") ?? "—"}
                         </span>
-                          <span className="datasrc-live-label">URL berbahaya dilacak</span>
-                        </div>
-                        <div className="datasrc-live-meta">
-                          <span className="datasrc-live-dot" />
-                          <span>{urlhausData.onlineCount?.toLocaleString("id-ID") ?? "—"} aktif sekarang</span>
-                          <span className="datasrc-live-sep">·</span>
-                          <span>diperbarui {new Date(urlhausData.fetchedAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</span>
-                          <button onClick={() => fetchLiveData(true)} className="datasrc-refresh" aria-label="Refresh" disabled={refreshing}>
-                            <RefreshCw size={10} className={refreshing ? "datasrc-spin" : ""} />
-                          </button>
-                        </div>
-                      </>
+                        <span className="ds-card-live-label">
+                          URL berbahaya dilacak ·{" "}
+                          {urlhausData.onlineCount?.toLocaleString("id-ID") ?? "—"} aktif
+                        </span>
+                      </div>
                     ) : (
-                      <p className="datasrc-desc">
-                        Database phishing & malware real-time dari komunitas keamanan global.
-                        <span className="datasrc-offline"> · Data tidak tersedia saat ini</span>
-                      </p>
+                      <p className="ds-card-desc">{s.desc}</p>
+                    )}
+
+                    {s.url && (
+                      <a
+                        className="ds-card-link"
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Kunjungi sumber <ExternalLink size={12} />
+                      </a>
                     )}
                   </div>
-                ) : (
-                  <p className="datasrc-desc">{s.desc}</p>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
+                </Card>
+              );
+            })}
+          </CardSwap>
+        </motion.div>
+
       </div>
     </section>
   );
