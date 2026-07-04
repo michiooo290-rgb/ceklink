@@ -57,6 +57,14 @@ export default function DataSources() {
     const container = header.parentElement; // .datasrc-showcase
     if (!container) return;
 
+    /* Netralkan CSS lama yang mungkin masih ter-cache di browser
+       (position:sticky; top:22vh). Inline style selalu menang atas stylesheet,
+       jadi pin JS tetap akurat meski DataSources.css versi baru belum termuat.
+       Tanpa ini, sticky menahan di 22vh LALU transform JS mendorong turun lagi
+       → teks meluncur ke bawah. */
+    header.style.position = "relative";
+    header.style.top = "auto";
+
     let ticking = false;
 
     const update = () => {
