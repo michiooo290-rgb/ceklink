@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import "./globals.css";
+import "./enhancements.css";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { ToastProvider } from "../components/Toast";
 
@@ -37,7 +38,7 @@ export default async function RootLayout({ children }) {
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <meta httpEquiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()" />
-        <meta name="theme-color" content="#1a1e2e" />
+        <meta name="theme-color" content="#0c0f1a" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Urlveil — Cek Keamanan Link" />
         <meta name="twitter:description" content="Tempel link, tahu aman atau bahaya. Gratis!" />
