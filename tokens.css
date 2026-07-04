@@ -1,11 +1,11 @@
 /* Design tokens: warna, tipografi, spacing, radius, shadow */
 
 :root {
-  /* ── Color Tokens: Paper (slate dark, neutral) ───────── */
-  --color-paper: oklch(13% 0.008 250);       /* ~#1a1e2e */
-  --color-paper-2: oklch(16% 0.008 250);     /* ~#1f2438 */
-  --color-paper-3: oklch(20% 0.010 250);     /* ~#262c42 */
-  --color-paper-4: oklch(25% 0.012 250);     /* ~#303850 */
+  /* ── Color Tokens: Paper (deep space, blue-charcoal) ───── */
+  --color-paper: oklch(13% 0.022 264);       /* ~#0c0f1a deep space */
+  --color-paper-2: oklch(16.5% 0.024 264);   /* ~#12151f */
+  --color-paper-3: oklch(20% 0.026 264);     /* ~#181c28 */
+  --color-paper-4: oklch(25% 0.028 264);     /* ~#222738 */
 
   /* ── Color Tokens: Text ───────────────── */
   --color-text: oklch(92% 0.003 250);        /* ~#e8eaf0 */
@@ -38,13 +38,13 @@
   --color-warn-glow: oklch(75% 0.17 75 / 20%);
 
   /* ── Color Tokens: Borders ─────────────── */
-  --color-border: oklch(23% 0.010 250);      /* ~#2e3348 */
+  --color-border: oklch(24% 0.026 264);      /* ~#2b3042 */
   --color-border-accent: oklch(75% 0.17 75 / 10%);
   --color-border-hover: oklch(75% 0.17 75 / 18%);
 
   --color-focus: oklch(75% 0.17 75 / 40%);
 
-  /* ── Font Tokens ─────────────── */
+  /* ── Font Tokens ───────────── */
   --font-display: "Outfit", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -76,7 +76,7 @@
   --space-20: 5rem;        /* 80px */
   --space-24: 6rem;        /* 96px */
 
-  /* ── Radius ─────────────────────── */
+  /* ── Radius ───────────────────── */
   --radius-sm: 0.375rem;   /* 6px */
   --radius-md: 0.5rem;     /* 8px */
   --radius-lg: 0.75rem;    /* 12px */
@@ -84,18 +84,18 @@
   --radius-2xl: 1.5rem;    /* 24px */
   --radius-full: 9999px;
 
-  /* ── Easings ─────────────────── */
+  /* ── Easings ───────────────── */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  /* ── Durations ──────────────── */
+  /* ── Durations ────────────── */
   --dur-fast: 150ms;
   --dur-normal: 250ms;
   --dur-slow: 400ms;
   --dur-slower: 600ms;
 
-  /* ── Shadows ─────────────────── */
+  /* ── Shadows ───────────────── */
   --shadow-sm: 0 1px 2px oklch(0% 0 0 / 30%);
   --shadow-md: 0 4px 12px oklch(0% 0 0 / 40%);
   --shadow-lg: 0 8px 32px oklch(0% 0 0 / 50%);
