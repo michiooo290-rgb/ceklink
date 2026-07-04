@@ -96,7 +96,9 @@
 }
 
 /* ═══════════════════════════════════════════
-   6. Hero URL demo card — kedalaman 3D & floating (tanpa kuning)
+   6. Hero URL demo card — kedalaman 3D & floating
+   Tilt interaktif dikendalikan oleh components/DemoTilt.jsx.
+   Animasi float di bawah ini jadi fallback bila JS tidak aktif.
    ═══════════════════════════════════════════ */
 
 .hero-demo {
@@ -104,6 +106,7 @@
 }
 
 .url-demo-wrap {
+  position: relative;
   transform-style: preserve-3d;
   box-shadow:
     0 30px 60px -18px oklch(0% 0 0 / 55%),
@@ -120,10 +123,34 @@
 }
 
 .hero-demo:hover .url-demo-wrap {
-  animation-play-state: paused;
   box-shadow:
     0 44px 90px -20px oklch(0% 0 0 / 62%),
     inset 0 1px 0 oklch(100% 0 0 / 14%);
+}
+
+/* Parallax: bar browser menonjol paling depan, body sedikit di belakang */
+.url-demo-chrome {
+  transform: translateZ(26px);
+}
+
+.url-demo-body {
+  transform: translateZ(10px);
+}
+
+/* Pantulan cahaya yang mengikuti kursor (dibuat oleh DemoTilt.jsx) */
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--gx, 50%) var(--gy, 50%),
+    oklch(100% 0 0 / 14%),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out);
+  pointer-events: none;
+  z-index: 3;
 }
 
 /* URL bar: kedalaman (inner shadow) */
@@ -148,6 +175,10 @@
     animation: none;
     transform: none;
   }
+  .url-demo-chrome,
+  .url-demo-body {
+    transform: none;
+  }
 }
 
 /* ── Hormati preferensi kurangi gerak ── */
@@ -158,6 +189,10 @@
     animation: none !important;
   }
   .url-demo-wrap {
+    transform: none !important;
+  }
+  .url-demo-chrome,
+  .url-demo-body {
     transform: none !important;
   }
   .datasrc-card:hover,
