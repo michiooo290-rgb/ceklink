@@ -9,6 +9,7 @@ import { createClient } from "../lib/supabase/client";
 const NAV_ITEMS = [
   { label: "Beranda", href: "/#beranda" },
   { label: "Cek Link", href: "/#cek-link" },
+  { label: "Cek File", href: "/#cek-file" },
   { label: "Database", href: "/#database" },
   { label: "Cara Kerja", href: "/#cara-kerja" },
 ];
@@ -317,7 +318,7 @@ export default function FloatingHeader() {
                 </button>
               </div>
 
-              <div className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${mobileOpen ? "max-h-80 pb-4" : "max-h-0"}`}>
+              <div className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${mobileOpen ? "max-h-96 pb-4" : "max-h-0"}`}>
                 <div className="border-t border-[rgba(255,255,255,0.05)] pt-3 mt-1 space-y-1">
                   {NAV_ITEMS.map((item) => {
                     const active = activeSection === item.href;
