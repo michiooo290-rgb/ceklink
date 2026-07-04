@@ -6,7 +6,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base Reset ─────────────────────────── */
+/* ── Base Reset ────────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -37,7 +37,7 @@ a[href^="#"] {
   }
 }
 
-/* ── Glassmorphism Card ────────────────── */
+/* ── Glassmorphism Card ────────────── */
 .glass-card {
   background: oklch(16% 0.008 250 / 70%);
   backdrop-filter: blur(12px);
@@ -51,7 +51,7 @@ a[href^="#"] {
   border-top: 1px solid oklch(100% 0 0 / 10%);
 }
 
-/* ── Glow Effects per Status ─────────────── */
+/* ── Glow Effects per Status ─────────── */
 .glow-safe {
   border-color: oklch(62% 0.14 185 / 40%);
   box-shadow: 0 0 30px var(--color-secondary-glow), inset 0 0 30px oklch(62% 0.14 185 / 3%);
@@ -67,7 +67,7 @@ a[href^="#"] {
   box-shadow: 0 0 30px var(--color-danger-glow), inset 0 0 30px oklch(58% 0.22 25 / 3%);
 }
 
-/* ── Scan Animation ───────────────────── */
+/* ── Scan Animation ───────────────── */
 .scan-overlay {
   position: absolute;
   inset: 0;
@@ -83,7 +83,7 @@ a[href^="#"] {
   animation: scan-line 1.5s var(--ease-in-out);
 }
 
-/* ── Button ──────────────────────────── */
+/* ── Button ──────────────────── */
 .btn-glow {
   position: relative;
   background: var(--color-accent);
@@ -109,7 +109,7 @@ a[href^="#"] {
   transform: none;
 }
 
-/* ── Input Focus ────────────────────── */
+/* ── Input Focus ──────────────── */
 .input-glow {
   background: oklch(14% 0.008 250 / 80%);
   border: 1px solid var(--color-border);
@@ -122,7 +122,7 @@ a[href^="#"] {
   border-color: var(--color-accent);
 }
 
-/* ── Status Badge ───────────────────── */
+/* ── Status Badge ─────────────── */
 .badge-safe {
   background: oklch(62% 0.14 185 / 10%);
   color: var(--color-secondary);
@@ -141,7 +141,7 @@ a[href^="#"] {
   border: 1px solid oklch(58% 0.22 25 / 30%);
 }
 
-/* ── Table Styling ──────────────────── */
+/* ── Table Styling ────────────── */
 .table-row {
   transition: background var(--dur-fast) var(--ease-out);
 }
@@ -150,7 +150,7 @@ a[href^="#"] {
   background: oklch(75% 0.17 75 / 4%);
 }
 
-/* ── Scrollbar ──────────────────────── */
+/* ── Scrollbar ──────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -169,7 +169,7 @@ a[href^="#"] {
   background: var(--color-paper-4);
 }
 
-/* ── Mesh Background ───────────────── */
+/* ── Mesh Background ──────────── */
 .mesh-bg {
   position: fixed;
   inset: 0;
@@ -244,14 +244,14 @@ a[href^="#"] {
   }
 }
 
-/* ── Section Divider ────────────────── */
+/* ── Section Divider ───────────── */
 .section-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--color-border), transparent);
 }
 
 
-/* ── Responsive Typography ───────────── */
+/* ── Responsive Typography ─────────── */
 @media (max-width: 640px) {
   html {
     font-size: 14px;
@@ -265,7 +265,7 @@ a[href^="#"] {
   outline-color: oklch(75% 0.17 75);
 }
 
-/* ── Reduced Motion ────────────────── */
+/* ── Reduced Motion ────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -276,9 +276,9 @@ a[href^="#"] {
   }
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    Hero
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .hero-section {
   position: relative;
@@ -315,11 +315,11 @@ a[href^="#"] {
 .hero-inner {
   position: relative;
   z-index: 1;
-  max-width: 72rem;
+  max-width: 76rem;
   margin: 0 auto;
-  padding: 4rem 1.5rem;
+  padding: 3rem 1.5rem 4rem;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 4rem;
   align-items: center;
 }
@@ -345,7 +345,7 @@ a[href^="#"] {
 .hero-headline {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.4rem, 4.5vw + 0.5rem, 4rem);
+  font-size: clamp(2.6rem, 5vw + 0.5rem, 4.25rem);
   line-height: 1.1;
   color: var(--color-text);
   margin-bottom: 1.25rem;
@@ -356,10 +356,10 @@ a[href^="#"] {
 }
 
 .hero-sub {
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--color-text-secondary);
   line-height: 1.7;
-  max-width: 38ch;
+  max-width: 44ch;
   margin-bottom: 2rem;
 }
 
@@ -564,9 +564,9 @@ a[href^="#"] {
   color: var(--color-text-muted);
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    Features
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .features-section {
   padding: 5rem 0;
@@ -664,9 +664,9 @@ a[href^="#"] {
   }
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    Data Sources
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .datasrc-section {
   padding: 3rem 2rem;
@@ -900,9 +900,9 @@ a[href^="#"] {
 .datasrc-offline { opacity: 0.6; }
 .datasrc-fallback { margin-top: 0.25rem; }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    StatsBar
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .statsbar-section {
   padding: 3rem 2rem;
@@ -995,9 +995,9 @@ a[href^="#"] {
   color: var(--color-text-dim);
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    CTA
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .cta-section {
   padding: 5rem 2rem;
@@ -1264,9 +1264,9 @@ a[href^="#"] {
   line-height: 1.6;
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    Footer
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .footer-root {
   border-top: 1px solid var(--color-border);
@@ -1368,9 +1368,9 @@ a[href^="#"] {
   color: var(--color-accent);
 }
 
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    PhishingDB
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .pdb-refresh {
   display: inline-flex;
@@ -1443,9 +1443,9 @@ a[href^="#"] {
   font-size: 0.75rem;
   color: var(--color-text-dim);
 }
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    Education
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .edu-section {
   padding: var(--space-16) var(--space-8);
@@ -2025,9 +2025,9 @@ a[href^="#"] {
   color: var(--color-text-dim);
   margin-top: var(--space-3);
 }
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    HowItWorks
-   ══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════ */
 
 .hiw-section {
   padding: 5rem 2rem;
