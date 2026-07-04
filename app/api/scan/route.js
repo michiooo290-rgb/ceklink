@@ -11,36 +11,35 @@ const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
 
 const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
 
-// ── Google Safe Browsing ──────────────────────────────────────────────
+// ── Google Safe Browsing ────────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
   if (!GSB_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
 
   try {
-    const res = await fetch(
-      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GSB_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client: { clientId: "urlveil", clientVersion: "1.0.0" },
-          threatInfo: {
-            threatTypes: [
-              "MALWARE",
-              "SOCIAL_ENGINEERING",
-              "UNWANTED_SOFTWARE",
-              "POTENTIALLY_HARMFUL_APPLICATION",
-            ],
-            platformTypes: ["ANY_PLATFORM"],
-            threatEntryTypes: ["URL"],
-            threatEntries: [{ url }],
-          },
-        }),
-      }
-    );
+    const endpoint =
+      "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=" + GSB_API_KEY;
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client: { clientId: "urlveil", clientVersion: "1.0.0" },
+        threatInfo: {
+          threatTypes: [
+            "MALWARE",
+            "SOCIAL_ENGINEERING",
+            "UNWANTED_SOFTWARE",
+            "POTENTIALLY_HARMFUL_APPLICATION",
+          ],
+          platformTypes: ["ANY_PLATFORM"],
+          threatEntryTypes: ["URL"],
+          threatEntries: [{ url }],
+        },
+      }),
+    });
 
     if (!res.ok) {
       const err = await res.json();
-      return { available: false, reason: err.error?.message || "GSB error" };
+      return { available: false, reason: (err.error && err.error.message) || "GSB error" };
     }
 
     const data = await res.json();
@@ -66,7 +65,7 @@ async function checkGoogleSafeBrowsing(url) {
   }
 }
 
-// ── URLScan.io ────────────────────────────────────────────────────────
+// ── URLScan.io ───────────────────────────────────────
 async function checkURLScan(url) {
   if (!URLSCAN_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
 
@@ -91,7 +90,7 @@ async function checkURLScan(url) {
     if (!submitRes.ok) {
       const err = await submitRes.json();
       // 400 bisa berarti URL sudah di-scan sebelumnya — coba ambil hasil lama
-      if (submitRes.status === 400 && err.message?.includes("already been submitted")) {
+      if (submitRes.status === 400 && err.message && err.message.includes("already been submitted")) {
         return { available: true, pending: true, label: "URL sedang dalam antrian scan" };
       }
       return { available: false, reason: err.message || "URLScan submit error" };
@@ -99,7 +98,7 @@ async function checkURLScan(url) {
 
     const submitData = await submitRes.json();
     const uuid = submitData.uuid;
-    const resultUrl = `https://urlscan.io/result/${uuid}/`;
+    const resultUrl = "https://urlscan.io/result/" + uuid + "/";
 
     // Tunggu hasil (URLScan butuh ~10 detik)
     // Di sini kita return pending, frontend bisa polling
@@ -115,10 +114,10 @@ async function checkURLScan(url) {
   }
 }
 
-// ── Poll URLScan result ───────────────────────────────────────────────
+// ── Poll URLScan result ─────────────────────────────────
 async function pollURLScanResult(uuid) {
   try {
-    const res = await fetch(`https://urlscan.io/api/v1/result/${uuid}/`, {
+    const res = await fetch("https://urlscan.io/api/v1/result/" + uuid + "/", {
       headers: { "API-Key": URLSCAN_API_KEY },
     });
 
@@ -136,9 +135,9 @@ async function pollURLScanResult(uuid) {
       categories: verdicts?.categories ?? [],
       brands: verdicts?.brands ?? [],
       screenshot: data.task?.screenshotURL ?? null,
-      resultUrl: `https://urlscan.io/result/${uuid}/`,
+      resultUrl: "https://urlscan.io/result/" + uuid + "/",
       label: verdicts?.malicious
-        ? `Berbahaya menurut URLScan (score: ${verdicts.score})`
+        ? "Berbahaya menurut URLScan (score: " + verdicts.score + ")"
         : "Aman menurut URLScan.io",
     };
   } catch {
@@ -146,7 +145,7 @@ async function pollURLScanResult(uuid) {
   }
 }
 
-// ── Combine results ───────────────────────────────────────────────────
+// ── Combine results ────────────────────────────────────
 function combineResults(gsb, urlscan) {
   // Kalau GSB bilang berbahaya → langsung danger
   if (gsb.available && !gsb.safe) {
@@ -167,14 +166,14 @@ function combineResults(gsb, urlscan) {
   return { status: "unknown", confidence: "low" };
 }
 
-// ── Route Handler ─────────────────────────────────────────────────────
+// ── Route Handler ────────────────────────────────────
 export async function POST(req) {
   try {
     const ip = getClientIp(req);
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
-        { error: `Terlalu banyak permintaan. Coba lagi dalam ${rateCheck.retryAfter} detik.` },
+        { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },
         { status: 429, headers: { "Retry-After": String(rateCheck.retryAfter) } }
       );
     }
