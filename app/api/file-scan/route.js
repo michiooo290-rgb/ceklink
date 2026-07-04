@@ -9,6 +9,7 @@
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 
 const VT_API_KEY = process.env.VIRUSTOTAL_API_KEY;
+const VT_BASE = "https://www.virustotal.com";
 
 const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
 
@@ -19,7 +20,7 @@ async function checkVirusTotal(hash) {
   if (!VT_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
 
   try {
-    const res = await fetch(`https://www.virustotal.com/api/v3/files/${hash}`, {
+    const res = await fetch(VT_BASE + "/api/v3/files/" + hash, {
       headers: { "x-apikey": VT_API_KEY },
     });
 
@@ -33,7 +34,7 @@ async function checkVirusTotal(hash) {
       return { available: false, reason: "Kuota VirusTotal habis, coba lagi nanti" };
     }
     if (!res.ok) {
-      return { available: false, reason: `VirusTotal error (${res.status})` };
+      return { available: false, reason: "VirusTotal error (" + res.status + ")" };
     }
 
     const data = await res.json();
@@ -58,12 +59,12 @@ async function checkVirusTotal(hash) {
       meaningfulName: attr.meaningful_name || (attr.names && attr.names[0]) || null,
       names: (attr.names || []).slice(0, 5),
       sizeBytes: attr.size != null ? attr.size : null,
-      permalink: `https://www.virustotal.com/gui/file/${hash}`,
+      permalink: VT_BASE + "/gui/file/" + hash,
       label:
         malicious > 0
-          ? `${malicious} dari ${total} mesin antivirus menandai file ini BERBAHAYA`
+          ? malicious + " dari " + total + " mesin antivirus menandai file ini BERBAHAYA"
           : suspicious > 0
-          ? `${suspicious} mesin antivirus menandai file ini mencurigakan`
+          ? suspicious + " mesin antivirus menandai file ini mencurigakan"
           : "Tidak ada mesin antivirus yang menandai file ini berbahaya",
     };
   } catch (err) {
@@ -89,7 +90,7 @@ export async function POST(req) {
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
-        { error: `Terlalu banyak permintaan. Coba lagi dalam ${rateCheck.retryAfter} detik.` },
+        { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },
         { status: 429, headers: { "Retry-After": String(rateCheck.retryAfter) } }
       );
     }
