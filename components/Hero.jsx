@@ -167,6 +167,7 @@ export default function Hero() {
               splitBy="characters"
               staggerDuration={0.025}
               staggerFrom="first"
+              wordLevelClassName="pb-[0.18em] -mb-[0.18em]"
               transition={ { type: "spring", stiffness: 200, damping: 21 } }
             >
               Jangan asal klik link yang
@@ -176,6 +177,7 @@ export default function Hero() {
               staggerDuration={0.025}
               staggerFrom="first"
               containerClassName="hero-accent"
+              wordLevelClassName="pb-[0.18em] -mb-[0.18em]"
               transition={ { type: "spring", stiffness: 200, damping: 21, delay: 0.7 } }
             >
               mencurigakan.
