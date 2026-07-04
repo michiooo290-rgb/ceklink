@@ -25,15 +25,15 @@ function Toast({ show }) {
     <AnimatePresence>
       {show && (
         <motion.div
-          initial= opacity: 0, y: 20, scale: 0.95 
-          animate= opacity: 1, y: 0, scale: 1 
-          exit= opacity: 0, y: 20, scale: 0.95 
-          transition= duration: 0.25, ease: [0.16, 1, 0.3, 1] 
+          initial={ { opacity: 0, y: 20, scale: 0.95 } }
+          animate={ { opacity: 1, y: 0, scale: 1 } }
+          exit={ { opacity: 0, y: 20, scale: 0.95 } }
+          transition={ { duration: 0.25, ease: [0.16, 1, 0.3, 1] } }
           className="fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 px-4 py-3 rounded-xl border"
-          style= background: "rgba(26,30,46,0.95)", backdropFilter: "blur(12px)", borderColor: "rgba(45,203,133,0.3)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(45,203,133,0.1) inset" 
+          style={ { background: "rgba(26,30,46,0.95)", backdropFilter: "blur(12px)", borderColor: "rgba(45,203,133,0.3)", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(45,203,133,0.1) inset" } }
         >
-          <CheckCircle2 size={16} style= color: "#2DCB85", flexShrink: 0  />
-          <span style= fontSize: "0.85rem", color: "#e0e0e0", fontWeight: 500 >
+          <CheckCircle2 size={16} style={ { color: "#2DCB85", flexShrink: 0 } } />
+          <span style={ { fontSize: "0.85rem", color: "#e0e0e0", fontWeight: 500 } }>
             Berhasil keluar dari Urlveil
           </span>
         </motion.div>
@@ -47,21 +47,21 @@ function LogoutConfirmModal({ show, onConfirm, onCancel, loading }) {
     <AnimatePresence>
       {show && (
         <motion.div
-          initial= opacity: 0 
-          animate= opacity: 1 
-          exit= opacity: 0 
+          initial={ { opacity: 0 } }
+          animate={ { opacity: 1 } }
+          exit={ { opacity: 0 } }
           className="fixed inset-0 z-[100] flex items-center justify-center px-4"
-          style= background: "rgba(10,12,20,0.7)", backdropFilter: "blur(4px)" 
+          style={ { background: "rgba(10,12,20,0.7)", backdropFilter: "blur(4px)" } }
           onClick={onCancel}
         >
           <motion.div
-            initial= opacity: 0, y: 12, scale: 0.96 
-            animate= opacity: 1, y: 0, scale: 1 
-            exit= opacity: 0, y: 12, scale: 0.96 
-            transition= duration: 0.2, ease: [0.16, 1, 0.3, 1] 
+            initial={ { opacity: 0, y: 12, scale: 0.96 } }
+            animate={ { opacity: 1, y: 0, scale: 1 } }
+            exit={ { opacity: 0, y: 12, scale: 0.96 } }
+            transition={ { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-sm rounded-2xl border p-6"
-            style= background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02) inset" 
+            style={ { background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.02) inset" } }
           >
             <h3 className="text-base font-semibold text-white mb-1.5">Keluar dari akun?</h3>
             <p className="text-sm text-[#8888aa] mb-5">
@@ -79,7 +79,7 @@ function LogoutConfirmModal({ show, onConfirm, onCancel, loading }) {
                 onClick={onConfirm}
                 disabled={loading}
                 className="flex-1 px-4 py-2.5 text-sm font-semibold rounded-xl text-white transition-all disabled:opacity-60"
-                style= background: "linear-gradient(135deg, #E55C30, #c4441f)" 
+                style={ { background: "linear-gradient(135deg, #E55C30, #c4441f)" } }
               >
                 {loading ? "Memproses..." : "Ya, Keluar"}
               </button>
@@ -204,7 +204,7 @@ export default function FloatingHeader() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
           visible ? "translate-y-0" : "-translate-y-full"
         }`}
-        style= willChange: "transform" 
+        style={ { willChange: "transform" } }
       >
         <div className={`mx-auto max-w-5xl px-4 pt-3 sm:pt-4 ${atTop ? "sm:pt-6" : ""} transition-all duration-500`}>
           <nav
@@ -260,12 +260,12 @@ export default function FloatingHeader() {
                       <AnimatePresence>
                         {userMenuOpen && (
                           <motion.div
-                            initial= opacity: 0, y: -6, scale: 0.97 
-                            animate= opacity: 1, y: 0, scale: 1 
-                            exit= opacity: 0, y: -6, scale: 0.97 
-                            transition= duration: 0.15 
+                            initial={ { opacity: 0, y: -6, scale: 0.97 } }
+                            animate={ { opacity: 1, y: 0, scale: 1 } }
+                            exit={ { opacity: 0, y: -6, scale: 0.97 } }
+                            transition={ { duration: 0.15 } }
                             className="absolute right-0 top-full mt-2 w-44 rounded-xl border p-1.5 overflow-hidden"
-                            style= background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 12px 32px rgba(0,0,0,0.4)" 
+                            style={ { background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 12px 32px rgba(0,0,0,0.4)" } }
                           >
                             <a
                               href="/riwayat"
