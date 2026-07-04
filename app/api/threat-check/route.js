@@ -17,7 +17,7 @@ const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLHAUS_AUTH_KEY = process.env.URLHAUS_AUTH_KEY; // opsional, daftar gratis di auth.abuse.ch
 const checkRateLimit = createRateLimiter({ max: 30, windowMs: 60_000 });
 
-// ── URLhaus ──────────────────────────────────────────────────────────
+// ── URLhaus ────────────────────────────────────────
 async function checkURLhaus(url) {
   try {
     const headers = { "Content-Type": "application/x-www-form-urlencoded" };
@@ -26,7 +26,7 @@ async function checkURLhaus(url) {
     const res = await fetch("https://urlhaus-api.abuse.ch/v1/url/", {
       method: "POST",
       headers,
-      body: `url=${encodeURIComponent(url)}`,
+      body: "url=" + encodeURIComponent(url),
       signal: AbortSignal.timeout(5000),
     });
 
@@ -42,7 +42,7 @@ async function checkURLhaus(url) {
         urlStatus: data.url_status,
         tags: data.tags || [],
         dateAdded: data.date_added,
-        urlhausLink: `https://urlhaus.abuse.ch/url/${data.id}/`,
+        urlhausLink: "https://urlhaus.abuse.ch/url/" + data.id + "/",
       };
     }
 
@@ -53,28 +53,27 @@ async function checkURLhaus(url) {
   }
 }
 
-// ── Google Safe Browsing ─────────────────────────────────────────────
+// ── Google Safe Browsing ──────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
   if (!GSB_API_KEY) return { available: false, listed: false };
 
   try {
-    const res = await fetch(
-      `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${GSB_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client: { clientId: "urlveil", clientVersion: "1.0.0" },
-          threatInfo: {
-            threatTypes: ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
-            platformTypes: ["ANY_PLATFORM"],
-            threatEntryTypes: ["URL"],
-            threatEntries: [{ url }],
-          },
-        }),
-        signal: AbortSignal.timeout(5000),
-      }
-    );
+    const endpoint =
+      "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=" + GSB_API_KEY;
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client: { clientId: "urlveil", clientVersion: "1.0.0" },
+        threatInfo: {
+          threatTypes: ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
+          platformTypes: ["ANY_PLATFORM"],
+          threatEntryTypes: ["URL"],
+          threatEntries: [{ url }],
+        },
+      }),
+      signal: AbortSignal.timeout(5000),
+    });
 
     if (!res.ok) return { available: false, listed: false };
 
@@ -96,7 +95,7 @@ export async function POST(req) {
     const rateCheck = checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
-        { error: `Terlalu banyak permintaan. Coba lagi dalam ${rateCheck.retryAfter} detik.` },
+        { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },
         { status: 429, headers: { "Retry-After": String(rateCheck.retryAfter) } }
       );
     }
