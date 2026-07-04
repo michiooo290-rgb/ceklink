@@ -6,7 +6,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base Reset ─────────────────── */
+/* ── Base Reset ────────────────── */
 * {
   margin: 0;
   padding: 0;
@@ -19,11 +19,14 @@ html {
   scroll-padding-top: 80px;
 }
 
+/* overflow-x: clip (BUKAN hidden) agar tetap mencegah scroll horizontal
+   TANPA menjadikan body sebagai scroll-container yang MEMATAHKAN
+   position:sticky pada turunannya (mis. .datasrc-header). */
 body {
   font-family: var(--font-body);
   background-color: var(--color-paper);
   color: var(--color-text);
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100dvh;
 }
 
@@ -37,7 +40,7 @@ a[href^="#"] {
   }
 }
 
-/* ── Glassmorphism Card ───────────── */
+/* ── Glassmorphism Card ─────────── */
 .glass-card {
   background: oklch(16% 0.008 250 / 70%);
   backdrop-filter: blur(12px);
@@ -51,7 +54,7 @@ a[href^="#"] {
   border-top: 1px solid oklch(100% 0 0 / 10%);
 }
 
-/* ── Glow Effects per Status ───────── */
+/* ── Glow Effects per Status ─────── */
 .glow-safe {
   border-color: oklch(62% 0.14 185 / 40%);
   box-shadow: 0 0 30px var(--color-secondary-glow), inset 0 0 30px oklch(62% 0.14 185 / 3%);
@@ -109,7 +112,7 @@ a[href^="#"] {
   transform: none;
 }
 
-/* ── Input Focus ────────────── */
+/* ── Input Focus ───────────── */
 .input-glow {
   background: oklch(14% 0.008 250 / 80%);
   border: 1px solid var(--color-border);
@@ -122,7 +125,7 @@ a[href^="#"] {
   border-color: var(--color-accent);
 }
 
-/* ── Status Badge ───────────── */
+/* ── Status Badge ──────────── */
 .badge-safe {
   background: oklch(62% 0.14 185 / 10%);
   color: var(--color-secondary);
@@ -141,7 +144,7 @@ a[href^="#"] {
   border: 1px solid oklch(58% 0.22 25 / 30%);
 }
 
-/* ── Table Styling ───────────── */
+/* ── Table Styling ──────────── */
 .table-row {
   transition: background var(--dur-fast) var(--ease-out);
 }
@@ -276,9 +279,9 @@ a[href^="#"] {
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    Hero
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .hero-section {
   position: relative;
@@ -564,9 +567,9 @@ a[href^="#"] {
   color: var(--color-text-muted);
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    Features
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .features-section {
   padding: 5rem 0;
@@ -664,9 +667,9 @@ a[href^="#"] {
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    Data Sources
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .datasrc-section {
   padding: 3rem 2rem;
@@ -900,9 +903,9 @@ a[href^="#"] {
 .datasrc-offline { opacity: 0.6; }
 .datasrc-fallback { margin-top: 0.25rem; }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    StatsBar
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .statsbar-section {
   padding: 3rem 2rem;
@@ -995,9 +998,9 @@ a[href^="#"] {
   color: var(--color-text-dim);
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    CTA
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .cta-section {
   padding: 5rem 2rem;
@@ -1264,9 +1267,9 @@ a[href^="#"] {
   line-height: 1.6;
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    Footer
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .footer-root {
   border-top: 1px solid var(--color-border);
@@ -1368,9 +1371,9 @@ a[href^="#"] {
   color: var(--color-accent);
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    PhishingDB
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .pdb-refresh {
   display: inline-flex;
@@ -1443,9 +1446,9 @@ a[href^="#"] {
   font-size: 0.75rem;
   color: var(--color-text-dim);
 }
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    Education
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .edu-section {
   padding: var(--space-16) var(--space-8);
@@ -2025,9 +2028,9 @@ a[href^="#"] {
   color: var(--color-text-dim);
   margin-top: var(--space-3);
 }
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    HowItWorks
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .hiw-section {
   padding: 5rem 2rem;
@@ -2180,11 +2183,11 @@ a[href^="#"] {
   letter-spacing: 0.05em;
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════
    Section Rhythm — subtle background variation (Tahap 4)
    Memberi latar gelap-halus pada section terpilih agar
    scroll panjang terasa punya "panel" yang berganti-ganti.
-   ═══════════════════════════════════════════ */
+   ════════════════════════════ */
 
 .datasrc-section,
 .statsbar-section,
