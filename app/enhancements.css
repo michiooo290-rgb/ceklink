@@ -207,6 +207,46 @@
   }
 }
 
+/* ═══════════════════════════════════════════
+   8. Scroll reveal — section fade/slide-in saat masuk viewport
+   Class .reveal ditambahkan oleh components/ScrollReveal.jsx.
+   ═══════════════════════════════════════════ */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+  will-change: opacity, transform;
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ═══════════════════════════════════════════
+   9. Aksesibilitas — focus ring konsisten (hanya keyboard)
+   ═══════════════════════════════════════════ */
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid #2DCB85;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════════
+   10. Mobile — cegah scroll horizontal tak sengaja
+   ═══════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
 /* ── Hormati preferensi kurangi gerak ── */
 @media (prefers-reduced-motion: reduce) {
   .hero-accent,
@@ -229,5 +269,10 @@
   .btn-primary::after,
   .cta-btn::after {
     transition: none;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
