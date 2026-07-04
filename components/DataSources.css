@@ -8,15 +8,11 @@
   align-items: center;
 }
 
-/* Teks kiri: tetap menempel (sticky) saat section di-scroll,
-   tidak ikut kabur bersama tumpukan kartu. top 6rem = di bawah navbar. */
+/* Teks kiri tetap di tengah vertikal, sejajar dengan tumpukan kartu. */
 .datasrc-showcase .datasrc-header {
   text-align: left;
   margin: 0;
   max-width: none;
-  align-self: start;
-  position: sticky;
-  top: 6rem;
 }
 
 /* Badge live real-time di kolom kiri */
@@ -46,13 +42,13 @@
 }
 
 /* Tumpukan digeser sedikit ke kanan (offset x -40) agar kartu depan
-   tidak menabrak teks di kiri; tetap turun sedikit dengan margin aman. */
+   tidak menabrak teks di kiri; dinaikkan sedikit (offset y +80). */
 .datasrc-stage .card-swap-container {
   left: 50%;
   top: 50%;
   right: auto;
   bottom: auto;
-  transform: translate(calc(-50% - 40px), calc(-50% + 120px));
+  transform: translate(calc(-50% - 40px), calc(-50% + 80px));
   transform-origin: center center;
 }
 
@@ -145,16 +141,11 @@
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  /* 1 kolom: matikan sticky agar teks tidak menutupi kartu */
-  .datasrc-showcase .datasrc-header {
-    position: static;
-    top: auto;
-  }
   .datasrc-stage {
     min-height: 540px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(-50%, calc(-50% + 100px)) scale(0.8);
+    transform: translate(-50%, calc(-50% + 70px)) scale(0.8);
   }
 }
 
@@ -163,6 +154,6 @@
     min-height: 440px;
   }
   .datasrc-stage .card-swap-container {
-    transform: translate(-50%, calc(-50% + 78px)) scale(0.6);
+    transform: translate(-50%, calc(-50% + 55px)) scale(0.6);
   }
 }
