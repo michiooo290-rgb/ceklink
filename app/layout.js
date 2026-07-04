@@ -3,6 +3,7 @@ import "./globals.css";
 import "./enhancements.css";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { ToastProvider } from "../components/Toast";
+import ScrollReveal from "../components/ScrollReveal";
 
 export const metadata = {
   title: "Urlveil — Cek Keamanan Link",
@@ -77,6 +78,7 @@ export default async function RootLayout({ children }) {
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
+          <ScrollReveal />
         </ToastProvider>
       </body>
     </html>
