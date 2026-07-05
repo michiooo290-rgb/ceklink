@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ClipboardPaste, ScanLine, ShieldCheck, Share2 } from "lucide-react";
+import "./HowItWorks.css";
 
 const STEPS = [
   {
@@ -46,9 +47,9 @@ export default function HowItWorks() {
         {/* Header — left aligned */}
         <motion.div
           className="hiw-header"
-          initial={{ opacity: 0, y: 16 }}
+          initial={ { opacity: 0, y: 20 } }
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
+          transition={ { duration: 0.5 } }
         >
           <span className="section-label">Cara kerja</span>
           <h2 className="hiw-title">
@@ -64,21 +65,20 @@ export default function HowItWorks() {
               <motion.div
                 key={i}
                 className="hiw-step"
-                initial={{ opacity: 0, y: 20 }}
+                style={ { "--step": step.color } }
+                initial={ { opacity: 0, y: 24 } }
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.4, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                transition={ { duration: 0.5, delay: i * 0.1 } }
               >
                 {/* Number + connector */}
                 <div className="hiw-step-top">
-                  <div className="hiw-step-num" style={{ color: step.color, borderColor: step.color + "33", background: step.color + "10" }}>
-                    {step.num}
-                  </div>
+                  <div className="hiw-step-num">{step.num}</div>
                   {i < STEPS.length - 1 && <div className="hiw-connector" />}
                 </div>
 
                 {/* Icon */}
-                <div className="hiw-icon" style={{ color: step.color }}>
-                  <Icon size={20} />
+                <div className="hiw-icon">
+                  <Icon size={22} />
                 </div>
 
                 {/* Text */}
@@ -92,9 +92,9 @@ export default function HowItWorks() {
         {/* Bottom note */}
         <motion.p
           className="hiw-note"
-          initial={{ opacity: 0 }}
+          initial={ { opacity: 0 } }
           animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.5, delay: 0.5 }}
+          transition={ { duration: 0.5, delay: 0.5 } }
         >
           Gratis · Tanpa daftar · Tanpa install apapun
         </motion.p>
