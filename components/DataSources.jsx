@@ -43,47 +43,42 @@ export default function DataSources() {
     if (mounted) fetchLiveData();
   }, [mounted]);
 
-  /* ── Pin teks kiri via JavaScript (transform-counteract) ──
-     Alih-alih position:sticky (yang berkali-kali patah karena overflow/
-     transform pada induk), kita ukur posisi section tiap frame lalu geser
-     .datasrc-header dengan translateY agar tampak terkunci di ~22% layar.
-     Murni berbasis koordinat viewport → tak bisa "kalah" oleh CSS induk.
-     Di-clamp antara 0 dan (tinggi kolom − tinggi teks) supaya teks tidak
-     keluar dari batas section. Nonaktif di layar ≤900px (layout 1 kolom). */
-  const headerRef = useRef(null);
+  /* ── Pin SELURUH BLOK (teks + kartu) via JavaScript ──
+     Section dibuat tinggi (200vh di CSS) sebagai "lintasan" scroll. Wrapper
+     .datasrc-pin ditahan di posisi tetap pada viewport lewat transform selama
+     section melintas, sehingga teks & kartu diam bersama sambil kartu berganti
+     otomatis. Murni berbasis koordinat viewport → tidak bergantung pada
+     sticky/overflow/transform induk. Nonaktif di layar ≤900px (scroll normal). */
+  const pinRef = useRef(null);
   useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return;
-    const container = header.parentElement; // .datasrc-showcase
-    if (!container) return;
-
-    /* Netralkan CSS lama yang mungkin masih ter-cache di browser
-       (position:sticky; top:22vh). Inline style selalu menang atas stylesheet,
-       jadi pin JS tetap akurat meski DataSources.css versi baru belum termuat.
-       Tanpa ini, sticky menahan di 22vh LALU transform JS mendorong turun lagi
-       → teks meluncur ke bawah. */
-    header.style.position = "relative";
-    header.style.top = "auto";
+    const section = ref.current;
+    const pin = pinRef.current;
+    if (!section || !pin) return;
 
     let ticking = false;
 
     const update = () => {
       ticking = false;
       if (window.innerWidth <= 900) {
-        header.style.transform = "";
+        pin.style.transform = "";
         return;
       }
-      const pinTop = window.innerHeight * 0.22;
-      const cRect = container.getBoundingClientRect();
-      const travel = cRect.height - header.offsetHeight;
+      const sRect = section.getBoundingClientRect();
+      const pinHeight = pin.offsetHeight;
+      const naturalTop = pin.offsetTop;
+      const travel = sRect.height - naturalTop - pinHeight;
       if (travel <= 0) {
-        header.style.transform = "";
+        pin.style.transform = "";
         return;
       }
-      let offset = pinTop - cRect.top;
+      const desiredTop =
+        pinHeight < window.innerHeight
+          ? (window.innerHeight - pinHeight) / 2
+          : 8;
+      let offset = desiredTop - (sRect.top + naturalTop);
       if (offset < 0) offset = 0;
       else if (offset > travel) offset = travel;
-      header.style.transform = `translateY(${offset}px)`;
+      pin.style.transform = `translateY(${offset}px)`;
     };
 
     const onScroll = () => {
@@ -144,110 +139,112 @@ export default function DataSources() {
 
   return (
     <section className="datasrc-section" aria-label="Sumber data analisis" ref={ref}>
-      <div className="datasrc-inner datasrc-showcase">
+      <div className="datasrc-pin" ref={pinRef}>
+        <div className="datasrc-inner datasrc-showcase">
 
-        {/* Kolom kiri: copy. Di-pin lewat JS (lihat useEffect di atas). */}
-        <div className="datasrc-header" ref={headerRef}>
+          {/* Kolom kiri: copy */}
+          <div className="datasrc-header">
+            <motion.div
+              className="datasrc-header-anim"
+              initial={ { opacity: 0, y: 20 } }
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={ { duration: 0.5 } }
+            >
+              <span className="statsbar-eyebrow">Transparansi data</span>
+              <p className="statsbar-title">Dari mana<br />datanya?</p>
+              <p className="datasrc-sub">
+                Setiap hasil scan didukung sumber yang bisa kamu verifikasi sendiri.
+              </p>
+              <div className="datasrc-live-badge">
+                <span className="datasrc-live-dot" aria-hidden="true" />
+                {mounted && urlhausData
+                  ? `${urlhausData.count?.toLocaleString("id-ID")} URL berbahaya terlacak real-time`
+                  : "5 sumber verifikasi aktif"}
+              </div>
+
+              {/* Versi teks untuk pembaca layar (kartu berputar disembunyikan dari AT) */}
+              <ul className="sr-only">
+                {SOURCES.map((s) => (
+                  <li key={s.name}>
+                    {s.name} ({s.tag}) — {s.desc}
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+
+          {/* Kolom kanan: tumpukan kartu 3D berputar */}
           <motion.div
-            className="datasrc-header-anim"
-            initial={ { opacity: 0, y: 20 } }
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={ { duration: 0.5 } }
+            className="datasrc-stage"
+            initial={ { opacity: 0, scale: 0.94 } }
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={ { duration: 0.6, delay: 0.15 } }
+            aria-hidden="true"
           >
-            <span className="statsbar-eyebrow">Transparansi data</span>
-            <p className="statsbar-title">Dari mana<br />datanya?</p>
-            <p className="datasrc-sub">
-              Setiap hasil scan didukung sumber yang bisa kamu verifikasi sendiri.
-            </p>
-            <div className="datasrc-live-badge">
-              <span className="datasrc-live-dot" aria-hidden="true" />
-              {mounted && urlhausData
-                ? `${urlhausData.count?.toLocaleString("id-ID")} URL berbahaya terlacak real-time`
-                : "5 sumber verifikasi aktif"}
-            </div>
-
-            {/* Versi teks untuk pembaca layar (kartu berputar disembunyikan dari AT) */}
-            <ul className="sr-only">
-              {SOURCES.map((s) => (
-                <li key={s.name}>
-                  {s.name} ({s.tag}) — {s.desc}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-        </div>
-
-        {/* Kolom kanan: tumpukan kartu 3D berputar */}
-        <motion.div
-          className="datasrc-stage"
-          initial={ { opacity: 0, scale: 0.94 } }
-          animate={isInView ? { opacity: 1, scale: 1 } : {}}
-          transition={ { duration: 0.6, delay: 0.15 } }
-          aria-hidden="true"
-        >
-          <CardSwap
-            width={500}
-            height={380}
-            cardDistance={60}
-            verticalDistance={70}
-            delay={4000}
-            skewAmount={6}
-            pauseOnHover
-            easing="elastic"
-          >
-            {SOURCES.map((s) => {
-              const Icon = s.icon;
-              return (
-                <Card key={s.name}>
-                  <div className="ds-card-inner">
-                    <div className="ds-card-top">
-                      <div
-                        className="ds-card-icon"
-                        style={ { color: s.tagColor, borderColor: `${s.tagColor}33`, background: `${s.tagColor}12` } }
-                      >
-                        <Icon size={22} />
+            <CardSwap
+              width={500}
+              height={380}
+              cardDistance={60}
+              verticalDistance={70}
+              delay={4000}
+              skewAmount={6}
+              pauseOnHover
+              easing="elastic"
+            >
+              {SOURCES.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <Card key={s.name}>
+                    <div className="ds-card-inner">
+                      <div className="ds-card-top">
+                        <div
+                          className="ds-card-icon"
+                          style={ { color: s.tagColor, borderColor: `${s.tagColor}33`, background: `${s.tagColor}12` } }
+                        >
+                          <Icon size={22} />
+                        </div>
+                        <span
+                          className="ds-card-tag"
+                          style={ { color: s.tagColor, borderColor: `${s.tagColor}40`, background: `${s.tagColor}14` } }
+                        >
+                          {s.tag}
+                        </span>
                       </div>
-                      <span
-                        className="ds-card-tag"
-                        style={ { color: s.tagColor, borderColor: `${s.tagColor}40`, background: `${s.tagColor}14` } }
-                      >
-                        {s.tag}
-                      </span>
+
+                      <div className="ds-card-name">{s.name}</div>
+
+                      {s.live && mounted && !loading && urlhausData ? (
+                        <div className="ds-card-live">
+                          <span className="ds-card-live-number">
+                            {urlhausData.count?.toLocaleString("id-ID") ?? "—"}
+                          </span>
+                          <span className="ds-card-live-label">
+                            URL berbahaya dilacak ·{" "}
+                            {urlhausData.onlineCount?.toLocaleString("id-ID") ?? "—"} aktif
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="ds-card-desc">{s.desc}</p>
+                      )}
+
+                      {s.url && (
+                        <a
+                          className="ds-card-link"
+                          href={s.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Kunjungi sumber <ExternalLink size={14} />
+                        </a>
+                      )}
                     </div>
+                  </Card>
+                );
+              })}
+            </CardSwap>
+          </motion.div>
 
-                    <div className="ds-card-name">{s.name}</div>
-
-                    {s.live && mounted && !loading && urlhausData ? (
-                      <div className="ds-card-live">
-                        <span className="ds-card-live-number">
-                          {urlhausData.count?.toLocaleString("id-ID") ?? "—"}
-                        </span>
-                        <span className="ds-card-live-label">
-                          URL berbahaya dilacak ·{" "}
-                          {urlhausData.onlineCount?.toLocaleString("id-ID") ?? "—"} aktif
-                        </span>
-                      </div>
-                    ) : (
-                      <p className="ds-card-desc">{s.desc}</p>
-                    )}
-
-                    {s.url && (
-                      <a
-                        className="ds-card-link"
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Kunjungi sumber <ExternalLink size={14} />
-                      </a>
-                    )}
-                  </div>
-                </Card>
-              );
-            })}
-          </CardSwap>
-        </motion.div>
-
+        </div>
       </div>
     </section>
   );
