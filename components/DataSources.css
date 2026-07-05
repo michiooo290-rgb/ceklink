@@ -1,37 +1,6 @@
 /* Layout showcase Sumber Data — 2 kolom (teks kiri + CardSwap kanan).
-   Seluruh blok "dikunci" di layar sebentar saat di-scroll (pin via JS di
-   DataSources.jsx). */
-
-/* body overflow-x: clip juga diperbaiki di globals.css (jaring pengaman). */
-body {
-  overflow-x: clip;
-}
-
-/* ScrollReveal menambahkan .reveal (transform) ke setiap <section>.
-   Netralkan di sini agar tidak mengganggu (fade-in via opacity tetap ada). */
-.datasrc-section.reveal,
-.datasrc-section.reveal--visible {
-  transform: none;
-  will-change: opacity;
-}
-
-/* Section jadi "lintasan": dibuat tinggi supaya ada jarak scroll untuk
-   mengunci blok. Hanya aktif di desktop; di mobile scroll normal. */
-.datasrc-section {
-  position: relative;
-}
-
-@media (min-width: 901px) {
-  .datasrc-section {
-    min-height: 200vh;
-  }
-}
-
-/* Wrapper yang ditahan di viewport oleh JS (transform-counteract) selama
-   section melintas. Teks + kartu tetap tampak bersama. */
-.datasrc-pin {
-  will-change: transform;
-}
+   Scroll normal: teks & kartu tampil berdampingan dan bergerak bersama
+   seperti section lain (tanpa pin/sticky). */
 
 .datasrc-showcase {
   display: grid;
@@ -165,7 +134,7 @@ body {
   color: var(--color-secondary, #2DCB85);
 }
 
-/* Responsif — di ≤900px: 1 kolom, tanpa pin (scroll normal). */
+/* Responsif */
 @media (max-width: 900px) {
   .datasrc-showcase {
     grid-template-columns: 1fr;
