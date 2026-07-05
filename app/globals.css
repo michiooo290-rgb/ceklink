@@ -694,8 +694,7 @@ a[href^="#"] {
 }
 
 .datasrc-header {
-  position: sticky;
-  top: 5rem;
+  position: static;
 }
 
 .datasrc-sub {
