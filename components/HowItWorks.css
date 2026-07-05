@@ -1,0 +1,163 @@
+/* ════════════════════════════════════════
+   HowItWorks — poles kartu langkah premium.
+   Selektor diberi prefix .hiw-section agar spesifisitasnya menang
+   atas aturan .hiw-* di globals.css TANPA bergantung pada urutan
+   pemuatan CSS (Next.js App Router tidak menjamin urutan chunk).
+   ════════════════════════════════════════ */
+
+/* Grid kartu */
+.hiw-section .hiw-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .hiw-section .hiw-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .hiw-section .hiw-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Kartu langkah */
+.hiw-section .hiw-step {
+  --step: var(--color-accent);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1.4rem 1.6rem;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(158deg, oklch(18% 0.012 280 / 75%), oklch(13.5% 0.006 280 / 65%));
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    transform 0.35s var(--ease-out),
+    border-color 0.3s var(--ease-out),
+    box-shadow 0.35s var(--ease-out);
+  will-change: transform;
+}
+
+/* garis aksen tipis di atas kartu, mengikuti warna langkah */
+.hiw-section .hiw-step::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--step), transparent 80%);
+  opacity: 0.5;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* glow radial halus saat hover */
+.hiw-section .hiw-step::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(120% 80% at 15% 0%, color-mix(in srgb, var(--step) 16%, transparent), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-out);
+}
+
+.hiw-section .hiw-step:hover {
+  transform: translateY(-5px);
+  border-color: color-mix(in srgb, var(--step) 45%, var(--color-border));
+  box-shadow:
+    0 18px 40px -18px oklch(0% 0 0 / 65%),
+    0 0 0 1px color-mix(in srgb, var(--step) 25%, transparent);
+}
+
+.hiw-section .hiw-step:hover::before { opacity: 1; }
+.hiw-section .hiw-step:hover::after { opacity: 1; }
+
+/* Baris nomor + konektor */
+.hiw-section .hiw-step-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.hiw-section .hiw-step-num {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--step) 55%, transparent);
+  color: var(--step);
+  background: color-mix(in srgb, var(--step) 12%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+
+.hiw-section .hiw-step:hover .hiw-step-num {
+  background: var(--step);
+  color: var(--color-paper);
+}
+
+.hiw-section .hiw-connector {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--step) 40%, var(--color-border)), transparent);
+  margin-left: 0.6rem;
+}
+
+/* Tile ikon */
+.hiw-section .hiw-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--step);
+  border: 1px solid color-mix(in srgb, var(--step) 30%, transparent);
+  background: color-mix(in srgb, var(--step) 10%, transparent);
+  margin-bottom: 1rem;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.hiw-section .hiw-step:hover .hiw-icon {
+  transform: scale(1.08) rotate(-3deg);
+}
+
+/* Teks */
+.hiw-section .hiw-step-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.hiw-section .hiw-step-desc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.65;
+}
+
+/* Hormati preferensi kurangi gerak */
+@media (prefers-reduced-motion: reduce) {
+  .hiw-section .hiw-step,
+  .hiw-section .hiw-icon,
+  .hiw-section .hiw-step-num {
+    transition: none;
+  }
+  .hiw-section .hiw-step:hover {
+    transform: none;
+  }
+  .hiw-section .hiw-step:hover .hiw-icon {
+    transform: none;
+  }
+}
