@@ -1,38 +1,49 @@
 /* Layout showcase Sumber Data — 2 kolom (teks kiri + CardSwap kanan).
-   Menyasar class .datasrc-* baru + isi kartu .ds-card-*. */
+   Seluruh blok "dikunci" di layar sebentar saat di-scroll (pin via JS di
+   DataSources.jsx). */
 
-/* body overflow-x: clip juga sudah diperbaiki di globals.css. Override ini
-   dibiarkan sebagai jaring pengaman (redundan, tidak berbahaya). */
+/* body overflow-x: clip juga diperbaiki di globals.css (jaring pengaman). */
 body {
   overflow-x: clip;
 }
 
-/* ScrollReveal menambahkan class .reveal (transform + will-change:transform)
-   ke SETIAP <section>. transform pada induk bisa mengganggu perhitungan,
-   jadi di section ini kita netralkan (fade-in via opacity tetap ada). */
+/* ScrollReveal menambahkan .reveal (transform) ke setiap <section>.
+   Netralkan di sini agar tidak mengganggu (fade-in via opacity tetap ada). */
 .datasrc-section.reveal,
 .datasrc-section.reveal--visible {
   transform: none;
   will-change: opacity;
 }
 
+/* Section jadi "lintasan": dibuat tinggi supaya ada jarak scroll untuk
+   mengunci blok. Hanya aktif di desktop; di mobile scroll normal. */
+.datasrc-section {
+  position: relative;
+}
+
+@media (min-width: 901px) {
+  .datasrc-section {
+    min-height: 200vh;
+  }
+}
+
+/* Wrapper yang ditahan di viewport oleh JS (transform-counteract) selama
+   section melintas. Teks + kartu tetap tampak bersama. */
+.datasrc-pin {
+  will-change: transform;
+}
+
 .datasrc-showcase {
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
   gap: 2rem;
-  align-items: start;
+  align-items: center;
 }
 
-/* Teks kiri: position relative + di-pin oleh JS via translateY
-   (lihat useEffect di DataSources.jsx). TIDAK memakai position:sticky
-   agar tidak bentrok dengan transform yang dikendalikan JS. */
 .datasrc-showcase .datasrc-header {
   text-align: left;
   margin: 0;
   max-width: none;
-  align-self: start;
-  position: relative;
-  will-change: transform;
 }
 
 /* Badge live real-time di kolom kiri */
@@ -51,18 +62,17 @@ body {
 }
 
 /* Panggung tempat tumpukan kartu 3D besar.
-   clip-path memotong HANYA sisi bawah (sisi atas/kiri/kanan sengaja
-   dilebarkan ke -100%/200% agar kartu besar tidak ikut terpotong).
-   Ini menahan kartu yang "jatuh" saat animasi agar tidak bocor ke
-   section di bawahnya — overflow:hidden tidak mempan untuk elemen 3D. */
+   clip-path memotong HANYA sisi bawah agar kartu yang "jatuh" saat animasi
+   tidak bocor ke section di bawahnya (overflow:hidden tidak mempan untuk
+   elemen 3D). */
 .datasrc-stage {
   position: relative;
   min-height: 680px;
   clip-path: polygon(-100% -100%, 200% -100%, 200% 100%, -100% 100%);
 }
 
-/* Tumpukan digeser sedikit ke kanan (offset x -40) agar kartu depan
-   tidak menabrak teks di kiri; dinaikkan sedikit (offset y +80). */
+/* Tumpukan digeser sedikit ke kanan (offset x -40) agar kartu depan tidak
+   menabrak teks di kiri; dinaikkan sedikit (offset y +80). */
 .datasrc-stage .card-swap-container {
   left: 50%;
   top: 50%;
@@ -155,16 +165,12 @@ body {
   color: var(--color-secondary, #2DCB85);
 }
 
-/* Responsif */
+/* Responsif — di ≤900px: 1 kolom, tanpa pin (scroll normal). */
 @media (max-width: 900px) {
   .datasrc-showcase {
     grid-template-columns: 1fr;
     gap: 1.5rem;
     align-items: stretch;
-  }
-  /* 1 kolom: JS menonaktifkan pin (transform dikosongkan) */
-  .datasrc-showcase .datasrc-header {
-    transform: none;
   }
   .datasrc-stage {
     min-height: 540px;
