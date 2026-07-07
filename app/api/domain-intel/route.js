@@ -207,13 +207,21 @@ export async function POST(req) {
 
     const hostname = new URL(validation.url).hostname;
 
-    // Resolve IP dulu (dibutuhkan AbuseIPDB), tapi tetap lanjut walau gagal
+    // Resolve IP dulu (dibutuhkan AbuseIPDB), tapi tetap lanjut walau gagal.
+    // Coba resolve4() dulu (query DNS langsung), fallback ke lookup() yang
+    // pakai OS resolver — resolve4() kadang gagal di Windows karena config
+    // DNS system-nya nggak kebaca oleh c-ares.
     let resolvedIp = null;
     try {
       const addresses = await dns.resolve4(hostname);
       resolvedIp = addresses[0] || null;
     } catch {
-      resolvedIp = null;
+      try {
+        const { address } = await dns.lookup(hostname, { family: 4 });
+        resolvedIp = address || null;
+      } catch {
+        resolvedIp = null;
+      }
     }
 
     const [abuseIpdb, whois, ssl, virusTotal] = await Promise.all([
