@@ -33,6 +33,32 @@ function getStatusColor(status) {
   return statusColors[status] || statusColors.warn;
 }
 
+// ── Domain Intel risk reasons ──────────────────────────────────────
+// Mirror logic scoring di app/api/domain-intel/route.js — biar badge
+// risiko di UI nggak cuma nunjukin level, tapi juga alasan konkretnya.
+function getRiskReasons(domainIntel) {
+  const reasons = [];
+  const { abuseIpdb, whois, ssl, virusTotal, shodan } = domainIntel;
+
+  if (abuseIpdb?.available && (abuseIpdb.status === "malicious" || abuseIpdb.status === "suspicious")) {
+    reasons.push("reputasi IP mencurigakan (AbuseIPDB)");
+  }
+  if (whois?.available && whois.isNewDomain) {
+    reasons.push(`domain baru dibuat (${whois.ageDays} hari)`);
+  }
+  if (ssl?.available && (ssl.status === "invalid" || ssl.status === "expired")) {
+    reasons.push(ssl.status === "expired" ? "sertifikat SSL kedaluwarsa" : "sertifikat SSL tidak valid");
+  }
+  if (virusTotal?.available && (virusTotal.status === "malicious" || virusTotal.status === "suspicious")) {
+    reasons.push("ditandai VirusTotal");
+  }
+  if (shodan?.available && shodan.status === "vulnerable") {
+    reasons.push(`known vulnerability terdeteksi Shodan (${shodan.vulns.length})`);
+  }
+
+  return reasons.length > 0 ? reasons : ["sinyal campuran dari beberapa sumber"];
+}
+
 // ── Score Circle ────────────────────────────────────────────────────
 function ScoreCircle({ score, status }) {
   const sc = getStatusColor(status);
@@ -360,7 +386,7 @@ function AnalisisContent() {
         {(domainIntelLoading || domainIntel) && (
           <motion.div variants={fadeUp} custom={0.5} initial="hidden" animate="visible"
             className="glass-card p-5 border border-[#2e3348]">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-1">
               <h2 className="font-heading font-semibold text-sm text-[#8888aa] flex items-center gap-2">
                 <Fingerprint size={16} className="text-[#F5A623]" />
                 Domain Intelligence
@@ -380,7 +406,17 @@ function AnalisisContent() {
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {domainIntel?.resolvedIp && (
+              <p className="text-[10px] text-[#555570] mb-2">
+                IP: {domainIntel.resolvedIp} (IPv{domainIntel.ipVersion || "?"})
+              </p>
+            )}
+            {domainIntel?.overallRisk && domainIntel.overallRisk !== "low" && domainIntel.overallRisk !== "unknown" && (
+              <p className="text-[10px] text-[#666680] mb-3">
+                Dipicu oleh: {getRiskReasons(domainIntel).join(", ")}
+              </p>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* AbuseIPDB */}
               <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
                 <div className="flex items-center gap-2 mb-1">
