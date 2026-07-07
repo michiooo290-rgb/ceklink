@@ -10,9 +10,17 @@
  * - SSL/TLS        → validitas & masa berlaku sertifikat (native Node tls)
  * - VirusTotal     → reputasi domain (reuse VIRUSTOTAL_API_KEY yang sudah
  *                    dipakai di /api/file-scan)
+ * - Shodan         → exposed ports/services & known vulns pada IP
+ *                    (butuh SHODAN_API_KEY)
  *
- * Endpoint ini butuh resolusi DNS (buat AbuseIPDB) dan koneksi TCP/TLS
- * (buat cek sertifikat), jadi lebih lambat dari /api/threat-check —
+ * Hasil di-cache in-memory per hostname (15 menit) buat ngirit kuota API
+ * yang kena limit (AbuseIPDB, Shodan) kalau domain yang sama dicek ulang.
+ *
+ * Resolusi IP coba IPv4 dulu, fallback ke IPv6 kalau domain cuma punya
+ * AAAA record (mis. domain IPv6-only) — dipakai buat AbuseIPDB & Shodan.
+ *
+ * Endpoint ini butuh resolusi DNS (buat AbuseIPDB/Shodan) dan koneksi
+ * TCP/TLS (buat cek sertifikat), jadi lebih lambat dari /api/threat-check —
  * cocoknya dipakai di halaman "Analisis Mendalam", bukan Quick Scan.
  */
 
@@ -20,9 +28,11 @@ import dns from "node:dns/promises";
 import tls from "node:tls";
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 import { validateScanUrl } from "../../../lib/validate-url";
+import { getCached, setCached } from "../../../lib/domain-intel-cache";
 
 const ABUSEIPDB_API_KEY = process.env.ABUSEIPDB_API_KEY;
 const VIRUSTOTAL_API_KEY = process.env.VIRUSTOTAL_API_KEY;
+const SHODAN_API_KEY = process.env.SHODAN_API_KEY;
 
 // Endpoint ini lebih berat (DNS + TLS handshake + beberapa API luar),
 // jadi limit lebih ketat dibanding quick scan.
@@ -156,6 +166,47 @@ function checkSSL(hostname) {
   });
 }
 
+// ── Shodan (exposed ports/services & known vulns) ─────
+async function checkShodan(ip) {
+  if (!ip) {
+    return { available: false, status: "unavailable", reason: "Gagal resolve IP dari domain." };
+  }
+  if (!SHODAN_API_KEY) {
+    return { available: false, status: "unavailable", reason: "API key tidak dikonfigurasi" };
+  }
+
+  try {
+    const res = await fetch(
+      "https://api.shodan.io/shodan/host/" + encodeURIComponent(ip) + "?key=" + SHODAN_API_KEY,
+      { signal: AbortSignal.timeout(8000) }
+    );
+
+    // 404 dari Shodan artinya IP ini nggak ada di indeks mereka (bukan error)
+    if (res.status === 404) {
+      return { available: true, status: "no_data", ip, ports: [], vulns: [] };
+    }
+    if (!res.ok) return { available: false, status: "error", reason: `HTTP ${res.status}` };
+
+    const data = await res.json();
+    const ports = data.ports || [];
+    const vulns = data.vulns ? Object.keys(data.vulns) : [];
+
+    return {
+      available: true,
+      status: vulns.length > 0 ? "vulnerable" : ports.length > 5 ? "exposed" : "normal",
+      ip,
+      org: data.org || null,
+      os: data.os || null,
+      ports,
+      vulns,
+      hostnames: data.hostnames || [],
+      lastUpdate: data.last_update || null,
+    };
+  } catch (err) {
+    return { available: false, status: "unavailable", reason: err.message };
+  }
+}
+
 // ── VirusTotal domain lookup ───────────────────────────
 async function checkVirusTotalDomain(domain) {
   if (!VIRUSTOTAL_API_KEY) {
@@ -207,31 +258,50 @@ export async function POST(req) {
 
     const hostname = new URL(validation.url).hostname;
 
-    // Resolve IP dulu (dibutuhkan AbuseIPDB), tapi tetap lanjut walau gagal.
-    // Coba resolve4() dulu (query DNS langsung), fallback ke lookup() yang
-    // pakai OS resolver — resolve4() kadang gagal di Windows karena config
-    // DNS system-nya nggak kebaca oleh c-ares.
+    // Cek cache dulu — kalau domain ini baru aja dicek (<15 menit), langsung
+    // balikin hasil lama tanpa manggil API eksternal lagi (ngirit kuota).
+    const cacheKey = "domain-intel:" + hostname;
+    const cachedResult = getCached(cacheKey);
+    if (cachedResult) {
+      return Response.json({ ...cachedResult, cached: true });
+    }
+
+    // Resolve IP dulu (dibutuhkan AbuseIPDB & Shodan), tapi tetap lanjut
+    // walau gagal. Urutan: resolve4() → resolve6() (domain IPv6-only) →
+    // lookup() OS resolver sebagai fallback terakhir (resolve4/6 kadang
+    // gagal di Windows karena config DNS system-nya nggak kebaca c-ares).
     let resolvedIp = null;
+    let ipVersion = null;
     try {
       const addresses = await dns.resolve4(hostname);
       resolvedIp = addresses[0] || null;
+      ipVersion = 4;
     } catch {
       try {
-        const { address } = await dns.lookup(hostname, { family: 4 });
-        resolvedIp = address || null;
+        const addresses6 = await dns.resolve6(hostname);
+        resolvedIp = addresses6[0] || null;
+        ipVersion = 6;
       } catch {
-        resolvedIp = null;
+        try {
+          const { address, family } = await dns.lookup(hostname);
+          resolvedIp = address || null;
+          ipVersion = family || null;
+        } catch {
+          resolvedIp = null;
+          ipVersion = null;
+        }
       }
     }
 
-    const [abuseIpdb, whois, ssl, virusTotal] = await Promise.all([
+    const [abuseIpdb, whois, ssl, virusTotal, shodan] = await Promise.all([
       checkAbuseIPDB(resolvedIp),
       checkWhois(hostname),
       checkSSL(hostname),
       checkVirusTotalDomain(hostname),
+      checkShodan(resolvedIp),
     ]);
 
-    const sources = { abuseIpdb, whois, ssl, virusTotal };
+    const sources = { abuseIpdb, whois, ssl, virusTotal, shodan };
     const checkedSources = Object.entries(sources)
       .filter(([, v]) => v.available)
       .map(([k]) => k);
@@ -239,12 +309,13 @@ export async function POST(req) {
       .filter(([, v]) => !v.available)
       .map(([k]) => k);
 
-    // Composite risk: sinyal "malicious/invalid/expired/new_domain" menaikkan risk
+    // Composite risk: sinyal "malicious/invalid/expired/new_domain/vulnerable" menaikkan risk
     const riskSignals = [
       abuseIpdb.available && (abuseIpdb.status === "malicious" || abuseIpdb.status === "suspicious"),
       whois.available && whois.isNewDomain,
       ssl.available && (ssl.status === "invalid" || ssl.status === "expired"),
       virusTotal.available && (virusTotal.status === "malicious" || virusTotal.status === "suspicious"),
+      shodan.available && shodan.status === "vulnerable",
     ].filter(Boolean).length;
 
     let overallRisk;
@@ -253,10 +324,11 @@ export async function POST(req) {
     else if (checkedSources.length > 0) overallRisk = "low";
     else overallRisk = "unknown";
 
-    return Response.json({
+    const result = {
       url: validation.url,
       hostname,
       resolvedIp,
+      ipVersion,
       overallRisk,
       checkedSources,
       unavailableSources,
@@ -264,8 +336,13 @@ export async function POST(req) {
       whois,
       ssl,
       virusTotal,
+      shodan,
       checkedAt: new Date().toISOString(),
-    });
+    };
+
+    setCached(cacheKey, result);
+
+    return Response.json({ ...result, cached: false });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }

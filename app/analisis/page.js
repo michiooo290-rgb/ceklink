@@ -487,6 +487,38 @@ function AnalisisContent() {
                   <p className="text-xs text-[#555570]">⚠️ {domainIntel?.virusTotal?.reason || "Tidak tersedia"}</p>
                 )}
               </div>
+
+              {/* Shodan */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <Eye size={14} className="text-[#8888aa]" />
+                  <span className="text-xs font-medium text-[#e0e0e0]">Exposed Services (Shodan)</span>
+                </div>
+                {domainIntelLoading && !domainIntel?.shodan ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : domainIntel?.shodan?.available ? (
+                  domainIntel.shodan.status === "no_data" ? (
+                    <p className="text-xs text-[#8888aa]">Tidak ada data terindeks Shodan buat IP ini</p>
+                  ) : (
+                    <div>
+                      <p className={`text-xs font-medium ${
+                        domainIntel.shodan.status === "vulnerable" ? "text-[#E55C30]"
+                        : domainIntel.shodan.status === "exposed" ? "text-[#F5A623]"
+                        : "text-[#8888aa]"
+                      }`}>
+                        {domainIntel.shodan.ports.length} port terbuka
+                        {domainIntel.shodan.vulns.length > 0 && ` · ⚠️ ${domainIntel.shodan.vulns.length} known vuln`}
+                      </p>
+                      <p className="text-[10px] text-[#555570] mt-0.5">
+                        {domainIntel.shodan.ports.length > 0 && `Port: ${domainIntel.shodan.ports.slice(0, 8).join(", ")}`}
+                        {domainIntel.shodan.org && ` · ${domainIntel.shodan.org}`}
+                      </p>
+                    </div>
+                  )
+                ) : (
+                  <p className="text-xs text-[#555570]">⚠️ {domainIntel?.shodan?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
