@@ -31,7 +31,7 @@ export default async function RiwayatPage() {
   const totalDanger = items.filter((i) => i.status === "danger").length;
 
   const MINI_STATS = [
-    { icon: ShieldCheck, value: totalSafe,   label: "Aman",        color: "#2DCB85", bg: "rgba(45,203,133,0.08)",  border: "rgba(45,203,133,0.15)"  },
+    { icon: ShieldCheck, value: totalSafe,   label: "Risiko Rendah",        color: "#2DCB85", bg: "rgba(45,203,133,0.08)",  border: "rgba(45,203,133,0.15)"  },
     { icon: ShieldAlert, value: totalWarn,   label: "Mencurigakan", color: "#F5A623", bg: "rgba(245,166,35,0.08)",  border: "rgba(245,166,35,0.15)"  },
     { icon: ShieldX,     value: totalDanger, label: "Berbahaya",    color: "#E55C30", bg: "rgba(229,92,48,0.08)",   border: "rgba(229,92,48,0.15)"   },
   ];

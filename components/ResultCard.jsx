@@ -42,7 +42,7 @@ export default function ResultCard({ result, url }) {
   const statusBg = status === "safe" ? "bg-[#2DCB85]/10" : status === "warn" ? "bg-[#F5A623]/10" : "bg-[#E55C30]/10";
 
   const handleCopy = async () => {
-    const text = `Hasil Cek Link - Urlveil\n\nLink: ${url}\nStatus: ${statusLabel}\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nTemuan:\n${issues.map((i) => `- ${i.label}: ${i.value}`).join("\n")}\n\nCek link lain di: urlveil.id`;
+    const text = `Hasil Cek Link - Urlveil\n\nLink: ${url}\nStatus: ${statusLabel}\nSkor: ${score}/95\nRisiko: ${riskLevel}\n\n${summary}\n\nTemuan:\n${issues.map((i) => `- ${i.label}: ${i.value}`).join("\n")}\n\nCatatan: Skor bersifat indikatif, bukan jaminan aman.\nCek link lain di: urlveil.id`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -54,7 +54,7 @@ export default function ResultCard({ result, url }) {
 
   const handleShareWA = () => {
     const text = encodeURIComponent(
-      `*Hasil Cek Link - Urlveil*\n\nLink: ${url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\nRisiko: ${riskLevel}\n\n${summary}\n\nCek link lain di: urlveil.id`
+      `*Hasil Cek Link - Urlveil*\n\nLink: ${url}\nStatus: *${statusLabel}*\nSkor: ${score}/95\nRisiko: ${riskLevel}\n\n${summary}\n\nCek link lain di: urlveil.id`
     );
     window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
   };
@@ -101,7 +101,7 @@ export default function ResultCard({ result, url }) {
               </motion.div>
               <div className="font-mono text-sm text-[#666680] break-all mt-1">{domain}</div>
               <div className="flex items-center gap-2 mt-2">
-                <Tooltip text="Risiko diperkirakan dari kombinasi reputasi domain, umur domain, dan apakah link ini pernah dilaporkan sebagai phising/malware di database ancaman.">
+                <Tooltip text="Skor menunjukkan indikator risiko yang ditemukan pada pemeriksaan ini. Skor tinggi bukan jaminan aman — tetap verifikasi domain sebelum memasukkan data.">
                   <span className={`text-xs px-2 py-1 rounded-full ${statusBg} ${statusColor} font-medium`}>
                     Risiko: {riskLevel}
                   </span>
@@ -125,10 +125,10 @@ export default function ResultCard({ result, url }) {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <Tooltip text="Skor 0-100 dihitung dari beberapa faktor: reputasi domain, ada/tidaknya HTTPS, umur domain, dan riwayat di database ancaman. Semakin tinggi, semakin aman.">
+                <Tooltip text="Skor 0-95 dihitung dari indikator risiko yang ditemukan. 95 berarti tidak ada indikator pada pemeriksaan ini, bukan jaminan aman.">
                   <div className="flex flex-col items-center">
                     <motion.span className="font-heading font-bold text-xl text-white">{score}</motion.span>
-                    <span className="text-[10px] text-[#666680]">/100</span>
+                    <span className="text-[10px] text-[#666680]">/95</span>
                   </div>
                 </Tooltip>
               </div>
@@ -250,8 +250,8 @@ export default function ResultCard({ result, url }) {
           <ul className="space-y-1 text-xs text-[#8888aa]">
             {status === "safe" ? (
               <>
-                <li>• Link ini terlihat aman, tetap waspada saat mengisi data</li>
-                <li>• Pastikan selalu cek URL sebelum login</li>
+                <li>• Tidak ada indikator berbahaya pada pemeriksaan ini — bukan jaminan aman</li>
+                <li>• Tetap verifikasi domain sebelum login, membayar, atau mengunduh file</li>
                 <li>• Gunakan 2FA untuk keamanan ekstra</li>
               </>
             ) : status === "warn" ? (
@@ -335,11 +335,17 @@ export default function ResultCard({ result, url }) {
             <div className="p-3 rounded-lg bg-[#1a1e2e] border border-[#2e3348]">
               <p className="text-[10px] font-mono text-[#555570] mb-1">Google Safe Browsing</p>
               {result.externalCheck.googleSafeBrowsing?.available ? (
-                <p className={`text-xs font-semibold ${result.externalCheck.googleSafeBrowsing.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
-                  {result.externalCheck.googleSafeBrowsing.label}
-                </p>
+                result.externalCheck.googleSafeBrowsing.safe ? (
+                  <p className="text-xs font-semibold text-[#8888aa]">
+                    Tidak ditemukan di Google Safe Browsing saat diperiksa
+                  </p>
+                ) : (
+                  <p className="text-xs font-semibold text-[#E55C30]">
+                    {result.externalCheck.googleSafeBrowsing.label || "Ancaman terdeteksi oleh Google"}
+                  </p>
+                )
               ) : (
-                <p className="text-xs text-[#555570]">{result.externalCheck.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
+                <p className="text-xs text-[#555570]">⚠️ {result.externalCheck.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
               )}
             </div>
             {/* URLScan.io */}
@@ -348,8 +354,10 @@ export default function ResultCard({ result, url }) {
               {result.externalCheck.urlscan?.available ? (
                 result.externalCheck.urlscan.ready ? (
                   <div>
-                    <p className={`text-xs font-semibold ${result.externalCheck.urlscan.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
-                      {result.externalCheck.urlscan.label}
+                    <p className={`text-xs font-semibold ${result.externalCheck.urlscan.safe ? "text-[#8888aa]" : "text-[#E55C30]"}`}>
+                      {result.externalCheck.urlscan.safe
+                        ? "URLScan.io tidak menandai malicious saat hasil ini dibuat"
+                        : result.externalCheck.urlscan.label || "Berbahaya menurut URLScan.io"}
                     </p>
                     {result.externalCheck.urlscan.resultUrl && (
                       <a href={result.externalCheck.urlscan.resultUrl} target="_blank" rel="noopener noreferrer"
@@ -359,13 +367,17 @@ export default function ResultCard({ result, url }) {
                     )}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#555570]">⏳ Menunggu hasil...</p>
+                  <p className="text-xs text-[#555570]">⏳ Menunggu hasil scan...</p>
                 )
               ) : (
-                <p className="text-xs text-[#555570]">{result.externalCheck.urlscan?.reason || "Tidak tersedia"}</p>
+                <p className="text-xs text-[#555570]">⚠️ {result.externalCheck.urlscan?.reason || "Tidak tersedia"}</p>
               )}
             </div>
           </div>
+          {/* Caveat */}
+          <p className="text-[10px] text-[#555570] mt-3 italic">
+            Catatan: tidak ditemukan di database bukan berarti pasti aman, terutama untuk URL baru atau konten yang dibuat pengguna.
+          </p>
         </motion.div>
       )}
 

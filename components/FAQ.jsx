@@ -28,8 +28,8 @@ const FAQS = [
     a: "Ya. Mengecek link sepenuhnya gratis dan tanpa perlu membuat akun. Tinggal tempel link, lalu cek.",
   },
   {
-    q: "Kalau hasilnya 'Aman', apakah pasti 100% aman?",
-    a: "Tidak ada alat keamanan yang sempurna. Hasil 'Aman' berarti tidak ada ancaman yang terdeteksi saat itu - bukan jaminan mutlak. Phising yang sangat baru bisa saja belum masuk database manapun, jadi tetap waspada.",
+    q: "Kalau hasilnya 'Risiko Rendah', apakah pasti aman?",
+    a: "Tidak ada alat keamanan yang sempurna. Hasil 'Risiko Rendah' berarti tidak ada indikator berbahaya yang terdeteksi saat itu — bukan jaminan mutlak. Phising yang sangat baru bisa saja belum masuk database manapun, jadi tetap waspada.",
   },
   {
     q: "Apakah saya bisa kena virus karena mengecek link berbahaya di sini?",

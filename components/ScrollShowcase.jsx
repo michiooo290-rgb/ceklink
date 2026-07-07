@@ -27,13 +27,13 @@ function ScanMockup() {
           </div>
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-[#2DCB85]/10 px-3 py-1 text-sm font-semibold text-[#2DCB85]">
-              AMAN
+              RISIKO RENDAH
             </span>
             <p className="mt-2 break-all font-mono text-sm text-slate-200 md:text-base">
               https://tokopedia.com
             </p>
             <p className="mt-1 text-xs text-slate-400 md:text-sm">
-              Link ini terlihat aman untuk dikunjungi.
+              Tidak ada indikator berbahaya yang terdeteksi. Tetap verifikasi domain sebelum login.
             </p>
           </div>
         </div>

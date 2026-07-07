@@ -68,7 +68,7 @@ async function getResponse(input) {
         `${statusIcon} **Hasil: ${result.statusLabel}**`,
         "",
         `🔗 \`${result.url}\``,
-        `📊 Skor: ${result.score}/100`,
+        `📊 Skor: ${result.score}/95`,
         `🌐 Domain: ${result.domain}`,
         "",
       ];

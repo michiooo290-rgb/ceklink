@@ -13,7 +13,7 @@ const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
 
 // ── Google Safe Browsing ────────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
-  if (!GSB_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
+  if (!GSB_API_KEY) return { available: false, status: "unavailable", reason: "API key tidak dikonfigurasi" };
 
   try {
     const endpoint =
@@ -35,11 +35,12 @@ async function checkGoogleSafeBrowsing(url) {
           threatEntries: [{ url }],
         },
       }),
+      signal: AbortSignal.timeout(8000),
     });
 
     if (!res.ok) {
       const err = await res.json();
-      return { available: false, reason: (err.error && err.error.message) || "GSB error" };
+      return { available: false, status: "error", reason: (err.error && err.error.message) || "GSB error" };
     }
 
     const data = await res.json();
@@ -50,6 +51,7 @@ async function checkGoogleSafeBrowsing(url) {
       return {
         available: true,
         safe: false,
+        status: "malicious",
         threatTypes: types,
         label: types.includes("SOCIAL_ENGINEERING")
           ? "Phising terdeteksi oleh Google"
@@ -59,15 +61,15 @@ async function checkGoogleSafeBrowsing(url) {
       };
     }
 
-    return { available: true, safe: true, threatTypes: [], label: "Aman menurut Google Safe Browsing" };
+    return { available: true, safe: true, status: "clean", threatTypes: [], label: "Tidak ditemukan di Google Safe Browsing saat diperiksa" };
   } catch (err) {
-    return { available: false, reason: err.message };
+    return { available: false, status: "unavailable", reason: err.message };
   }
 }
 
 // ── URLScan.io ───────────────────────────────────────
 async function checkURLScan(url) {
-  if (!URLSCAN_API_KEY) return { available: false, reason: "API key tidak dikonfigurasi" };
+  if (!URLSCAN_API_KEY) return { available: false, status: "unavailable", reason: "API key tidak dikonfigurasi" };
 
   try {
     // Submit scan
@@ -79,38 +81,35 @@ async function checkURLScan(url) {
       },
       body: JSON.stringify({
         url,
-        // FIX: "public" bikin URL yang di-scan bisa dicari & dilihat siapapun
-        // di urlscan.io (termasuk screenshot halaman). "unlisted" tetap bisa
-        // diakses lewat link langsung (resultUrl) tapi nggak nongol di pencarian publik.
         visibility: "unlisted",
         tags: ["urlveil"],
       }),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!submitRes.ok) {
       const err = await submitRes.json();
-      // 400 bisa berarti URL sudah di-scan sebelumnya — coba ambil hasil lama
+      // 400 bisa berarti URL sudah di-scan sebelumnya — tapi kita tidak punya UUID untuk poll
       if (submitRes.status === 400 && err.message && err.message.includes("already been submitted")) {
-        return { available: true, pending: true, label: "URL sedang dalam antrian scan" };
+        return { available: true, pending: true, status: "pending", label: "URL sudah dalam antrian scan — coba beberapa saat lagi" };
       }
-      return { available: false, reason: err.message || "URLScan submit error" };
+      return { available: false, status: "error", reason: err.message || "URLScan submit error" };
     }
 
     const submitData = await submitRes.json();
     const uuid = submitData.uuid;
     const resultUrl = "https://urlscan.io/result/" + uuid + "/";
 
-    // Tunggu hasil (URLScan butuh ~10 detik)
-    // Di sini kita return pending, frontend bisa polling
     return {
       available: true,
       pending: true,
+      status: "pending",
       uuid,
       resultUrl,
       label: "Scan dikirim ke URLScan.io — hasil dalam ~10 detik",
     };
   } catch (err) {
-    return { available: false, reason: err.message };
+    return { available: false, status: "unavailable", reason: err.message };
   }
 }
 
@@ -119,10 +118,12 @@ async function pollURLScanResult(uuid) {
   try {
     const res = await fetch("https://urlscan.io/api/v1/result/" + uuid + "/", {
       headers: { "API-Key": URLSCAN_API_KEY },
+      signal: AbortSignal.timeout(8000),
     });
 
-    if (res.status === 404) return { ready: false };
-    if (!res.ok) return { ready: false };
+    if (res.status === 404) return { ready: false, status: "pending" };
+    if (res.status === 429) return { ready: false, status: "error", reason: "Rate limit exceeded" };
+    if (!res.ok) return { ready: false, status: "error", reason: `HTTP ${res.status}` };
 
     const data = await res.json();
     const verdicts = data.verdicts?.overall;
@@ -130,6 +131,7 @@ async function pollURLScanResult(uuid) {
     return {
       ready: true,
       safe: !verdicts?.malicious,
+      status: verdicts?.malicious ? "malicious" : "clean",
       score: verdicts?.score ?? 0,
       malicious: verdicts?.malicious ?? false,
       categories: verdicts?.categories ?? [],
@@ -138,32 +140,60 @@ async function pollURLScanResult(uuid) {
       resultUrl: "https://urlscan.io/result/" + uuid + "/",
       label: verdicts?.malicious
         ? "Berbahaya menurut URLScan (score: " + verdicts.score + ")"
-        : "Aman menurut URLScan.io",
+        : "URLScan.io tidak menandai malicious saat hasil ini dibuat",
     };
-  } catch {
-    return { ready: false };
+  } catch (err) {
+    return { ready: false, status: "error", reason: err.message };
   }
 }
 
 // ── Combine results ────────────────────────────────────
 function combineResults(gsb, urlscan) {
   // Kalau GSB bilang berbahaya → langsung danger
-  if (gsb.available && !gsb.safe) {
-    return { status: "danger", confidence: "high" };
+  if (gsb.available && gsb.status === "malicious") {
+    return { status: "danger", confidence: "high", label: "Ancaman terdeteksi oleh Google Safe Browsing" };
   }
   // Kalau URLScan bilang berbahaya
   if (urlscan.available && urlscan.ready && urlscan.malicious) {
-    return { status: "danger", confidence: "medium" };
+    return { status: "danger", confidence: "medium", label: "Ancaman terdeteksi oleh URLScan.io" };
   }
-  // Keduanya aman
-  if (gsb.available && gsb.safe && urlscan.available && urlscan.ready && !urlscan.malicious) {
-    return { status: "safe", confidence: "high" };
+
+  const gsbClean = gsb.available && gsb.status === "clean";
+  const urlscanDone = urlscan.available && urlscan.ready && !urlscan.malicious;
+  const urlscanPending = urlscan.available && !urlscan.ready;
+  const urlscanUnavailable = !urlscan.available;
+
+  // Keduanya tersedia dan clean → risiko rendah
+  if (gsbClean && urlscanDone) {
+    return { status: "safe", confidence: "high", label: "Tidak ditemukan di sumber yang tersedia" };
   }
-  // GSB aman tapi URLScan pending/tidak available
-  if (gsb.available && gsb.safe) {
-    return { status: "safe", confidence: "medium" };
+
+  // GSB clean + URLScan pending → jangan bilang safe, bilang pending
+  if (gsbClean && urlscanPending) {
+    return { status: "pending", confidence: "medium", label: "Verifikasi eksternal belum selesai" };
   }
-  return { status: "unknown", confidence: "low" };
+
+  // GSB clean + URLScan unavailable → partial clean, bukan safe
+  if (gsbClean && urlscanUnavailable) {
+    return { status: "partial_clean", confidence: "medium", label: "Hanya dicek oleh Google Safe Browsing — URLScan tidak tersedia" };
+  }
+
+  // GSB unavailable + URLScan clean
+  if (!gsb.available && urlscanDone) {
+    return { status: "partial_clean", confidence: "medium", label: "Hanya dicek oleh URLScan.io — Google Safe Browsing tidak tersedia" };
+  }
+
+  // Semua unavailable
+  if (!gsb.available && !urlscan.available) {
+    return { status: "unknown", confidence: "low", label: "Semua sumber reputasi tidak tersedia" };
+  }
+
+  // URLScan pending, GSB unavailable
+  if (!gsb.available && urlscanPending) {
+    return { status: "pending", confidence: "low", label: "Scan sedang diproses" };
+  }
+
+  return { status: "unknown", confidence: "low", label: "Hasil tidak lengkap" };
 }
 
 // ── Route Handler ────────────────────────────────────

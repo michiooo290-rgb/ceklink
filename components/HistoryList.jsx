@@ -92,7 +92,7 @@ export default function HistoryList({ initialHistory, userId }) {
                     {item.status_label}
                   </span>
                   <span>·</span>
-                  <span>Skor {item.score}/100</span>
+                  <span>Skor {item.score}/95</span>
                   <span>·</span>
                   <span>{formatDate(item.created_at)}</span>
                 </div>

@@ -103,7 +103,7 @@ export default function FileScanner() {
         status === "danger"
           ? "\u26a0\ufe0f Hati-hati \u2014 file ini terindikasi berbahaya."
           : status === "safe"
-          ? "Pemeriksaan selesai. File terlihat aman."
+          ? "Pemeriksaan selesai. Tidak ada indikator berbahaya pada file ini."
           : "Pemeriksaan selesai. Lihat hasilnya di bawah.",
         { type: status === "danger" ? "danger" : "success" }
       );

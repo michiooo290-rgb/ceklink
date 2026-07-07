@@ -30,7 +30,7 @@ async function checkURLhaus(url) {
       signal: AbortSignal.timeout(5000),
     });
 
-    if (!res.ok) return { available: false, listed: false };
+    if (!res.ok) return { available: false, listed: false, status: "error", reason: `HTTP ${res.status}` };
 
     const data = await res.json();
 
@@ -38,6 +38,7 @@ async function checkURLhaus(url) {
       return {
         available: true,
         listed: true,
+        status: "malicious",
         threat: data.threat || "malware_distribution",
         urlStatus: data.url_status,
         tags: data.tags || [],
@@ -47,15 +48,15 @@ async function checkURLhaus(url) {
     }
 
     // "no_results" → URL bersih menurut URLhaus
-    return { available: true, listed: false };
+    return { available: true, listed: false, status: "clean" };
   } catch (err) {
-    return { available: false, listed: false, reason: err.message };
+    return { available: false, listed: false, status: "unavailable", reason: err.message };
   }
 }
 
 // ── Google Safe Browsing ──────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
-  if (!GSB_API_KEY) return { available: false, listed: false };
+  if (!GSB_API_KEY) return { available: false, listed: false, status: "unavailable", reason: "API key tidak dikonfigurasi" };
 
   try {
     const endpoint =
@@ -75,17 +76,17 @@ async function checkGoogleSafeBrowsing(url) {
       signal: AbortSignal.timeout(5000),
     });
 
-    if (!res.ok) return { available: false, listed: false };
+    if (!res.ok) return { available: false, listed: false, status: "error", reason: `HTTP ${res.status}` };
 
     const data = await res.json();
     const matches = data.matches || [];
 
     if (matches.length > 0) {
-      return { available: true, listed: true, threatTypes: matches.map((m) => m.threatType) };
+      return { available: true, listed: true, status: "malicious", threatTypes: matches.map((m) => m.threatType) };
     }
-    return { available: true, listed: false };
+    return { available: true, listed: false, status: "clean" };
   } catch (err) {
-    return { available: false, listed: false, reason: err.message };
+    return { available: false, listed: false, status: "unavailable", reason: err.message };
   }
 }
 
@@ -114,9 +115,36 @@ export async function POST(req) {
 
     const listedAnywhere = urlhaus.listed || gsb.listed;
 
+    // Tri-state reputation aggregate
+    const urlhausClean = urlhaus.available && urlhaus.status === "clean";
+    const gsbClean = gsb.available && gsb.status === "clean";
+    const urlhausAvail = urlhaus.available;
+    const gsbAvail = gsb.available;
+
+    let reputationStatus;
+    if (listedAnywhere) {
+      reputationStatus = "malicious";
+    } else if (urlhausClean && gsbClean) {
+      reputationStatus = "clean";
+    } else if (urlhausClean || gsbClean) {
+      reputationStatus = "partial_clean";
+    } else {
+      reputationStatus = "unknown";
+    }
+
+    const checkedSources = [urlhausAvail && "urlhaus", gsbAvail && "gsb"].filter(Boolean);
+    const unavailableSources = [
+      !urlhausAvail && "urlhaus",
+      !gsbAvail && "gsb",
+    ].filter(Boolean);
+
     return Response.json({
       url,
       listed: listedAnywhere,
+      reputationStatus,
+      anyUnavailable: unavailableSources.length > 0,
+      checkedSources,
+      unavailableSources,
       urlhaus,
       googleSafeBrowsing: gsb,
       checkedAt: new Date().toISOString(),

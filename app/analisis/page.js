@@ -57,7 +57,7 @@ function ScoreCircle({ score, status }) {
         >
           {score}
         </motion.span>
-        <span className="text-xs text-[#666680]">/100</span>
+        <span className="text-xs text-[#666680]">/95</span>
       </div>
     </div>
   );
@@ -200,7 +200,7 @@ function AnalisisContent() {
 
   const handleCopy = async () => {
     if (!result) return;
-    const text = `Analisis Mendalam - Urlveil\n\nLink: ${result.url}\nStatus: ${result.statusLabel}\nSkor: ${result.score}/100\nDomain: ${result.domain}\n\n${result.summary}\n\nCek analisis lengkap di: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`;
+    const text = `Analisis Mendalam - Urlveil\n\nLink: ${result.url}\nStatus: ${result.statusLabel}\nSkor: ${result.score}/95\nDomain: ${result.domain}\n\n${result.summary}\n\nCatatan: Skor bersifat indikatif, bukan jaminan aman.\nCek analisis lengkap di: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`;
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -285,11 +285,15 @@ function AnalisisContent() {
                 {externalLoading && !externalCheck?.googleSafeBrowsing ? (
                   <p className="text-xs text-[#555570]">Memeriksa...</p>
                 ) : externalCheck?.googleSafeBrowsing?.available ? (
-                  <p className={`text-xs font-medium ${externalCheck.googleSafeBrowsing.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
-                    {externalCheck.googleSafeBrowsing.label}
-                  </p>
+                  externalCheck.googleSafeBrowsing.safe ? (
+                    <p className="text-xs font-medium text-[#8888aa]">Tidak ditemukan di Google Safe Browsing saat diperiksa</p>
+                  ) : (
+                    <p className="text-xs font-medium text-[#E55C30]">
+                      {externalCheck.googleSafeBrowsing.label || "Ancaman terdeteksi oleh Google"}
+                    </p>
+                  )
                 ) : (
-                  <p className="text-xs text-[#555570]">{externalCheck?.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
+                  <p className="text-xs text-[#555570]">⚠️ {externalCheck?.googleSafeBrowsing?.reason || "Tidak tersedia"}</p>
                 )}
               </div>
               {/* URLScan.io */}
@@ -303,8 +307,10 @@ function AnalisisContent() {
                 ) : externalCheck?.urlscan?.available ? (
                   externalCheck.urlscan.ready ? (
                     <div>
-                      <p className={`text-xs font-medium ${externalCheck.urlscan.safe ? "text-[#2DCB85]" : "text-[#E55C30]"}`}>
-                        {externalCheck.urlscan.label}
+                      <p className={`text-xs font-medium ${externalCheck.urlscan.safe ? "text-[#8888aa]" : "text-[#E55C30]"}`}>
+                        {externalCheck.urlscan.safe
+                          ? "URLScan.io tidak menandai malicious saat hasil ini dibuat"
+                          : externalCheck.urlscan.label || "Berbahaya menurut URLScan.io"}
                       </p>
                       {externalCheck.urlscan.resultUrl && (
                         <a href={externalCheck.urlscan.resultUrl} target="_blank" rel="noopener noreferrer"
@@ -315,11 +321,11 @@ function AnalisisContent() {
                     </div>
                   ) : (
                     <p className="text-xs text-[#555570]">
-                      {urlscanUUID ? "⏳ Menunggu hasil scan..." : externalCheck.urlscan.label}
+                      {urlscanUUID ? "⏳ Menunggu hasil scan..." : externalCheck.urlscan.label || "⏳ Menunggu hasil..."}
                     </p>
                   )
                 ) : (
-                  <p className="text-xs text-[#555570]">{externalCheck?.urlscan?.reason || "Tidak tersedia"}</p>
+                  <p className="text-xs text-[#555570]">⚠️ {externalCheck?.urlscan?.reason || "Tidak tersedia"}</p>
                 )}
               </div>
             </div>
@@ -353,7 +359,7 @@ function AnalisisContent() {
             </div>
             <div className="mt-4 p-3 rounded-lg bg-[#E55C30]/5 border border-[#E55C30]/10">
               <p className="text-xs text-[#E55C30]">
-                Total pengurangan: <span className="font-mono font-bold">{100 - score}</span> poin dari skor awal 100
+                Total pengurangan: <span className="font-mono font-bold">{95 - score}</span> poin dari skor awal 95
               </p>
             </div>
           </Section>
@@ -732,8 +738,8 @@ function AnalisisContent() {
             <ul className="space-y-1.5 text-xs text-[#8888aa]">
               {status === "safe" ? (
                 <>
-                  <li>• Link ini terlihat aman, tetap waspada saat mengisi data</li>
-                  <li>• Pastikan selalu cek URL sebelum login</li>
+                  <li>• Tidak ada indikator berbahaya pada pemeriksaan ini — bukan jaminan aman</li>
+                  <li>• Tetap verifikasi domain sebelum login, membayar, atau mengunduh file</li>
                   <li>• Gunakan 2FA untuk keamanan ekstra</li>
                 </>
               ) : status === "warn" ? (
@@ -766,7 +772,7 @@ function AnalisisContent() {
             </motion.button>
             <motion.button
               onClick={() => {
-                const text = encodeURIComponent(`*Hasil Analisis Urlveil*\n\nLink: ${result.url}\nStatus: *${statusLabel}*\nSkor: ${score}/100\n\nCek analisis: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`);
+                const text = encodeURIComponent(`*Hasil Analisis Urlveil*\n\nLink: ${result.url}\nStatus: *${statusLabel}*\nSkor: ${score}/95\n\nCek analisis: urlveil.id/analisis?url=${encodeURIComponent(result.url)}`);
                 window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
               }}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#2DCB85]/10 border border-[#2DCB85]/20 text-[#2DCB85] hover:bg-[#2DCB85]/20 transition-colors text-sm"
