@@ -7,7 +7,7 @@ import {
   ShieldCheck, ShieldAlert, ShieldX, ArrowLeft, Search, Globe, Lock, Unlock,
   Link, AlertTriangle, CheckCircle2, XCircle, Info, Copy, Share2, Flag,
   Shield, Eye, Code, Layers, Hash, Fingerprint, Zap, Target, FileText,
-  ChevronDown, ChevronUp, ExternalLink, Smartphone,
+  ChevronDown, ChevronUp, ExternalLink, Smartphone, Calendar, Server,
 } from "lucide-react";
 import { scanURL } from "../../lib/scanner";
 import FloatingHeader from "../../components/FloatingHeader";
@@ -132,6 +132,8 @@ function AnalisisContent() {
   const [externalCheck, setExternalCheck] = useState(null);
   const [externalLoading, setExternalLoading] = useState(false);
   const [urlscanUUID, setUrlscanUUID] = useState(null);
+  const [domainIntel, setDomainIntel] = useState(null);
+  const [domainIntelLoading, setDomainIntelLoading] = useState(false);
 
   useEffect(() => {
     if (!urlParam) {
@@ -149,24 +151,46 @@ function AnalisisContent() {
         const data = await scanURL(normalizedUrl);
         setResult(data);
 
-        // External API check (non-blocking)
+        // External API check + Domain Intelligence — jalan paralel, non-blocking
         setExternalLoading(true);
-        try {
-          const extRes = await fetch("/api/scan", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url: normalizedUrl }),
-          });
-          const extData = await extRes.json();
-          setExternalCheck(extData);
-          if (extData.urlscan?.uuid) {
-            setUrlscanUUID(extData.urlscan.uuid);
+        setDomainIntelLoading(true);
+
+        const scanExternal = async () => {
+          try {
+            const extRes = await fetch("/api/scan", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: normalizedUrl }),
+            });
+            const extData = await extRes.json();
+            setExternalCheck(extData);
+            if (extData.urlscan?.uuid) {
+              setUrlscanUUID(extData.urlscan.uuid);
+            }
+          } catch {
+            // External check gagal — client-side tetap tampil
+          } finally {
+            setExternalLoading(false);
           }
-        } catch {
-          // External check gagal — client-side tetap tampil
-        } finally {
-          setExternalLoading(false);
-        }
+        };
+
+        const scanDomainIntel = async () => {
+          try {
+            const intelRes = await fetch("/api/domain-intel", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: normalizedUrl }),
+            });
+            const intelData = await intelRes.json();
+            setDomainIntel(intelData);
+          } catch {
+            // Domain intel gagal — bagian lain tetap tampil
+          } finally {
+            setDomainIntelLoading(false);
+          }
+        };
+
+        await Promise.allSettled([scanExternal(), scanDomainIntel()]);
       } catch (err) {
         console.error("Scan error:", err);
         setError("Terjadi kesalahan saat menganalisis URL. Pastikan URL valid.");
@@ -326,6 +350,141 @@ function AnalisisContent() {
                   )
                 ) : (
                   <p className="text-xs text-[#555570]">⚠️ {externalCheck?.urlscan?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── 0b. Domain Intelligence (AbuseIPDB, WHOIS, SSL, VirusTotal) ── */}
+        {(domainIntelLoading || domainIntel) && (
+          <motion.div variants={fadeUp} custom={0.5} initial="hidden" animate="visible"
+            className="glass-card p-5 border border-[#2e3348]">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-heading font-semibold text-sm text-[#8888aa] flex items-center gap-2">
+                <Fingerprint size={16} className="text-[#F5A623]" />
+                Domain Intelligence
+              </h2>
+              {domainIntel?.overallRisk && (
+                <span className={
+                  "text-[10px] font-semibold px-2 py-1 rounded-full " +
+                  (domainIntel.overallRisk === "high"
+                    ? "bg-[#E55C30]/10 text-[#E55C30]"
+                    : domainIntel.overallRisk === "medium"
+                    ? "bg-[#F5A623]/10 text-[#F5A623]"
+                    : domainIntel.overallRisk === "low"
+                    ? "bg-[#2DCB85]/10 text-[#2DCB85]"
+                    : "bg-white/10 text-[#8888aa]")
+                }>
+                  Risiko: {domainIntel.overallRisk === "high" ? "Tinggi" : domainIntel.overallRisk === "medium" ? "Sedang" : domainIntel.overallRisk === "low" ? "Rendah" : "Tidak diketahui"}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* AbuseIPDB */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <Server size={14} className="text-[#8888aa]" />
+                  <span className="text-xs font-medium text-[#e0e0e0]">Reputasi IP (AbuseIPDB)</span>
+                </div>
+                {domainIntelLoading && !domainIntel?.abuseIpdb ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : domainIntel?.abuseIpdb?.available ? (
+                  <div>
+                    <p className={`text-xs font-medium ${
+                      domainIntel.abuseIpdb.status === "malicious" ? "text-[#E55C30]"
+                      : domainIntel.abuseIpdb.status === "suspicious" ? "text-[#F5A623]"
+                      : "text-[#8888aa]"
+                    }`}>
+                      Skor abuse: {domainIntel.abuseIpdb.abuseConfidenceScore}% ({domainIntel.abuseIpdb.totalReports} laporan)
+                    </p>
+                    <p className="text-[10px] text-[#555570] mt-0.5">
+                      {domainIntel.abuseIpdb.ip} · {domainIntel.abuseIpdb.isp || "ISP tidak diketahui"}
+                      {domainIntel.abuseIpdb.isTor && " · Tor exit node"}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#555570]">⚠️ {domainIntel?.abuseIpdb?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+
+              {/* WHOIS / Umur Domain */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar size={14} className="text-[#8888aa]" />
+                  <span className="text-xs font-medium text-[#e0e0e0]">Umur Domain (WHOIS)</span>
+                </div>
+                {domainIntelLoading && !domainIntel?.whois ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : domainIntel?.whois?.available ? (
+                  <div>
+                    <p className={`text-xs font-medium ${domainIntel.whois.isNewDomain ? "text-[#F5A623]" : "text-[#8888aa]"}`}>
+                      {domainIntel.whois.isNewDomain
+                        ? `⚠️ Domain baru (${domainIntel.whois.ageDays} hari)`
+                        : `Terdaftar ${domainIntel.whois.ageDays} hari lalu`}
+                    </p>
+                    {domainIntel.whois.registrar && (
+                      <p className="text-[10px] text-[#555570] mt-0.5">Registrar: {domainIntel.whois.registrar}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#555570]">⚠️ {domainIntel?.whois?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+
+              {/* SSL/TLS */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  {domainIntel?.ssl?.status === "valid" ? (
+                    <Lock size={14} className="text-[#8888aa]" />
+                  ) : (
+                    <Unlock size={14} className="text-[#8888aa]" />
+                  )}
+                  <span className="text-xs font-medium text-[#e0e0e0]">Sertifikat SSL/TLS</span>
+                </div>
+                {domainIntelLoading && !domainIntel?.ssl ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : domainIntel?.ssl?.available ? (
+                  <div>
+                    <p className={`text-xs font-medium ${
+                      domainIntel.ssl.status === "valid" ? "text-[#8888aa]"
+                      : domainIntel.ssl.status === "expiring_soon" ? "text-[#F5A623]"
+                      : "text-[#E55C30]"
+                    }`}>
+                      {domainIntel.ssl.status === "valid" && `Valid, berlaku ${domainIntel.ssl.daysUntilExpiry} hari lagi`}
+                      {domainIntel.ssl.status === "expiring_soon" && `⚠️ Akan kedaluwarsa dalam ${domainIntel.ssl.daysUntilExpiry} hari`}
+                      {domainIntel.ssl.status === "expired" && "⚠️ Sertifikat sudah kedaluwarsa"}
+                      {domainIntel.ssl.status === "invalid" && "⚠️ Sertifikat tidak valid"}
+                    </p>
+                    {domainIntel.ssl.issuer && (
+                      <p className="text-[10px] text-[#555570] mt-0.5">Penerbit: {domainIntel.ssl.issuer}</p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#555570]">⚠️ {domainIntel?.ssl?.reason || "Tidak tersedia"}</p>
+                )}
+              </div>
+
+              {/* VirusTotal */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.03]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-sm bg-white/10 flex items-center justify-center text-[10px]">V</div>
+                  <span className="text-xs font-medium text-[#e0e0e0]">VirusTotal (Domain)</span>
+                </div>
+                {domainIntelLoading && !domainIntel?.virusTotal ? (
+                  <p className="text-xs text-[#555570]">Memeriksa...</p>
+                ) : domainIntel?.virusTotal?.available ? (
+                  <p className={`text-xs font-medium ${
+                    domainIntel.virusTotal.status === "malicious" ? "text-[#E55C30]"
+                    : domainIntel.virusTotal.status === "suspicious" ? "text-[#F5A623]"
+                    : "text-[#8888aa]"
+                  }`}>
+                    {domainIntel.virusTotal.status === "clean"
+                      ? `Bersih (${domainIntel.virusTotal.harmless} vendor menandai aman)`
+                      : `${domainIntel.virusTotal.malicious} vendor menandai berbahaya`}
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#555570]">⚠️ {domainIntel?.virusTotal?.reason || "Tidak tersedia"}</p>
                 )}
               </div>
             </div>
