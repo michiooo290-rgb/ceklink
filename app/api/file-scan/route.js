@@ -11,7 +11,7 @@ import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 const VT_API_KEY = process.env.VIRUSTOTAL_API_KEY;
 const VT_BASE = "https://www.virustotal.com";
 
-const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
+const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000, prefix: "file-scan" });
 
 const SHA256_RE = /^[a-f0-9]{64}$/i;
 
@@ -87,7 +87,7 @@ function combineResult(vt) {
 export async function POST(req) {
   try {
     const ip = getClientIp(req);
-    const rateCheck = checkRateLimit(ip);
+    const rateCheck = await checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
         { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },

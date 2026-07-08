@@ -36,7 +36,7 @@ const SHODAN_API_KEY = process.env.SHODAN_API_KEY;
 
 // Endpoint ini lebih berat (DNS + TLS handshake + beberapa API luar),
 // jadi limit lebih ketat dibanding quick scan.
-const checkRateLimit = createRateLimiter({ max: 15, windowMs: 60_000 });
+const checkRateLimit = createRateLimiter({ max: 15, windowMs: 60_000, prefix: "domain-intel" });
 
 // ── AbuseIPDB ──────────────────────────────────────────
 async function checkAbuseIPDB(ip) {
@@ -242,7 +242,7 @@ async function checkVirusTotalDomain(domain) {
 export async function POST(req) {
   try {
     const ip = getClientIp(req);
-    const rateCheck = checkRateLimit(ip);
+    const rateCheck = await checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
         { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },

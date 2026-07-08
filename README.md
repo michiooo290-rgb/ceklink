@@ -57,6 +57,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 GOOGLE_SAFE_BROWSING_API_KEY=       # https://developers.google.com/safe-browsing
 URLSCAN_API_KEY=                    # https://urlscan.io/user/signup
 URLHAUS_AUTH_KEY=                   # opsional, https://auth.abuse.ch/
+UPSTASH_REDIS_REST_URL=              # opsional, https://console.upstash.com/ (rate limiting)
+UPSTASH_REDIS_REST_TOKEN=            # opsional, tanpa ini fallback ke in-memory limiter
 ```
 
 ### Jalankan
@@ -99,7 +101,7 @@ public/                # Aset statis (logo, robots.txt, dll)
 ## ⚠️ Catatan Pengembangan
 
 - **Login/Signup** saat ini baru berupa UI (belum terhubung ke backend/database asli) — submit form hanya simulasi.
-- **Rate limiter** bersifat in-memory, cukup untuk single-instance. Untuk deploy di environment serverless multi-instance (Vercel dst.), pertimbangkan Upstash Redis / Vercel KV.
+- **Rate limiter** sudah pakai Upstash Redis (akurat lintas instance di Vercel). Kalau `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` belum diisi, otomatis fallback ke in-memory (perilaku lama, hanya akurat single-instance).
 
 ## 👤 Author
 

@@ -15,7 +15,7 @@ import { validateScanUrl } from "../../../lib/validate-url";
 
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLHAUS_AUTH_KEY = process.env.URLHAUS_AUTH_KEY; // opsional, daftar gratis di auth.abuse.ch
-const checkRateLimit = createRateLimiter({ max: 30, windowMs: 60_000 });
+const checkRateLimit = createRateLimiter({ max: 30, windowMs: 60_000, prefix: "threat-check" });
 
 // ── URLhaus ────────────────────────────────────────
 async function checkURLhaus(url) {
@@ -93,7 +93,7 @@ async function checkGoogleSafeBrowsing(url) {
 export async function POST(req) {
   try {
     const ip = getClientIp(req);
-    const rateCheck = checkRateLimit(ip);
+    const rateCheck = await checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
         { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },

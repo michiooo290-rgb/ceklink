@@ -9,7 +9,7 @@ import { validateScanUrl } from "../../../lib/validate-url";
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
 
-const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000 });
+const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000, prefix: "scan" });
 
 // ── Google Safe Browsing ────────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
@@ -200,7 +200,7 @@ function combineResults(gsb, urlscan) {
 export async function POST(req) {
   try {
     const ip = getClientIp(req);
-    const rateCheck = checkRateLimit(ip);
+    const rateCheck = await checkRateLimit(ip);
     if (!rateCheck.allowed) {
       return Response.json(
         { error: "Terlalu banyak permintaan. Coba lagi dalam " + rateCheck.retryAfter + " detik." },
