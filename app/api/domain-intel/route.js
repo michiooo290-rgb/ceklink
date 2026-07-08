@@ -30,6 +30,13 @@ import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 import { validateScanUrl } from "../../../lib/validate-url";
 import { getCached, setCached } from "../../../lib/domain-intel-cache";
 import { createClient } from "../../../lib/supabase/server";
+import {
+  DEEPSCAN_ANON_MAX,
+  DEEPSCAN_USER_MAX,
+  ONE_DAY_MS,
+  DEEPSCAN_ANON_PREFIX,
+  DEEPSCAN_USER_PREFIX,
+} from "../../../lib/quota-config";
 
 const ABUSEIPDB_API_KEY = process.env.ABUSEIPDB_API_KEY;
 const VIRUSTOTAL_API_KEY = process.env.VIRUSTOTAL_API_KEY;
@@ -39,19 +46,19 @@ const SHODAN_API_KEY = process.env.SHODAN_API_KEY;
 // jadi limit lebih ketat dibanding quick scan.
 const checkRateLimit = createRateLimiter({ max: 15, windowMs: 60_000, prefix: "domain-intel" });
 
-// ── Kuota harian Analisis Mendalam (shared dengan /api/scan, prefix sama) ──
-const DEEPSCAN_ANON_MAX = 5;
-const DEEPSCAN_USER_MAX = 30;
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+// ── Kuota harian Analisis Mendalam ──
+// Konstanta & prefix di lib/quota-config.js — shared dengan /api/scan
+// (prefix sama, jadi satu pool kuota) dan dibaca halaman /akun buat
+// nampilin sisa kuota tanpa duplikasi angka.
 const checkDeepScanAnonQuota = createRateLimiter({
   max: DEEPSCAN_ANON_MAX,
   windowMs: ONE_DAY_MS,
-  prefix: "deepscan-daily-anon",
+  prefix: DEEPSCAN_ANON_PREFIX,
 });
 const checkDeepScanUserQuota = createRateLimiter({
   max: DEEPSCAN_USER_MAX,
   windowMs: ONE_DAY_MS,
-  prefix: "deepscan-daily-user",
+  prefix: DEEPSCAN_USER_PREFIX,
 });
 
 // ── AbuseIPDB ──────────────────────────────────────────

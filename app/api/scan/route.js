@@ -6,6 +6,13 @@
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 import { validateScanUrl } from "../../../lib/validate-url";
 import { createClient } from "../../../lib/supabase/server";
+import {
+  DEEPSCAN_ANON_MAX,
+  DEEPSCAN_USER_MAX,
+  ONE_DAY_MS,
+  DEEPSCAN_ANON_PREFIX,
+  DEEPSCAN_USER_PREFIX,
+} from "../../../lib/quota-config";
 
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
@@ -16,18 +23,17 @@ const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000, prefix: "s
 // Dipakai bareng /api/domain-intel (prefix sama) karena keduanya sama-sama
 // bagian dari satu "Analisis Mendalam" dan sama-sama manggil API eksternal
 // yang kuotanya terbatas (URLScan.io, AbuseIPDB, dst).
-const DEEPSCAN_ANON_MAX = 5;
-const DEEPSCAN_USER_MAX = 30;
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+// Angka & prefix ada di lib/quota-config.js supaya halaman /akun bisa
+// nampilin sisa kuota yang sama persis tanpa duplikasi konstanta.
 const checkDeepScanAnonQuota = createRateLimiter({
   max: DEEPSCAN_ANON_MAX,
   windowMs: ONE_DAY_MS,
-  prefix: "deepscan-daily-anon",
+  prefix: DEEPSCAN_ANON_PREFIX,
 });
 const checkDeepScanUserQuota = createRateLimiter({
   max: DEEPSCAN_USER_MAX,
   windowMs: ONE_DAY_MS,
-  prefix: "deepscan-daily-user",
+  prefix: DEEPSCAN_USER_PREFIX,
 });
 
 // ── Google Safe Browsing ────────────────────────────────

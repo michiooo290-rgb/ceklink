@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { LogIn, LogOut, User as UserIcon, CheckCircle2, History, ChevronDown } from "lucide-react";
+import { LogIn, LogOut, User as UserIcon, UserCircle2, CheckCircle2, History, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "../lib/supabase/client";
@@ -267,6 +267,14 @@ export default function FloatingHeader() {
                             style={ { background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 12px 32px rgba(0,0,0,0.4)" } }
                           >
                             <a
+                              href="/akun"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+                            >
+                              <UserCircle2 size={15} />
+                              Akun Saya
+                            </a>
+                            <a
                               href="/riwayat"
                               onClick={() => setUserMenuOpen(false)}
                               className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors"
@@ -338,14 +346,24 @@ export default function FloatingHeader() {
                     );
                   })}
                   {user && (
-                    <a
-                      href="/riwayat"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
-                    >
-                      <History size={16} />
-                      Riwayat Scan
-                    </a>
+                    <>
+                      <a
+                        href="/akun"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 mt-2 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                      >
+                        <UserCircle2 size={16} />
+                        Akun Saya
+                      </a>
+                      <a
+                        href="/riwayat"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-xl text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                      >
+                        <History size={16} />
+                        Riwayat Scan
+                      </a>
+                    </>
                   )}
                   {user ? (
                     <button
