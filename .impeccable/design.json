@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-09T00:00:00Z",
+  "title": "Design System: Urlveil",
+  "extensions": {
+    "colorMeta": {
+      "cosmic-indigo": {
+        "role": "neutral",
+        "displayName": "Cosmic Indigo",
+        "canonical": "oklch(14% 0.042 278)",
+        "tonalRamp": [
+          "oklch(10% 0.03 278)",
+          "oklch(14% 0.042 278)",
+          "oklch(17.5% 0.05 278)",
+          "oklch(21% 0.055 279)",
+          "oklch(26% 0.06 280)",
+          "oklch(35% 0.06 280)",
+          "oklch(50% 0.05 280)",
+          "oklch(70% 0.04 282)"
+        ]
+      },
+      "signal-amber": {
+        "role": "primary",
+        "displayName": "Signal Amber",
+        "canonical": "oklch(75% 0.17 75)",
+        "tonalRamp": [
+          "oklch(20% 0.05 75)",
+          "oklch(35% 0.09 75)",
+          "oklch(50% 0.12 75)",
+          "oklch(65% 0.14 75)",
+          "oklch(75% 0.17 75)",
+          "oklch(82% 0.16 78)",
+          "oklch(88% 0.12 80)",
+          "oklch(94% 0.06 82)"
+        ]
+      },
+      "teal-safe": {
+        "role": "secondary",
+        "displayName": "Teal Safe",
+        "canonical": "oklch(62% 0.14 185)",
+        "tonalRamp": [
+          "oklch(15% 0.04 185)",
+          "oklch(30% 0.08 185)",
+          "oklch(42% 0.10 185)",
+          "oklch(52% 0.12 185)",
+          "oklch(62% 0.14 185)",
+          "oklch(72% 0.12 185)",
+          "oklch(82% 0.08 185)",
+          "oklch(92% 0.04 185)"
+        ]
+      },
+      "coral-danger": {
+        "role": "tertiary",
+        "displayName": "Coral Danger",
+        "canonical": "oklch(58% 0.22 25)",
+        "tonalRamp": [
+          "oklch(15% 0.06 25)",
+          "oklch(30% 0.10 25)",
+          "oklch(42% 0.14 25)",
+          "oklch(48% 0.18 25)",
+          "oklch(58% 0.22 25)",
+          "oklch(68% 0.18 28)",
+          "oklch(80% 0.12 30)",
+          "oklch(92% 0.05 32)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines, section headings. Geometric and confident."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraph text, descriptions. Warm and readable."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Labels, status indicators, data. Technical signal, never body copy."
+      }
+    },
+    "shadows": [
+      {
+        "name": "glow-ambient",
+        "value": "0 0 24px oklch(75% 0.17 75 / 25%)",
+        "purpose": "Primary CTA hover glow. Signals interactivity."
+      },
+      {
+        "name": "glow-safe",
+        "value": "0 0 30px oklch(62% 0.14 185 / 20%)",
+        "purpose": "Safe verdict glow. Reinforces positive status."
+      },
+      {
+        "name": "glow-danger",
+        "value": "0 0 30px oklch(58% 0.22 25 / 20%)",
+        "purpose": "Danger verdict glow. Reinforces alert status."
+      },
+      {
+        "name": "inset-highlight",
+        "value": "inset 0 1px 1px oklch(100% 0 0 / 6%)",
+        "purpose": "Top-edge highlight on glass cards. Subtle lit-from-above effect."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 8px 32px oklch(0% 0 0 / 50%)",
+        "purpose": "Elevated surfaces — modals, dropdowns, floating elements."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default exit easing. Exponential deceleration."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.65, 0, 0.35, 1)",
+        "purpose": "Symmetric transitions — scan lines, cycling animations."
+      },
+      {
+        "name": "dur-fast",
+        "value": "150ms",
+        "purpose": "Micro-interactions — hover, focus, color shifts."
+      },
+      {
+        "name": "dur-normal",
+        "value": "250ms",
+        "purpose": "Standard transitions — reveals, expansions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The highest-contrast action element. Signal Amber on Cosmic Indigo.",
+      "html": "<button class=\"ds-btn-primary\">Cek Link Sekarang</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; background: oklch(75% 0.17 75); color: oklch(14% 0.042 278); font-family: 'Outfit', system-ui, sans-serif; font-weight: 600; font-size: 0.9rem; border: none; cursor: pointer; transition: box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1), transform 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-primary:hover { box-shadow: 0 0 24px oklch(75% 0.17 75 / 25%); transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(0) scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(75% 0.17 75 / 40%); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action. Transparent with muted text, shifts to primary text on hover.",
+      "html": "<button class=\"ds-btn-ghost\">Pelajari Lebih Lanjut</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 4px; padding: 12px 16px; border-radius: 12px; background: transparent; color: oklch(76% 0.012 285); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.9rem; border: none; cursor: pointer; transition: color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-btn-ghost:hover { color: oklch(92% 0.006 285); } .ds-btn-ghost:focus-visible { outline: 2px solid oklch(75% 0.17 75 / 40%); outline-offset: 2px; }"
+    },
+    {
+      "name": "URL Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Primary URL input field. Dark semi-transparent with amber focus ring.",
+      "html": "<input class=\"ds-input\" type=\"url\" placeholder=\"Tempel link di sini...\" />",
+      "css": ".ds-input { width: 100%; padding: 11px 16px; border-radius: 12px; background: oklch(14% 0.008 250 / 80%); border: 1px solid oklch(28% 0.05 280); color: oklch(92% 0.006 285); font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.85rem; transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-input:focus { outline: none; border-color: oklch(75% 0.17 75); } .ds-input::placeholder { color: oklch(56% 0.016 285); }"
+    },
+    {
+      "name": "Glass Card",
+      "kind": "card",
+      "refersTo": "card-glass",
+      "description": "Overlay/floating card with glass effect. Reserved for overlays, not default cards.",
+      "html": "<div class=\"ds-glass-card\"><p>Overlay content</p></div>",
+      "css": ".ds-glass-card { background: oklch(16% 0.008 250 / 70%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid oklch(28% 0.05 280); border-radius: 16px; padding: 24px; box-shadow: inset 0 1px 1px oklch(100% 0 0 / 6%), inset 0 0 16px oklch(100% 0 0 / 2%), 0 8px 32px oklch(0% 0 0 / 50%); border-top: 1px solid oklch(100% 0 0 / 10%); }"
+    },
+    {
+      "name": "Safe Badge",
+      "kind": "chip",
+      "refersTo": "badge-safe",
+      "description": "Status badge for safe/positive verdicts.",
+      "html": "<span class=\"ds-badge-safe\">✓ Aman</span>",
+      "css": ".ds-badge-safe { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 9999px; background: oklch(62% 0.14 185 / 10%); color: oklch(62% 0.14 185); border: 1px solid oklch(62% 0.14 185 / 30%); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Danger Badge",
+      "kind": "chip",
+      "refersTo": "badge-danger",
+      "description": "Status badge for danger/alert verdicts.",
+      "html": "<span class=\"ds-badge-danger\">✕ Bahaya</span>",
+      "css": ".ds-badge-danger { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 9999px; background: oklch(58% 0.22 25 / 10%); color: oklch(58% 0.22 25); border: 1px solid oklch(58% 0.22 25 / 30%); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Floating Header",
+      "kind": "nav",
+      "description": "Glass-effect navigation bar, fixed to top. Compact layout.",
+      "html": "<nav class=\"ds-header\"><span class=\"ds-header-logo\">Urlveil</span><div class=\"ds-header-links\"><a href=\"#\">Fitur</a><a href=\"#\">Edukasi</a><a href=\"#\">Kontak</a></div></nav>",
+      "css": ".ds-header { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: oklch(14% 0.042 278 / 80%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid oklch(28% 0.05 280); z-index: 50; } .ds-header-logo { font-family: 'Outfit', system-ui, sans-serif; font-weight: 700; font-size: 1.1rem; color: oklch(92% 0.006 285); } .ds-header-links { display: flex; gap: 24px; } .ds-header-links a { font-family: 'IBM Plex Sans', system-ui, sans-serif; font-size: 0.85rem; color: oklch(76% 0.012 285); text-decoration: none; transition: color 150ms; } .ds-header-links a:hover { color: oklch(92% 0.006 285); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calibrated Instrument",
+    "overview": "Urlveil's design system is built around the metaphor of a precision instrument — a well-calibrated device that delivers clear, trustworthy readings. Every element serves a function; nothing is decorative noise. The interface communicates technical credibility through clean geometry, purposeful motion, and a restrained but distinctive color palette.\n\nThe system rejects the cold corporate aesthetic of enterprise security tools and the templated warmth of generic SaaS landing pages. Instead, it occupies a distinct space: technically precise but approachable, dark but not cold, serious but not intimidating.",
+    "keyCharacteristics": [
+      "Functional precision — every visual choice maps to a purpose",
+      "Warm darkness — deep blue-violet base with amber warmth",
+      "Economy of means — three font weights, four surface levels, three semantic colors",
+      "Status-driven color — amber = action, teal = safe, coral = danger"
+    ],
+    "rules": [
+      { "name": "The Status Trinity Rule", "body": "Color communicates status, never decoration. Amber = attention/action, Teal = safe/positive, Coral = danger/alert.", "section": "colors" },
+      { "name": "The Tinted Neutral Rule", "body": "All neutrals carry 0.04–0.06 chroma toward hue 278–280. No pure grays.", "section": "colors" },
+      { "name": "The Line-Length Rule", "body": "Body text never exceeds 75ch. Content is constrained by max-width, not font size.", "section": "typography" },
+      { "name": "The Mono Restraint Rule", "body": "JetBrains Mono is reserved for data, code, labels, and status indicators. Never for body copy or headings.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadows and glows appear only as responses to state or to communicate status.", "section": "elevation" },
+      { "name": "The No-Drop-Shadow Rule", "body": "No ambient drop shadows on cards or containers. Tonal layering provides depth.", "section": "elevation" }
+    ],
+    "dos": [
+      "Use the Status Trinity (Amber/Teal/Coral) for all semantic color",
+      "Maintain the tinted neutral ramp — all grays carry chroma toward hue 278–280",
+      "Keep body text at ≥4.5:1 contrast against its background",
+      "Use text-wrap: balance on h1–h3",
+      "Provide prefers-reduced-motion alternatives for all animations",
+      "Use the glass effect sparingly — only for overlays and floating elements"
+    ],
+    "donts": [
+      "Use glassmorphism as default card treatment",
+      "Pair border + wide box-shadow on the same element",
+      "Use border-radius: 32px+ on cards or sections",
+      "Repeat tiny uppercase tracked eyebrows above every section",
+      "Use gradient text (background-clip: text)",
+      "Use side-stripe borders (border-left/right > 1px as accent)",
+      "Animate CSS layout properties",
+      "Use the enterprise security aesthetic (Norton, Kaspersky)",
+      "Use the generic SaaS landing page aesthetic (cream bg, gradient text, card grids)",
+      "Use numbered section markers (01/02/03) as default scaffolding"
+    ]
+  }
+}
