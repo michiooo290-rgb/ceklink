@@ -268,6 +268,7 @@
   width: 140vw;
   height: 90vh;
   transform: translateX(-50%);
+  will-change: transform;
   background:
     radial-gradient(closest-side at 30% 40%, rgba(138, 92, 255, 0.16), transparent 70%),
     radial-gradient(closest-side at 65% 55%, rgba(45, 203, 133, 0.14), transparent 70%),

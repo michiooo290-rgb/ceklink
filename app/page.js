@@ -1,5 +1,4 @@
 import FloatingHeader from "../components/FloatingHeader";
-import MeshBackground from "../components/MeshBackground";
 import AuroraBackground from "../components/AuroraBackground";
 import DemoTilt from "../components/DemoTilt";
 import Hero from "../components/Hero";
@@ -18,7 +17,6 @@ export default function Home() {
   return (
     <>
       <AuroraBackground />
-      <MeshBackground variant="cool" intensity="medium" />
       <DemoTilt />
       <FloatingHeader />
       <main>
