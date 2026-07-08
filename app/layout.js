@@ -4,6 +4,7 @@ import "./enhancements.css";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { ToastProvider } from "../components/Toast";
 import ScrollReveal from "../components/ScrollReveal";
+import SmoothScroll from "../components/SmoothScroll";
 
 export const metadata = {
   title: "Urlveil — Cek Keamanan Link",
@@ -75,6 +76,7 @@ export default async function RootLayout({ children }) {
       </head>
       <body className="antialiased">
         <ToastProvider>
+          <SmoothScroll />
           <ErrorBoundary>
             {children}
           </ErrorBoundary>
