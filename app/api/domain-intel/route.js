@@ -29,6 +29,7 @@ import tls from "node:tls";
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 import { validateScanUrl } from "../../../lib/validate-url";
 import { getCached, setCached } from "../../../lib/domain-intel-cache";
+import { createClient } from "../../../lib/supabase/server";
 
 const ABUSEIPDB_API_KEY = process.env.ABUSEIPDB_API_KEY;
 const VIRUSTOTAL_API_KEY = process.env.VIRUSTOTAL_API_KEY;
@@ -37,6 +38,21 @@ const SHODAN_API_KEY = process.env.SHODAN_API_KEY;
 // Endpoint ini lebih berat (DNS + TLS handshake + beberapa API luar),
 // jadi limit lebih ketat dibanding quick scan.
 const checkRateLimit = createRateLimiter({ max: 15, windowMs: 60_000, prefix: "domain-intel" });
+
+// ── Kuota harian Analisis Mendalam (shared dengan /api/scan, prefix sama) ──
+const DEEPSCAN_ANON_MAX = 5;
+const DEEPSCAN_USER_MAX = 30;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const checkDeepScanAnonQuota = createRateLimiter({
+  max: DEEPSCAN_ANON_MAX,
+  windowMs: ONE_DAY_MS,
+  prefix: "deepscan-daily-anon",
+});
+const checkDeepScanUserQuota = createRateLimiter({
+  max: DEEPSCAN_USER_MAX,
+  windowMs: ONE_DAY_MS,
+  prefix: "deepscan-daily-user",
+});
 
 // ── AbuseIPDB ──────────────────────────────────────────
 async function checkAbuseIPDB(ip) {
@@ -264,6 +280,36 @@ export async function POST(req) {
     const cachedResult = getCached(cacheKey);
     if (cachedResult) {
       return Response.json({ ...cachedResult, cached: true });
+    }
+
+    // ── Kuota harian Analisis Mendalam ─────────────────────
+    // Cuma dipotong kalau beneran manggil API eksternal (cache miss di atas).
+    // Login → jatah 30x/hari per akun. Belum login → 5x/hari per IP.
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const quotaCheck = user
+      ? await checkDeepScanUserQuota(user.id)
+      : await checkDeepScanAnonQuota(ip);
+
+    if (!quotaCheck.allowed) {
+      return Response.json(
+        {
+          error: user
+            ? `Kuota Analisis Mendalam harian kamu (${DEEPSCAN_USER_MAX}x) sudah habis. Coba lagi besok.`
+            : `Kuota gratis Analisis Mendalam (${DEEPSCAN_ANON_MAX}x/hari) sudah habis. Login/daftar dulu buat dapet kuota harian lebih besar (${DEEPSCAN_USER_MAX}x/hari).`,
+          requireLogin: !user,
+          quotaExceeded: true,
+        },
+        {
+          status: 429,
+          headers: quotaCheck.retryAfter
+            ? { "Retry-After": String(quotaCheck.retryAfter) }
+            : {},
+        }
+      );
     }
 
     // Resolve IP dulu (dibutuhkan AbuseIPDB & Shodan), tapi tetap lanjut

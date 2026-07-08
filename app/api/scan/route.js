@@ -5,11 +5,30 @@
 
 import { createRateLimiter, getClientIp } from "../../../lib/rate-limit";
 import { validateScanUrl } from "../../../lib/validate-url";
+import { createClient } from "../../../lib/supabase/server";
 
 const GSB_API_KEY = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 const URLSCAN_API_KEY = process.env.URLSCAN_API_KEY;
 
 const checkRateLimit = createRateLimiter({ max: 20, windowMs: 60_000, prefix: "scan" });
+
+// ── Kuota harian Analisis Mendalam ───────────────────────
+// Dipakai bareng /api/domain-intel (prefix sama) karena keduanya sama-sama
+// bagian dari satu "Analisis Mendalam" dan sama-sama manggil API eksternal
+// yang kuotanya terbatas (URLScan.io, AbuseIPDB, dst).
+const DEEPSCAN_ANON_MAX = 5;
+const DEEPSCAN_USER_MAX = 30;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const checkDeepScanAnonQuota = createRateLimiter({
+  max: DEEPSCAN_ANON_MAX,
+  windowMs: ONE_DAY_MS,
+  prefix: "deepscan-daily-anon",
+});
+const checkDeepScanUserQuota = createRateLimiter({
+  max: DEEPSCAN_USER_MAX,
+  windowMs: ONE_DAY_MS,
+  prefix: "deepscan-daily-user",
+});
 
 // ── Google Safe Browsing ────────────────────────────────
 async function checkGoogleSafeBrowsing(url) {
@@ -211,10 +230,40 @@ export async function POST(req) {
     const body = await req.json();
     const { url, uuid } = body;
 
-    // Poll mode — frontend nanya hasil URLScan
+    // Poll mode — frontend nanya hasil URLScan yang udah jalan (bukan scan
+    // baru), jadi TIDAK dipotong dari kuota harian.
     if (uuid) {
       const result = await pollURLScanResult(uuid);
       return Response.json(result);
+    }
+
+    // ── Kuota harian Analisis Mendalam ─────────────────────
+    // Login → jatah 30x/hari per akun. Belum login → 5x/hari per IP.
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const quotaCheck = user
+      ? await checkDeepScanUserQuota(user.id)
+      : await checkDeepScanAnonQuota(ip);
+
+    if (!quotaCheck.allowed) {
+      return Response.json(
+        {
+          error: user
+            ? `Kuota Analisis Mendalam harian kamu (${DEEPSCAN_USER_MAX}x) sudah habis. Coba lagi besok.`
+            : `Kuota gratis Analisis Mendalam (${DEEPSCAN_ANON_MAX}x/hari) sudah habis. Login/daftar dulu buat dapet kuota harian lebih besar (${DEEPSCAN_USER_MAX}x/hari).`,
+          requireLogin: !user,
+          quotaExceeded: true,
+        },
+        {
+          status: 429,
+          headers: quotaCheck.retryAfter
+            ? { "Retry-After": String(quotaCheck.retryAfter) }
+            : {},
+        }
+      );
     }
 
     const validation = validateScanUrl(url);

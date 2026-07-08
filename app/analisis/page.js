@@ -160,6 +160,7 @@ function AnalisisContent() {
   const [urlscanUUID, setUrlscanUUID] = useState(null);
   const [domainIntel, setDomainIntel] = useState(null);
   const [domainIntelLoading, setDomainIntelLoading] = useState(false);
+  const [deepScanLocked, setDeepScanLocked] = useState(null); // { message, requireLogin }
 
   useEffect(() => {
     if (!urlParam) {
@@ -189,6 +190,12 @@ function AnalisisContent() {
               body: JSON.stringify({ url: normalizedUrl }),
             });
             const extData = await extRes.json();
+            if (extRes.status === 429 && extData.quotaExceeded) {
+              setDeepScanLocked((prev) =>
+                prev || { message: extData.error, requireLogin: extData.requireLogin }
+              );
+              return;
+            }
             setExternalCheck(extData);
             if (extData.urlscan?.uuid) {
               setUrlscanUUID(extData.urlscan.uuid);
@@ -208,6 +215,12 @@ function AnalisisContent() {
               body: JSON.stringify({ url: normalizedUrl }),
             });
             const intelData = await intelRes.json();
+            if (intelRes.status === 429 && intelData.quotaExceeded) {
+              setDeepScanLocked((prev) =>
+                prev || { message: intelData.error, requireLogin: intelData.requireLogin }
+              );
+              return;
+            }
             setDomainIntel(intelData);
           } catch {
             // Domain intel gagal — bagian lain tetap tampil
@@ -317,8 +330,36 @@ function AnalisisContent() {
 
       <div className="space-y-6">
 
+        {/* ── Kuota Analisis Mendalam habis ───────────────────────── */}
+        {deepScanLocked && (
+          <motion.div variants={fadeUp} custom={0} initial="hidden" animate="visible"
+            className="glass-card p-5 border border-[#F5A623]/30 bg-[#F5A623]/[0.03]">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#F5A623]/10 flex items-center justify-center shrink-0">
+                <Lock size={16} className="text-[#F5A623]" />
+              </div>
+              <div className="flex-1">
+                <h2 className="font-heading font-semibold text-sm text-[#e0e0e0] mb-1">
+                  Verifikasi Eksternal &amp; Domain Intelligence Terkunci
+                </h2>
+                <p className="text-xs text-[#8888aa] mb-3">{deepScanLocked.message}</p>
+                {deepScanLocked.requireLogin && (
+                  <div className="flex flex-wrap gap-2">
+                    <a href="/signup" className="btn-glow inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-xs">
+                      Daftar Gratis
+                    </a>
+                    <a href="/login" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-xs border border-[#2e3348] text-[#8888aa] hover:text-[#e0e0e0] transition-colors">
+                      Login
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* ── 0. External Check (GSB + URLScan) ───────────────────── */}
-        {(externalLoading || externalCheck) && (
+        {!deepScanLocked && (externalLoading || externalCheck) && (
           <motion.div variants={fadeUp} custom={0} initial="hidden" animate="visible"
             className="glass-card p-5 border border-[#2e3348]">
             <h2 className="font-heading font-semibold text-sm text-[#8888aa] mb-3 flex items-center gap-2">
@@ -383,7 +424,7 @@ function AnalisisContent() {
         )}
 
         {/* ── 0b. Domain Intelligence (AbuseIPDB, WHOIS, SSL, VirusTotal) ── */}
-        {(domainIntelLoading || domainIntel) && (
+        {!deepScanLocked && (domainIntelLoading || domainIntel) && (
           <motion.div variants={fadeUp} custom={0.5} initial="hidden" animate="visible"
             className="glass-card p-5 border border-[#2e3348]">
             <div className="flex items-center justify-between mb-1">
