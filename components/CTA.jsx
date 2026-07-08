@@ -2,7 +2,12 @@
 
 import { useRef, useState } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { X, CheckCircle2 } from "lucide-react";
+import { X, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { createClient } from "../lib/supabase/client";
+
+function isValidEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
 
 export default function CTA() {
   const ref = useRef(null);
@@ -10,17 +15,40 @@ export default function CTA() {
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim()) {
-      setSubmitted(true);
-      setTimeout(() => {
-        setShowModal(false);
-        setSubmitted(false);
-        setEmail("");
-      }, 3000);
+    const trimmed = email.trim().toLowerCase();
+
+    if (!isValidEmail(trimmed)) {
+      setError("Format email tidak valid.");
+      return;
     }
+    setError("");
+    setSubmitting(true);
+
+    const supabase = createClient();
+    const { error: insertError } = await supabase
+      .from("extension_waitlist")
+      .insert({ email: trimmed, source: "cta_homepage" });
+
+    setSubmitting(false);
+
+    // Kode 23505 = unique violation (email sudah pernah daftar) —
+    // tetap dianggap sukses dari sisi user, nggak perlu bikin bingung.
+    if (insertError && insertError.code !== "23505") {
+      setError("Gagal mendaftar. Coba lagi sebentar.");
+      return;
+    }
+
+    setSubmitted(true);
+    setTimeout(() => {
+      setShowModal(false);
+      setSubmitted(false);
+      setEmail("");
+    }, 3000);
   };
 
   return (
@@ -113,25 +141,44 @@ export default function CTA() {
                     Kami kabari begitu Urlveil Extension untuk Chrome dan Firefox tersedia.
                   </p>
                   <form onSubmit={handleSubmit} className="modal-form">
+                    {error && (
+                      <p
+                        className="modal-error"
+                        style={{ display: "flex", alignItems: "center", gap: "6px", color: "var(--color-danger, #E55C30)", fontSize: "0.8rem", marginBottom: "8px" }}
+                        role="alert"
+                      >
+                        <AlertCircle size={13} />
+                        {error}
+                      </p>
+                    )}
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
                       placeholder="nama@email.com"
                       className="modal-input"
                       required
                       autoFocus
+                      disabled={submitting}
                     />
                     <div className="modal-actions">
                       <button
                         type="button"
                         onClick={() => setShowModal(false)}
                         className="modal-btn-cancel"
+                        disabled={submitting}
                       >
                         Batal
                       </button>
-                      <button type="submit" className="modal-btn-submit">
-                        Daftar
+                      <button type="submit" className="modal-btn-submit" disabled={submitting}>
+                        {submitting ? (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                            <Loader2 size={14} className="animate-spin" />
+                            Mendaftar...
+                          </span>
+                        ) : (
+                          "Daftar"
+                        )}
                       </button>
                     </div>
                   </form>

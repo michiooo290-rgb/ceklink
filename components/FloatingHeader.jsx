@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { label: "Cek Link", href: "/#cek-link" },
   { label: "Cek File", href: "/#cek-file" },
   { label: "Database", href: "/#database" },
+  { label: "Fitur", href: "/fitur" },
   { label: "Cara Kerja", href: "/#cara-kerja" },
 ];
 
