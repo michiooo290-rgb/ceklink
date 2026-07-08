@@ -15,6 +15,17 @@ const NAV_ITEMS = [
   { label: "Cara Kerja", href: "/#cara-kerja" },
 ];
 
+// Item utama yang tampil di baris pertama navbar desktop.
+// "Beranda" sengaja tidak diulang di sini karena logo sudah berfungsi sebagai link ke home.
+const PRIMARY_NAV_ITEMS = NAV_ITEMS.filter((item) =>
+  ["/#cek-link", "/#cek-file", "/#database"].includes(item.href)
+);
+
+// Item sekunder dikelompokkan ke dropdown "Selengkapnya" supaya navbar tidak terlalu ramai.
+const MORE_NAV_ITEMS = NAV_ITEMS.filter((item) =>
+  ["/fitur", "/#cara-kerja"].includes(item.href)
+);
+
 const SCROLL_TOP_LIMIT = 10;
 const SCROLL_HIDE_LIMIT = 80;
 const SCROLL_DELTA = 5;
@@ -101,12 +112,17 @@ export default function FloatingHeader() {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const moreMenuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
         setUserMenuOpen(false);
+      }
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target)) {
+        setMoreOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -221,7 +237,7 @@ export default function FloatingHeader() {
                 </a>
 
                 <div className="hidden md:flex items-center gap-0.5">
-                  {NAV_ITEMS.map((item) => {
+                  {PRIMARY_NAV_ITEMS.map((item) => {
                     const active = activeSection === item.href;
                     return (
                       <a
@@ -240,6 +256,47 @@ export default function FloatingHeader() {
                       </a>
                     );
                   })}
+
+                  <div className="relative" ref={moreMenuRef}>
+                    <button
+                      onClick={() => setMoreOpen((v) => !v)}
+                      className={`flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 ${
+                        MORE_NAV_ITEMS.some((item) => activeSection === item.href)
+                          ? "text-[#F5A623] bg-[rgba(245,166,35,0.08)]"
+                          : "text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.04)]"
+                      }`}
+                    >
+                      Selengkapnya
+                      <ChevronDown
+                        size={14}
+                        className={`transition-transform duration-200 ${moreOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {moreOpen && (
+                        <motion.div
+                          initial={ { opacity: 0, y: -6, scale: 0.97 } }
+                          animate={ { opacity: 1, y: 0, scale: 1 } }
+                          exit={ { opacity: 0, y: -6, scale: 0.97 } }
+                          transition={ { duration: 0.15 } }
+                          className="absolute left-0 top-full mt-2 w-44 rounded-xl border p-1.5 overflow-hidden"
+                          style={ { background: "rgba(26,30,46,0.98)", backdropFilter: "blur(16px)", borderColor: "rgba(255,255,255,0.08)", boxShadow: "0 12px 32px rgba(0,0,0,0.4)" } }
+                        >
+                          {MORE_NAV_ITEMS.map((item) => (
+                            <a
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setMoreOpen(false)}
+                              className="block px-3 py-2 text-sm rounded-lg text-[#8888aa] hover:text-white hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+                            >
+                              {item.label}
+                            </a>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
 
                 <div className="hidden md:flex items-center gap-2">
