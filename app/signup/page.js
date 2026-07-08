@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, User, Mail, Lock, Eye, EyeOff,
   ShieldCheck, Check, X, Loader2, UserPlus,
-  Star, Users, TrendingUp, AlertCircle,
+  Star, TrendingUp, AlertCircle,
 } from "lucide-react";
 import { createClient } from "../../lib/supabase/client";
 
@@ -77,9 +77,8 @@ function LeftPanel() {
       {/* Center */}
       <div className="relative z-10 flex-1 flex flex-col justify-center py-8">
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="grid grid-cols-2 gap-3 mb-8">
           {[
-            { icon: Users, val: "4.5K+", label: "Pengguna aktif" },
             { icon: ShieldCheck, val: "99.2%", label: "Akurasi deteksi" },
             { icon: TrendingUp, val: "100%", label: "Gratis selamanya" },
           ].map(({ icon: Icon, val, label }, i) => (
