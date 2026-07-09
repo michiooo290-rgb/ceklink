@@ -70,7 +70,7 @@ function ScoreCircle({ score, status }) {
           cx="60" cy="60" r="52" fill="none"
           stroke={sc.color} strokeWidth="8" strokeLinecap="round"
           initial={{ strokeDasharray: "0 327" }}
-          animate={{ strokeDasharray: `${(score / 100) * 327} 327` }}
+          animate={{ strokeDasharray: `${(score / 95) * 327} 327` }}
           transition={{ delay: 0.3, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
         />
       </svg>
@@ -627,7 +627,7 @@ function AnalisisContent() {
             </div>
             <div className="mt-4 p-3 rounded-lg bg-[#E55C30]/5 border border-[#E55C30]/10">
               <p className="text-xs text-[#E55C30]">
-                Total pengurangan: <span className="font-mono font-bold">{95 - score}</span> poin dari skor awal 95
+                Total pengurangan: <span className="font-mono font-bold">{100 - score}</span> poin dari skor awal 100 (di-cap maksimal 95)
               </p>
             </div>
           </Section>

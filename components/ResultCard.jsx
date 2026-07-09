@@ -120,7 +120,7 @@ export default function ResultCard({ result, url }) {
                   stroke={status === "safe" ? "#2DCB85" : status === "warn" ? "#F5A623" : "#E55C30"}
                   strokeWidth="5" strokeLinecap="round"
                   initial={{ strokeDasharray: "0 220" }}
-                  animate={{ strokeDasharray: `${(score / 100) * 220} 220` }}
+                  animate={{ strokeDasharray: `${(score / 95) * 220} 220` }}
                   transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
                 />
               </svg>
