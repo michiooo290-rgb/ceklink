@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { ShieldCheck, AlertTriangle, XCircle, Chrome, ScanSearch, Radar } from "lucide-react";
+import { ShieldCheck, AlertTriangle, XCircle, Globe, ScanSearch, Radar } from "lucide-react";
 import ShapeGrid from "./ShapeGrid";
 import { VerticalCutReveal } from "./VerticalCutReveal";
 
@@ -207,7 +207,7 @@ export default function Hero() {
                 URLhaus
               </li>
               <li className="hero-trust-item">
-                <Chrome size={15} aria-hidden="true" />
+                <Globe size={15} aria-hidden="true" />
                 Google Safe Browsing
               </li>
               <li className="hero-trust-item">
