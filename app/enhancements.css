@@ -6,7 +6,13 @@
    ════════════════════════════ */
 
 /* ── 1. Hero accent: teks gradien beranimasi ── */
-.hero-accent {
+/* Gradien juga diterapkan ke span anak: VerticalCutReveal memecah teks jadi
+   span per-karakter yang punya transform (framer-motion), yang membuat
+   stacking context baru dan mematahkan background-clip:text milik induk —
+   sehingga teks jadi transparan/tak terlihat. Menerapkan klip langsung ke
+   span anak memastikan tiap huruf tetap ter-render. */
+.hero-accent,
+.hero-accent span {
   background: linear-gradient(110deg, var(--color-accent), #ffd27a 45%, var(--color-secondary));
   background-size: 220% auto;
   -webkit-background-clip: text;
@@ -14,6 +20,17 @@
   -webkit-text-fill-color: transparent;
   color: transparent;
   animation: enh-sheen 7s linear infinite;
+}
+
+/* Fallback: kalau background-clip:text tak didukung, teks tetap tampil solid
+   (headline hero tidak boleh pernah tak terlihat). */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero-accent,
+  .hero-accent span {
+    background: none;
+    -webkit-text-fill-color: var(--color-accent);
+    color: var(--color-accent);
+  }
 }
 
 @keyframes enh-sheen {
