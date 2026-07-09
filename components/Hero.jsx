@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { ShieldCheck, AlertTriangle, XCircle } from "lucide-react";
+import { ShieldCheck, AlertTriangle, XCircle, Chrome, ScanSearch, Radar } from "lucide-react";
 import ShapeGrid from "./ShapeGrid";
 import { VerticalCutReveal } from "./VerticalCutReveal";
 
@@ -198,6 +198,28 @@ export default function Hero() {
             </a>
           </div>
 
+          {/* Trust bar: sumber data yang mendukung setiap scan */}
+          <div className="hero-trust" aria-label="Didukung oleh sumber keamanan">
+            <span className="hero-trust-label">Didukung oleh</span>
+            <ul className="hero-trust-list">
+              <li className="hero-trust-item">
+                <ShieldCheck size={15} aria-hidden="true" />
+                URLhaus
+              </li>
+              <li className="hero-trust-item">
+                <Chrome size={15} aria-hidden="true" />
+                Google Safe Browsing
+              </li>
+              <li className="hero-trust-item">
+                <ScanSearch size={15} aria-hidden="true" />
+                VirusTotal
+              </li>
+              <li className="hero-trust-item">
+                <Radar size={15} aria-hidden="true" />
+                Analisis Heuristik
+              </li>
+            </ul>
+          </div>
 
         </motion.div>
 
