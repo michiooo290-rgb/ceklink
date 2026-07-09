@@ -24,23 +24,23 @@ const MAX_ATTACKS = 893;
 
 const SECTOR_DATA = [
   { name: "Portal Online", pct: 16.46, color: "#2DCB85" },
-  { name: "Toko Online", pct: 12.22, color: "#06b6d4" },
-  { name: "Bank", pct: 11.29, color: "#8a5cff" },
-  { name: "Jasa Pengiriman", pct: 8.30, color: "#F5A623" },
+  { name: "Toko Online", pct: 12.22, color: "#F5A623" },
+  { name: "Bank", pct: 11.29, color: "#E55C30" },
+  { name: "Jasa Pengiriman", pct: 8.30, color: "#1FA86B" },
   { name: "Lainnya", pct: 51.73, color: "#666680" },
 ];
 
 const METHOD_DATA = [
   { name: "WhatsApp", pct: 82.71, icon: MessageSquare, color: "#25d366" },
   { name: "Telegram", pct: 14.12, icon: Smartphone, color: "#2DCB85" },
-  { name: "Viber", pct: 3.17, icon: Mail, color: "#8a5cff" },
+  { name: "Viber", pct: 3.17, icon: Mail, color: "#E55C30" },
 ];
 
 const QUICK_STATS = [
   { value: 26.8, suffix: " jt", label: "Aktivitas Phising", sub: "terdeteksi 2024", icon: ShieldAlert, color: "#E55C30" },
   { value: 18, suffix: "T", label: "Kerugian Siber Nasional", sub: "Rupiah, 2024", icon: TrendingUp, color: "#F5A623" },
-  { value: 514, suffix: " rb", label: "Aktivitas Ransomware", sub: "Indonesia, 2024", icon: Target, color: "#06b6d4" },
-  { value: 35, suffix: "%", label: "Paham Ciri Email Phising", sub: "Survei Kominfo 2023", icon: BarChart3, color: "#8a5cff" },
+  { value: 514, suffix: " rb", label: "Aktivitas Ransomware", sub: "Indonesia, 2024", icon: Target, color: "#1FA86B" },
+  { value: 35, suffix: "%", label: "Paham Ciri Email Phising", sub: "Survei Kominfo 2023", icon: BarChart3, color: "#F5A623" },
 ];
 
 // ─── Animated Counter ───────────────────────────────────────────────
@@ -106,8 +106,8 @@ function PhisingStats() {
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <Globe size={28} className="text-[#06b6d4] mx-auto mb-2" />
-          <div className="font-heading font-bold text-3xl text-[#06b6d4]">#1</div>
+          <Globe size={28} className="text-[#F5A623] mx-auto mb-2" />
+          <div className="font-heading font-bold text-3xl text-[#F5A623]">#1</div>
           <div className="text-sm text-[#e0e0e0]">Asia Tenggara</div>
           <div className="text-xs text-[#666680]">57.554 serangan ransomware 2024, tertinggi di kawasan</div>
         </motion.div>
@@ -136,7 +136,7 @@ function PhisingStats() {
               <span className="text-sm font-mono text-[#8888aa] w-10">{d.year}</span>
               <div className="flex-1 h-7 bg-white/[0.03] rounded-lg overflow-hidden relative">
                 <motion.div
-                  className="h-full rounded-lg bg-gradient-to-r from-[#2DCB85] to-[#06b6d4]"
+                  className="h-full rounded-lg bg-gradient-to-r from-[#2DCB85] to-[#F5A623]"
                   initial={{ width: 0 }}
                   animate={inView ? { width: `${(d.attacks / MAX_ATTACKS) * 100}%` } : {}}
                   transition={{ delay: 0.7 + i * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}

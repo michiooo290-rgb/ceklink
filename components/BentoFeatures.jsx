@@ -16,14 +16,14 @@ const FEATURES = [
     icon: Globe,
     title: "URLhaus",
     desc: "Database malware & phishing yang diperbarui real-time.",
-    color: "#06b6d4",
+    color: "#2DCB85",
     span: "",
   },
   {
     icon: Radar,
     title: "Google Safe Browsing",
     desc: "Dicocokkan dengan miliaran situs berbahaya milik Google.",
-    color: "#8a5cff",
+    color: "#F5A623",
     span: "",
   },
   {

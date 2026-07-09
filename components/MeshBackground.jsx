@@ -23,8 +23,8 @@ const VARIANTS = {
   },
   cool: {
     orb1: "#2DCB85",  // teal
-    orb2: "#06b6d4",  // cyan
-    orb3: "#8a5cff",  // purple
+    orb2: "#F5A623",  // amber
+    orb3: "#1FA86B",  // teal-dim
   },
 };
 
