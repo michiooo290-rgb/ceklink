@@ -18,13 +18,15 @@ export async function middleware(request) {
     "default-src 'self'",
     // 'unsafe-eval' cuma dipakai di dev (dibutuhkan Next.js dev server / HMR),
     // dihilangkan otomatis di production build.
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
     // Supabase auth/API dipanggil langsung dari browser, jadi domain-nya
-    // perlu diizinkan di connect-src.
-    `connect-src 'self' ${supabaseUrl}`,
+    // perlu diizinkan di connect-src. challenges.cloudflare.com untuk Turnstile.
+    `connect-src 'self' ${supabaseUrl} https://challenges.cloudflare.com`,
+    // Turnstile me-render widget-nya lewat iframe dari domain ini.
+    "frame-src 'self' https://challenges.cloudflare.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
