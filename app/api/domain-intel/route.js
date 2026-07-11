@@ -42,6 +42,48 @@ const ABUSEIPDB_API_KEY = process.env.ABUSEIPDB_API_KEY;
 const VIRUSTOTAL_API_KEY = process.env.VIRUSTOTAL_API_KEY;
 const SHODAN_API_KEY = process.env.SHODAN_API_KEY;
 
+/**
+ * isPrivateOrReservedIp — cegah SSRF.
+ *
+ * Endpoint ini (khususnya checkSSL) melakukan koneksi TCP/TLS SUNGGUHAN
+ * dari server ke IP hasil resolve domain yang di-submit user. Tanpa filter
+ * ini, user bisa submit domain yang sengaja di-arahkan (lewat DNS mereka
+ * sendiri) ke IP internal (127.0.0.1, 169.254.169.254 metadata endpoint,
+ * 10.x/172.16.x/192.168.x jaringan privat Vercel, dst) — server kita jadi
+ * "proxy" buat mengintip/scan jaringan internal (SSRF).
+ *
+ * Dipanggil SETELAH dns.resolve(), sebelum IP hasil resolve dipakai buat
+ * checkSSL() (yang benar-benar connect) atau AbuseIPDB/Shodan.
+ */
+function isPrivateOrReservedIp(ip, version) {
+  if (!ip) return false;
+
+  if (version === 4 || ip.includes(".")) {
+    const parts = ip.split(".").map(Number);
+    if (parts.length !== 4 || parts.some((n) => Number.isNaN(n))) return false;
+    const [a, b] = parts;
+    if (a === 127) return true; // loopback
+    if (a === 10) return true; // private kelas A
+    if (a === 172 && b >= 16 && b <= 31) return true; // private kelas B
+    if (a === 192 && b === 168) return true; // private kelas C
+    if (a === 169 && b === 254) return true; // link-local (termasuk cloud metadata 169.254.169.254)
+    if (a === 0) return true; // reserved
+    if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT shared address space
+    return false;
+  }
+
+  // IPv6
+  const lower = ip.toLowerCase();
+  if (lower === "::1") return true; // loopback
+  if (lower.startsWith("fe80:")) return true; // link-local
+  if (lower.startsWith("fc") || lower.startsWith("fd")) return true; // unique local (ULA, setara private IPv4)
+  if (lower.startsWith("::ffff:")) {
+    // IPv4-mapped IPv6 — cek bagian IPv4-nya
+    return isPrivateOrReservedIp(lower.replace("::ffff:", ""), 4);
+  }
+  return false;
+}
+
 // Endpoint ini lebih berat (DNS + TLS handshake + beberapa API luar),
 // jadi limit lebih ketat dibanding quick scan.
 const checkRateLimit = createRateLimiter({ max: 15, windowMs: 60_000, prefix: "domain-intel" });
@@ -346,12 +388,22 @@ export async function POST(req) {
       }
     }
 
+    // ── Blokir SSRF: kalau IP hasil resolve ternyata internal/privat,
+    // JANGAN lakukan koneksi TLS langsung atau kirim IP itu ke AbuseIPDB/Shodan.
+    const isBlockedIp = isPrivateOrReservedIp(resolvedIp, ipVersion);
+
     const [abuseIpdb, whois, ssl, virusTotal, shodan] = await Promise.all([
-      checkAbuseIPDB(resolvedIp),
+      isBlockedIp
+        ? Promise.resolve({ available: false, status: "blocked", reason: "IP internal/privat — tidak diperiksa demi keamanan." })
+        : checkAbuseIPDB(resolvedIp),
       checkWhois(hostname),
-      checkSSL(hostname),
+      isBlockedIp
+        ? Promise.resolve({ available: false, status: "blocked", reason: "Domain mengarah ke IP internal/privat — koneksi diblokir demi keamanan." })
+        : checkSSL(hostname),
       checkVirusTotalDomain(hostname),
-      checkShodan(resolvedIp),
+      isBlockedIp
+        ? Promise.resolve({ available: false, status: "blocked", reason: "IP internal/privat — tidak diperiksa demi keamanan." })
+        : checkShodan(resolvedIp),
     ]);
 
     const sources = { abuseIpdb, whois, ssl, virusTotal, shodan };
@@ -362,17 +414,20 @@ export async function POST(req) {
       .filter(([, v]) => !v.available)
       .map(([k]) => k);
 
-    // Composite risk: sinyal "malicious/invalid/expired/new_domain/vulnerable" menaikkan risk
+    // Composite risk: sinyal "malicious/invalid/expired/new_domain/vulnerable" menaikkan risk.
+    // Domain yang sengaja diarahkan ke IP internal itu sendiri sinyal kuat (khas SSRF/DNS rebinding).
     const riskSignals = [
       abuseIpdb.available && (abuseIpdb.status === "malicious" || abuseIpdb.status === "suspicious"),
       whois.available && whois.isNewDomain,
       ssl.available && (ssl.status === "invalid" || ssl.status === "expired"),
       virusTotal.available && (virusTotal.status === "malicious" || virusTotal.status === "suspicious"),
       shodan.available && shodan.status === "vulnerable",
+      isBlockedIp,
     ].filter(Boolean).length;
 
     let overallRisk;
-    if (riskSignals >= 2) overallRisk = "high";
+    if (isBlockedIp) overallRisk = "high";
+    else if (riskSignals >= 2) overallRisk = "high";
     else if (riskSignals === 1) overallRisk = "medium";
     else if (checkedSources.length > 0) overallRisk = "low";
     else overallRisk = "unknown";
@@ -382,6 +437,7 @@ export async function POST(req) {
       hostname,
       resolvedIp,
       ipVersion,
+      isInternalIp: isBlockedIp,
       overallRisk,
       checkedSources,
       unavailableSources,
