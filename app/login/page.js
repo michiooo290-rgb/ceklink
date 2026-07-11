@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail, Lock, Eye, EyeOff, LogIn, ArrowLeft,
@@ -151,6 +152,21 @@ export default function LoginPage() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [authError, setAuthError] = useState(null);
 
+  /* ── Turnstile (Cloudflare CAPTCHA) ─────────────── */
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const widgetIdRef = useRef(null);
+  const turnstileContainerRef = useRef(null);
+
+  const renderTurnstile = useCallback(() => {
+    if (!window.turnstile || !turnstileContainerRef.current || widgetIdRef.current) return;
+    widgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+      sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+      callback: (token) => setCaptchaToken(token),
+      "expired-callback": () => setCaptchaToken(null),
+      "error-callback": () => setCaptchaToken(null),
+    });
+  }, []);
+
   const handleBlur = useCallback((field) => {
     setTouched((p) => ({ ...p, [field]: true }));
     const val = field === "email" ? email : password;
@@ -176,8 +192,17 @@ export default function LoginPage() {
     setErrors({ email: ee, password: pe });
     if (ee || pe) return;
 
+    if (!captchaToken) {
+      setAuthError("Mohon selesaikan verifikasi CAPTCHA terlebih dahulu");
+      return;
+    }
+
     setIsLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: { captchaToken },
+    });
     setIsLoading(false);
 
     if (error) {
@@ -186,6 +211,11 @@ export default function LoginPage() {
           ? "Email atau password salah"
           : error.message
       );
+      // Reset widget karena token Turnstile sekali pakai
+      if (window.turnstile && widgetIdRef.current) {
+        window.turnstile.reset(widgetIdRef.current);
+      }
+      setCaptchaToken(null);
       return;
     }
 
@@ -361,10 +391,15 @@ export default function LoginPage() {
               </a>
             </div>
 
+            {/* Cloudflare Turnstile CAPTCHA */}
+            <div className="mb-5 flex justify-center">
+              <div ref={turnstileContainerRef} />
+            </div>
+
             {/* Submit */}
             <motion.button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !captchaToken}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ background: "linear-gradient(135deg, var(--color-accent), #D4870A)", color: "var(--color-paper)", boxShadow: "0 4px 20px rgba(245,166,35,0.25)" }}
               whileHover={!isLoading ? { y: -1, boxShadow: "0 6px 28px rgba(245,166,35,0.35)" } : {}}
@@ -400,6 +435,13 @@ export default function LoginPage() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Load Cloudflare Turnstile script, lalu render widget-nya */}
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="afterInteractive"
+        onLoad={renderTurnstile}
+      />
     </main>
   );
 }
