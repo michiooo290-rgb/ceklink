@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, User, Mail, Lock, Eye, EyeOff,
@@ -174,6 +175,21 @@ export default function SignupPage() {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [authError, setAuthError] = useState(null);
 
+  /* ── Turnstile (Cloudflare CAPTCHA) ─────────────── */
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const widgetIdRef = useRef(null);
+  const turnstileContainerRef = useRef(null);
+
+  const renderTurnstile = useCallback(() => {
+    if (!window.turnstile || !turnstileContainerRef.current || widgetIdRef.current) return;
+    widgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+      sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+      callback: (token) => setCaptchaToken(token),
+      "expired-callback": () => setCaptchaToken(null),
+      "error-callback": () => setCaptchaToken(null),
+    });
+  }, []);
+
   const pwdScore = useMemo(() => getStrength(form.password), [form.password]);
 
   const validate = useCallback((field, val) => {
@@ -203,11 +219,16 @@ export default function SignupPage() {
     setErrors(newErrors);
     if (Object.values(newErrors).some(Boolean) || !agreed) return;
 
+    if (!captchaToken) {
+      setAuthError("Mohon selesaikan verifikasi CAPTCHA terlebih dahulu");
+      return;
+    }
+
     setIsLoading(true);
     const { error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
-      options: { data: { full_name: form.name } },
+      options: { data: { full_name: form.name }, captchaToken },
     });
     setIsLoading(false);
 
@@ -217,6 +238,11 @@ export default function SignupPage() {
           ? "Email ini sudah terdaftar"
           : error.message
       );
+      // Reset widget karena token Turnstile sekali pakai
+      if (window.turnstile && widgetIdRef.current) {
+        window.turnstile.reset(widgetIdRef.current);
+      }
+      setCaptchaToken(null);
       return;
     }
 
@@ -244,7 +270,7 @@ export default function SignupPage() {
     return `${base} ${bg} border-[var(--color-border)] focus:border-[var(--color-secondary)] focus:shadow-[0_0_0_3px_var(--color-secondary-glow)]`;
   }
 
-  const canSubmit = Object.values(form).every(Boolean) && agreed && !isLoading;
+  const canSubmit = Object.values(form).every(Boolean) && agreed && !isLoading && !!captchaToken;
 
   return (
     <main className="min-h-screen flex" style={{ background: "var(--color-paper)" }}>
@@ -416,6 +442,11 @@ export default function SignupPage() {
               </p>
             </div>
 
+            {/* Cloudflare Turnstile CAPTCHA */}
+            <div className="mb-5 flex justify-center">
+              <div ref={turnstileContainerRef} />
+            </div>
+
             {/* Submit */}
             <motion.button
               type="submit"
@@ -443,6 +474,13 @@ export default function SignupPage() {
           </motion.p>
         </motion.div>
       </div>
+
+      {/* Load Cloudflare Turnstile script, lalu render widget-nya */}
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="afterInteractive"
+        onLoad={renderTurnstile}
+      />
     </main>
   );
 }

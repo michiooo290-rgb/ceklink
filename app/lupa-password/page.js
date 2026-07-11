@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
+import Script from "next/script";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail, ArrowLeft, ShieldCheck, AlertCircle, CheckCircle2, Loader2,
@@ -98,6 +99,21 @@ export default function LupaPasswordPage() {
   const [sent, setSent] = useState(false);
   const [authError, setAuthError] = useState(null);
 
+  /* ── Turnstile (Cloudflare CAPTCHA) ─────────────── */
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const widgetIdRef = useRef(null);
+  const turnstileContainerRef = useRef(null);
+
+  const renderTurnstile = useCallback(() => {
+    if (!window.turnstile || !turnstileContainerRef.current || widgetIdRef.current) return;
+    widgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+      sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+      callback: (token) => setCaptchaToken(token),
+      "expired-callback": () => setCaptchaToken(null),
+      "error-callback": () => setCaptchaToken(null),
+    });
+  }, []);
+
   const handleBlur = useCallback(() => {
     setTouched(true);
     setError(validateEmail(email));
@@ -116,14 +132,26 @@ export default function LupaPasswordPage() {
     setError(err);
     if (err) return;
 
+    if (!captchaToken) {
+      setError(null);
+      setAuthError("Mohon selesaikan verifikasi CAPTCHA terlebih dahulu");
+      return;
+    }
+
     setIsLoading(true);
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      captchaToken,
     });
     setIsLoading(false);
 
     if (resetError) {
       setAuthError(resetError.message);
+      // Reset widget karena token Turnstile sekali pakai
+      if (window.turnstile && widgetIdRef.current) {
+        window.turnstile.reset(widgetIdRef.current);
+      }
+      setCaptchaToken(null);
       return;
     }
 
@@ -224,9 +252,14 @@ export default function LupaPasswordPage() {
                   </AnimatePresence>
                 </div>
 
+                {/* Cloudflare Turnstile CAPTCHA */}
+                <div className="mb-5 flex justify-center">
+                  <div ref={turnstileContainerRef} />
+                </div>
+
                 <motion.button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || !captchaToken}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ background: "linear-gradient(135deg, var(--color-accent), #D4870A)", color: "var(--color-paper)", boxShadow: "0 4px 20px rgba(245,166,35,0.25)" }}
                   whileHover={!isLoading ? { y: -1, boxShadow: "0 6px 28px rgba(245,166,35,0.35)" } : {}}
@@ -265,6 +298,13 @@ export default function LupaPasswordPage() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Load Cloudflare Turnstile script, lalu render widget-nya */}
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="afterInteractive"
+        onLoad={renderTurnstile}
+      />
     </main>
   );
 }
